@@ -1,16 +1,32 @@
-FROM node:22-alpine AS base
+FROM harbor.local/react-app/react-karir:node-base AS builder
+WORKDIR /app
 
-# Mengatur direktori kerja menjadi /web-rekrutmen
-WORKDIR /web-rekrutmen
-
-# Menyalin seluruh kode sumber aplikasi ke dalam direktori kerja
 COPY . .
 
-# Membangun aplikasi untuk produksi
-RUN npm install && npm run build
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Mengatur port yang akan digunakan (dalam hal ini, port 30100)
-EXPOSE 30100
+FROM harbor.local/react-app/react-karir:node-base AS runner
+WORKDIR /app
 
-# Menjalankan aplikasi dengan perintah yang sesuai, termasuk opsi -n
-CMD ["serve", "-s", "build", "-l", "30100", "-n"]
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]
