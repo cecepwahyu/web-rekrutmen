@@ -1,0 +1,4 @@
+# Disable these if you're building base image
+
+node_modules
+.next

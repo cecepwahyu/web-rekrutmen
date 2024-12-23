@@ -1,14 +1,19 @@
-version: '3'
-
 services:
-    app:
-        image: web-rekrutmen:v1
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: 'web-rekrutmen'
-        tty: true
-        stdin_open: true
-        restart: 'unless-stopped'
-        ports:
-            - '30100:3000'
+  frontend-karir:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "harbor.local/react-app/react-karir:result"
+    container_name: "frontend-karir"
+    tty: true
+    stdin_open: true
+    env_file:
+      - .env
+    restart: "unless-stopped"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+    environment:
+      - TZ=Asia/Jakarta

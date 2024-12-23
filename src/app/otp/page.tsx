@@ -73,13 +73,16 @@ const Otp = () => {
         },
       });
 
-      const response = await fetch("http://localhost:8080/api/auth/resend-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/auth/resend-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -98,7 +101,9 @@ const Otp = () => {
           },
         });
       } else {
-        toast.error(result.responseMessage || "Failed to resend OTP. Please try again.");
+        toast.error(
+          result.responseMessage || "Failed to resend OTP. Please try again."
+        );
       }
     } catch (error) {
       console.error("Error during OTP resend:", error);
@@ -145,7 +150,9 @@ const Otp = () => {
           window.location.href = "/karir";
         }, 2000);
       } else {
-        toast.error(result.responseMessage || "OTP Verification failed. Please try again.");
+        toast.error(
+          result.responseMessage || "OTP Verification failed. Please try again."
+        );
       }
     } catch (error) {
       console.error("Error during OTP Verification:", error);
@@ -212,11 +219,13 @@ const Otp = () => {
           </form>
 
           <div className="text-center text-gray-700 mt-4">
-            Didn't receive OTP Code?{" "}
+            Didn&apos;t receive OTP Code?{" "}
             <button
               onClick={handleResendClick}
               className={`font-bold ${
-                isDisabled ? "text-gray-400 cursor-not-allowed" : "text-darkBlue hover:underline"
+                isDisabled
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-darkBlue hover:underline"
               }`}
               disabled={isDisabled}
             >

@@ -1,0 +1,6 @@
+services:
+  master-image:
+    image: harbor.local/react-app/react-karir:node-base
+    build:
+      context: .
+      dockerfile: Dockerfile.build

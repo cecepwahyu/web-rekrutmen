@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+import localFont from "next/font/local";
+
+const interLocal = localFont({
+  src: "/fonts/Inter.ttf",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Rekrutmen BPD DIY",
@@ -17,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={interLocal.className}>
         <main>{children}</main>
         <Toaster /> {/* Add the Toaster component here */}
       </body>
