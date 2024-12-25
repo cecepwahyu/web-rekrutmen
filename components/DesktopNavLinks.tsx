@@ -13,7 +13,7 @@ import {
     NavigationMenuTrigger,
     NavigationMenuViewport,
   } from "@/components/ui/navigation-menu"
-import HomeIcon from './HomeIcon';
+import HomeIcon from '../src/components/HomeIcon';
 
 function DesktopNavLinks() {
   const [isScrolled, setIsScrolled] = useState(false);

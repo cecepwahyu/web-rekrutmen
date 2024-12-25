@@ -10,7 +10,7 @@ import {
     NavigationMenuTrigger,
     NavigationMenuViewport,
   } from "@/components/ui/navigation-menu"
-import HomeIcon from './HomeIcon';
+import HomeIcon from '../src/components/HomeIcon';
 
 function DekstopNavLinksAlt() {
   const [isScrolled, setIsScrolled] = useState(false);
