@@ -35,11 +35,12 @@ const Pengumuman = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/pengumuman-umum/paginated?page=${currentPage}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/pengumuman-umum/paginated?page=${currentPage}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`, // Use token from localStorage
+                        "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
