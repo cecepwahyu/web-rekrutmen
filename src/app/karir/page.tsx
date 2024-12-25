@@ -51,7 +51,8 @@ const Karir = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`, // Use the token from localStorage
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
                 const data = await response.json();
@@ -181,7 +182,7 @@ const Karir = () => {
                                             <div className="w-3/4 pl-6 text-left">
                                                 <h2 className="text-xl font-bold mb-2 text-darkBlue">{job.judulLowongan}</h2>
                                                 <p className="text-sm text-gray-600">{job.tentangPekerjaan}</p>
-                                                <div className="flex items-center text-sm text-gray-600 space-x-4 mt-2">
+                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-sm text-gray-600 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
                                                     <div className="flex items-center">
                                                         <FontAwesomeIcon icon={faUsers} className="mr-1" />
                                                         <span>{job.posisi}</span>
@@ -189,7 +190,10 @@ const Karir = () => {
                                                     <div className="flex items-center">
                                                         <FontAwesomeIcon icon={faCalendar} className="mr-1" />
                                                         <span>
-                                                            {job.periodeAwal} s/d {job.periodeAkhir}
+                                                            {new Date(job.periodeAwal).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })} 
+                                                            {new Date(job.periodeAwal).getFullYear() !== new Date(job.periodeAkhir).getFullYear() && ` ${new Date(job.periodeAwal).getFullYear()}`} 
+                                                            {" s/d "}
+                                                            {new Date(job.periodeAkhir).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
                                                         </span>
                                                     </div>
                                                 </div>
