@@ -21,6 +21,7 @@ import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useRouter } from "next/navigation";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -36,6 +37,14 @@ const Login = () => {
   // Add a state to manage the scroll state
   const [isScrolled, setIsScrolled] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/"); // Redirect to homepage if already logged in
+    }
+  }, [router]);
 
   // Function to handle scroll event
   const handleScroll = () => {
@@ -80,6 +89,7 @@ const Login = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({ ...data, recaptchaToken }),
       });
