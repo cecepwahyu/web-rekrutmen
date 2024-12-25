@@ -36,7 +36,8 @@ const InfoArtikel = () => {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`, // Use token from localStorage
+                        "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
