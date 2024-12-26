@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DesktopNavLinks from "./DesktopNavLinks";
+import DesktopNavLinks from "../src/components/DesktopNavLinks";
 import MobileMenuButton from "./MobileMenuButton";
 import Image from "next/image";
 import Link from "next/link";
