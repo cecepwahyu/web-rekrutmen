@@ -5,13 +5,13 @@ import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
 import MenuBar from "../../../components/MenuBar";
-import FooterCopyright from "../../../components/FooterCopyright";
-import FooterSection from "../../../components/FooterSection";
-import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
-import CariKarirButton from "../../../components/CariKarirButton";
+import FooterCopyright from "../../components/FooterCopyright";
+import FooterSection from "../../components/FooterSection";
+import { ScrollToTopButton } from "../../components/ScrollToTopButton";
+import CariKarirButton from "../../components/CariKarirButton";
 import animation404 from '../../../public/animations/404.json';
 import loadingAnimation from '../../../public/animations/loading.json';
-import LottieAnimation from "../../../components/Animations";
+import LottieAnimation from "../../components/Animations";
 
 const InfoArtikel = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -32,7 +32,7 @@ const InfoArtikel = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/artikel/paginated?page=${currentPage}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/artikel/paginated?page=${currentPage}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
