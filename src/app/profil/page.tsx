@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import MenuBar from "../../../components/MenuBar";
-import FooterCopyright from "../../../components/FooterCopyright";
-import FooterSection from "../../../components/FooterSection";
-import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
-import CariKarirButton from "../../../components/CariKarirButton";
-import LottieAnimation from "../../../components/Animations";
+import FooterCopyright from "../../components/FooterCopyright";
+import FooterSection from "../../components/FooterSection";
+import { ScrollToTopButton } from "../../components/ScrollToTopButton";
+import CariKarirButton from "../../components/CariKarirButton";
+import LottieAnimation from "../../components/Animations";
 import loadingAnimation from '../../../public/animations/loading.json';
 import animation404 from '../../../public/animations/404.json';
 import { FaUser, FaEnvelope, FaIdCard, FaIdBadge, FaRegCheckSquare, FaMedal, FaCalendar, FaPen, FaMapMarkerAlt, FaPhone, FaGraduationCap, FaHeart, FaBuilding, FaBriefcase, FaBook, FaUsers, FaAddressBook } from 'react-icons/fa';
@@ -75,6 +75,30 @@ const handleChangeProfilePicture = () => {
     console.log("Change profile picture button clicked");
 };
 
+const getIdFromToken = async (token: string): Promise<string | null> => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+
+        const data = await response.json();
+        if (data.responseCode === "000") {
+            return data.data.idPeserta || null;
+        } else {
+            console.error("Error fetching ID:", data.responseMessage);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching ID:", error);
+        return null;
+    }
+};
+
 const Profile = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -96,12 +120,20 @@ const Profile = () => {
                 return;
             }
 
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                setIsLoading(false);
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/api/profile/45`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
@@ -130,12 +162,19 @@ const Profile = () => {
                 return;
             }
 
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/api/profile/pengalaman/45`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pengalaman/${id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
@@ -162,12 +201,19 @@ const Profile = () => {
                 return;
             }
 
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/api/profile/pendidikan/45`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pendidikan/${id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
@@ -178,7 +224,7 @@ const Profile = () => {
                     console.error("Error fetching data:", data.responseMessage);
                 }
             } catch (error) {
-                console.error("Error fetching pengalaman data:", error);
+                console.error("Error fetching pendidikan data:", error);
             }
         };
 
@@ -194,12 +240,19 @@ const Profile = () => {
                 return;
             }
 
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/api/profile/organisasi/45`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/organisasi/${id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
@@ -226,12 +279,19 @@ const Profile = () => {
                 return;
             }
 
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/api/profile/kontak/45`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
                     },
                 });
 
