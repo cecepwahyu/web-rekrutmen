@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import MenuBar from "../../../components/MenuBar";
-import FooterCopyright from "../../../components/FooterCopyright";
-import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
+import FooterCopyright from "../../components/FooterCopyright";
+import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import {
   Form,
   FormControl,
@@ -67,10 +67,11 @@ const Register = () => {
   const handleRegister = async (data: RegisterFormValues) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/register", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(data),
       });
@@ -84,7 +85,7 @@ const Register = () => {
 
       if (result.responseCode === "000") {
         // Login successful
-        localStorage.setItem("token", result.data.token);
+        //localStorage.setItem("token", result.data.token);
 
         // Show success toast
         toast.success("Register successful! Redirecting...", {
