@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import MenuBar from "../../../../components/MenuBar";
-import FooterCopyright from "../../../../components/FooterCopyright";
-import FooterSection from "../../../../components/FooterSection";
-import { ScrollToTopButton } from "../../../../components/ScrollToTopButton";
-import CariKarirButton from "../../../../components/CariKarirButton";
-import LottieAnimation from "../../../../components/Animations";
+import FooterCopyright from "../../../components/FooterCopyright";
+import FooterSection from "../../../components/FooterSection";
+import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
+import CariKarirButton from "../../../components/CariKarirButton";
+import LottieAnimation from "../../../components/Animations";
 import loadingAnimation from '../../../../public/animations/loading.json';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
