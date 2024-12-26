@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import LottieAnimation from "../../components/Animations";
+import dynamic from 'next/dynamic';
+import LottieAnimation from "../components/Animations";
 import animationFgData from '../../public/animations/fg.json';
 import animationExperiencedData from '../../public/animations/experienced.json';
-import animationInternshipData from '../../public/animations/internship.json';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import Image from "next/image";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import React from 'react';
@@ -15,18 +13,19 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import MenuBar from "../../components/MenuBar";
-import CariKarirButton from "../../components/CariKarirButton";
-import {ScrollToTopButton} from "../../components/ScrollToTopButton";
-import FooterCopyright from "../../components/FooterCopyright";
-import FooterSection from "../../components/FooterSection";
+import { ScrollToTopButton } from "../components/ScrollToTopButton";
+import FooterCopyright from "../components/FooterCopyright";
+import FooterSection from "../components/FooterSection";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-  } from "@/components/ui/accordion"
-import RandomShapes from '../../components/RandomShapes';
+} from "@/components/ui/accordion";
+import RandomShapes from '../components/RandomShapes';
 import { motion } from 'framer-motion';
+
+const CariKarirButton = dynamic(() => import('../components/CariKarirButton'), { ssr: false });
 
 const Home = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -58,7 +57,6 @@ const Home = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
-
             {/* Section MenuBar */}
             <MenuBar />
 
@@ -83,7 +81,12 @@ const Home = () => {
                                         <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Temukan Jalanmu untuk Berinovasi dan Mewujudkan Mimpi</h1>
                                         <p className="text-white hover:text-yellow-500 transition-colors duration-300">Jelajahi dan temukan tujuan karirmu bersama BPD DIY <b>#MungkinAndaCocok</b> kerja di BPD DIY</p>
                                         <br />
-                                        <button className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition">Jelajahi Karir</button>
+                                        <button 
+                                            className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition"
+                                            onClick={() => window.location.href = '/karir'}
+                                        >
+                                            Jelajahi Karir
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
@@ -107,7 +110,12 @@ const Home = () => {
                                         <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Karir di BPD DIY</h1>
                                         <p className="text-white hover:text-yellow-500 transition-colors duration-300">Bergabunglah dengan tim kami dan kembangkan karirmu di BPD DIY. Kami menyediakan berbagai posisi yang sesuai dengan minat dan keahlianmu.</p>
                                         <br />
-                                        <button className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition">Lihat Lowongan</button>
+                                        <button 
+                                            className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition"
+                                            onClick={() => window.location.href = '/karir'}
+                                        >
+                                            Lihat Lowongan
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
@@ -131,7 +139,12 @@ const Home = () => {
                                         <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Lowongan Pekerjaan</h1>
                                         <p className="text-white hover:text-yellow-500 transition-colors duration-300">Temukan berbagai lowongan pekerjaan yang tersedia di BPD DIY dan raih kesempatan untuk berkarir di dunia perbankan.</p>
                                         <br />
-                                        <button className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition">Cari Lowongan</button>
+                                        <button 
+                                            className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition"
+                                            onClick={() => window.location.href = '/karir'}
+                                        >
+                                            Cari Lowongan
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
@@ -228,7 +241,10 @@ const Home = () => {
                         <p className="mt-4 font-sans text-base font-normal leading-relaxed text-gray-800 text-center md:text-left md:ml-60">
                             Untuk kamu yang baru memulai karir, Fresh Graduate memiliki 2 kriteria, yaitu Program dan Staf.
                         </p>
-                        <button className="mt-6 font-semibold hover:underline text-darkBlue text-center md:text-left md:ml-60">
+                        <button 
+                            className="mt-6 font-semibold hover:underline text-darkBlue text-center md:text-left md:ml-60"
+                            onClick={() => window.location.href = '/karir'}
+                        >
                             Daftar &gt;
                         </button>
                     </div>
@@ -257,33 +273,14 @@ const Home = () => {
                         <p className="mt-4 font-sans text-base font-normal leading-relaxed text-gray-800 text-center md:text-left md:mr-60">
                         Untuk kamu yang sudah memiliki pengalaman di bidang tertentu dan ingin mengembangkan diri lebih lagi.
                         </p>
-                        <button className="mt-6 font-semibold hover:underline text-darkBlue text-center md:text-left md:mr-60">
+                        <button 
+                            className="mt-6 font-semibold hover:underline text-darkBlue text-center md:text-left md:mr-60"
+                            onClick={() => window.location.href = '/karir'}
+                        >
                             Daftar &gt;
                         </button>
                     </div>
                 </div>
-
-                {/* Section Internship */}
-                {/* <div className="flex flex-col md:flex-row relative z-10 bg-white"> */}
-                    {/* Left Section */}
-                    {/* <div className="w-full md:w-1/2 px-4 pt-8 bg-white text-black"> */}
-                        {/* <span className="text-blue-400 font-semibold text-3xl md:ml-60 text-center md:text-left">
-                            Internship
-                        </span> */}
-                        {/* <p className="mt-4 font-sans text-base font-normal leading-relaxed text-gray-800 text-center md:text-left md:ml-60">
-                        Untuk kamu yang ingin magang di bidang tertentu dan mendapatkan pengalaman kerja sebelum lulus.
-                        </p> */}
-                        {/* <button className="mt-6 font-semibold hover:underline text-darkBlue text-center md:text-left md:ml-60">
-                            Daftar &gt;
-                        </button> */}
-                    {/* </div> */}
-                    {/* Right Section */}
-                    {/* <div className="w-full md:w-1/2 px-4 pt-8 bg-white flex justify-center md:justify-end items-center md:mr-60">
-                        <div className="w-[80%] h-auto md:w-[60%] md:h-auto md:-mt-32">
-                            <LottieAnimation animationData={animationInternshipData} width="100%" height="100%" />
-                        </div>
-                    </div> */}
-                {/* </div> */}
 
                 {/* Section FAQ's */}
                 <div className="flex flex-col justify-center items-center w-full bg-white h-auto relative z-10 pb-12 pt-8">
