@@ -31,7 +31,7 @@ const FooterSection = () => {
                     <ul className="text-sm text-gray-700 space-y-4">
                         <li>
                             <button
-                                onClick={() => window.open("https://facebook.com", "_blank")}
+                                onClick={() => window.open("https://www.facebook.com/bpddiy.official/", "_blank")}
                                 className="flex items-center justify-start lg:justify-center hover:text-blue-700 transition"
                             >
                                 <FontAwesomeIcon icon={faFacebook} className="mr-2" />
@@ -40,7 +40,7 @@ const FooterSection = () => {
                         </li>
                         <li>
                             <button
-                                onClick={() => window.open("https://instagram.com", "_blank")}
+                                onClick={() => window.open("https://www.instagram.com/bpddiy", "_blank")}
                                 className="flex items-center justify-start lg:justify-center hover:text-purple-700 transition"
                             >
                                 <FontAwesomeIcon icon={faInstagram} className="mr-2" />
@@ -49,7 +49,7 @@ const FooterSection = () => {
                         </li>
                         <li>
                             <button
-                                onClick={() => window.open("https://youtube.com", "_blank")}
+                                onClick={() => window.open("https://www.youtube.com/@bankbpddiy4861", "_blank")}
                                 className="flex items-center justify-start lg:justify-center hover:text-red-700 transition"
                             >
                                 <FontAwesomeIcon icon={faYoutube} className="mr-2" />
