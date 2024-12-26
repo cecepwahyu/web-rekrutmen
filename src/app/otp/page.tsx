@@ -11,10 +11,10 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import MenuBar from "../../../components/MenuBar";
-import FooterCopyright from "../../../components/FooterCopyright";
-import DekstopNavLinksAlt from "../../../components/DekstopNavLinksAlt";
+import FooterCopyright from "../../components/FooterCopyright";
+import DekstopNavLinksAlt from "../../components/DekstopNavLinksAlt";
 import Image from "next/image";
-import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
+import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 
 // Define the form schema using zod
 const formSchema = z.object({
