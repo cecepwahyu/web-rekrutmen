@@ -78,7 +78,23 @@ const Register = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.responseMessage.includes("already exist")) {
+            if (errorJson.data.includes("Username")) {
+              toast.error("Username already registered. Please choose another one.");
+            } else if (errorJson.data.includes("Email")) {
+              toast.error("Email already registered. Please use another email.");
+            } else {
+              toast.error("Register failed. Please try again.");
+            }
+          } else {
+            toast.error(errorJson.responseMessage || "Register failed. Please try again.");
+          }
+        } catch (e) {
+          throw new Error(`API error: ${response.status} - ${errorText}`);
+        }
+        return;
       }
 
       const result = await response.json();
