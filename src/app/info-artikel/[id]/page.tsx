@@ -7,13 +7,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookF, faWhatsapp, faTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import MenuBar from "../../../../components/MenuBar";
-import FooterCopyright from "../../../../components/FooterCopyright";
-import FooterSection from "../../../../components/FooterSection";
-import { ScrollToTopButton } from "../../../../components/ScrollToTopButton";
-import CariKarirButton from "../../../../components/CariKarirButton";
+import FooterCopyright from "../../../components/FooterCopyright";
+import FooterSection from "../../../components/FooterSection";
+import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
+import CariKarirButton from "../../../components/CariKarirButton";
 import animation404 from '../../../../public/animations/404.json';
 import loadingAnimation from '../../../../public/animations/loading.json';
-import LottieAnimation from "../../../../components/Animations";
+import LottieAnimation from "../../../components/Animations";
 
 interface Article {
     judul: string;
