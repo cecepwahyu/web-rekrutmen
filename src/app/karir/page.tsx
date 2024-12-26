@@ -6,11 +6,11 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faUsers } from "@fortawesome/free-solid-svg-icons";
 import MenuBar from "../../../components/MenuBar";
-import FooterCopyright from "../../../components/FooterCopyright";
-import FooterSection from "../../../components/FooterSection";
-import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
-import CariKarirButton from "../../../components/CariKarirButton";
-import LottieAnimation from "../../../components/Animations";
+import FooterCopyright from "../../components/FooterCopyright";
+import FooterSection from "../../components/FooterSection";
+import { ScrollToTopButton } from "../../components/ScrollToTopButton";
+import CariKarirButton from "../../components/CariKarirButton";
+import LottieAnimation from "../../components/Animations";
 import animation404 from "../../../public/animations/404.json";
 import loadingAnimation from "../../../public/animations/loading.json";
 
@@ -47,7 +47,7 @@ const Karir = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/api/lowongan/paginated?page=${currentPage}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/paginated?page=${currentPage}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
