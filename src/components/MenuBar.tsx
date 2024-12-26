@@ -9,7 +9,7 @@ const MenuBar = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const hasToken = false; // Replace with actual token check logic
+    const hasToken = false;
 
     useEffect(() => {
         const handleScroll = () => {
