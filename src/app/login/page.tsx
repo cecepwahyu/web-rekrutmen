@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import MenuBar from "../../../components/MenuBar";
-import FooterCopyright from "../../../components/FooterCopyright";
-import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
+import FooterCopyright from "../../components/FooterCopyright";
+import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -102,6 +102,20 @@ const Login = () => {
       const result = await response.json();
 
       if (result.responseCode === "000") {
+        // Check if the account is active
+        if (!result.data.isActive) {
+          toast.error("Account is inactive! Please verify your account.", {
+        style: {
+          backgroundColor: "white", // White background
+          color: "red", // Red text color for alert
+          borderRadius: "8px", // Rounded corners
+          padding: "10px 20px", // Padding
+        },
+          });
+          setLoading(false);
+          return;
+        }
+
         // Login successful
         const token = result.data.token;
 
