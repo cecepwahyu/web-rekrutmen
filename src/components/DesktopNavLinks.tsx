@@ -67,23 +67,40 @@ function DesktopNavLinks() {
       setName(storedName);
     }
 
-    const token = localStorage.getItem('token');
-    fetch('http://localhost:8080/api/profile/peserta-info/45', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
+    const fetchProfileData = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+        if (result.responseCode === '000') {
+          const idPeserta = result.data.idPeserta;
+          const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/peserta-info/${idPeserta}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const profileData = await profileResponse.json();
+          if (profileData.responseCode === '000') {
+            setName(profileData.data.nama);
+            localStorage.setItem('name', profileData.data.nama);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.responseCode === '000') {
-        setName(data.data.nama);
-        localStorage.setItem('name', data.data.nama);
-      }
-    })
-    .catch(error => console.error('Error fetching data:', error));
+    };
+
+    fetchProfileData();
   }, []);
 
   const handleProfileDropdownToggle = () => {
@@ -178,11 +195,11 @@ function DesktopNavLinks() {
                 <Avatar className="w-8 h-8 mr-2">
                   <AvatarImage src="/path-to-avatar-image.jpg" alt="User Avatar" />
                   <AvatarFallback className="text-darkBlue">
-                  {getInitials(name)}
+                  {getInitials(name) || '-'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="mr-4">
-                  <div className="font-semibold">{name}</div>
+                  <div className="font-semibold">{name || '-'}</div>
                 </div>
                 <FontAwesomeIcon
                     icon={faAngleDown}
