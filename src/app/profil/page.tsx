@@ -142,9 +142,11 @@ const Profile = () => {
                     setProfileData(data.data);
                 } else {
                     console.error("Error fetching data:", data.responseMessage);
+                    setProfileData(null); // Set profile data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching profile data:", error);
+                setProfileData(null); // Set profile data to null if error occurs
             } finally {
                 setIsLoading(false);
             }
@@ -183,9 +185,11 @@ const Profile = () => {
                     setPengalamanData(data.data);
                 } else {
                     console.error("Error fetching data:", data.responseMessage);
+                    setPengalamanData(null); // Set pengalaman data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching pengalaman data:", error);
+                setPengalamanData(null); // Set pengalaman data to null if error occurs
             }
         };
 
@@ -222,9 +226,11 @@ const Profile = () => {
                     setPendidikanData(data.data);
                 } else {
                     console.error("Error fetching data:", data.responseMessage);
+                    setPendidikanData(null); // Set pendidikan data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching pendidikan data:", error);
+                setPendidikanData(null); // Set pendidikan data to null if error occurs
             }
         };
 
@@ -261,9 +267,11 @@ const Profile = () => {
                     setOrganisasiData(data.data);
                 } else {
                     console.error("Error fetching data:", data.responseMessage);
+                    setOrganisasiData(null); // Set organisasi data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching organisasi data:", error);
+                setOrganisasiData(null); // Set organisasi data to null if error occurs
             }
         };
 
@@ -300,9 +308,11 @@ const Profile = () => {
                     setKontakData(data.data);
                 } else {
                     console.error("Error fetching data:", data.responseMessage);
+                    setKontakData(null); // Set kontak data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching kontak data:", error);
+                setKontakData(null); // Set kontak data to null if error occurs
             }
         };
 
@@ -366,7 +376,7 @@ const Profile = () => {
 
                                 {/* Section Profile Picture */}
                                 <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4">
-                                    <div className="w-3/4 lg:w-full h-48 bg-gray-300 flex justify-center items-center">
+                                    <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center">
                                         <span className="text-gray-500">3x4 Rectangle</span>
                                     </div>
                                     <button 
@@ -535,7 +545,7 @@ const Profile = () => {
                                             </div>
                                             <div className="flex items-center mb-2">
                                                 <FaUser className="mr-2 text-darkBlue" />
-                                                <p><strong>Hubungan Kerabat:</strong> {kontakData.hubKontak}</p>
+                                                <p><strong>Hubungan Kerabat:</strong> {kontakData.hubKontak || '-'}</p>
                                             </div>
                                             <div className="flex items-center mb-2">
                                                 <FaPhone className="mr-2 text-darkBlue" />
