@@ -130,120 +130,132 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#015CAC] to-[#018ED2] font-sans relative">
+    <div className="min-h-screen bg-gray-100 font-sans relative">
       <MenuBar />
-      <main className="flex items-center justify-center pt-10 sm:pt-20 min-h-screen px-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md transform transition-transform duration-300 hover:scale-105">
-          <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
-            Daftar Akun Baru
-          </h2>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
-              {/* Username Field */}
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your username"
-                        type="username"
-                        {...field}
-                        className="transition-transform duration-300 focus:scale-105"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 flex flex-col min-h-screen">
+        <div className="bg-white flex-grow relative z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <defs>
+              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
+            <path fill="url(#grad1)"
+              d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
+          </svg>
+        </div>
 
-              {/* No Identitas Field */}
-              <FormField
-                control={form.control}
-                name="no_identitas"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>No Identitas</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your No Identitas"
-                        type="number"
-                        {...field}
-                        className="transition-transform duration-300 focus:scale-105"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* Email Field */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your email"
-                        type="email"
-                        {...field}
-                        className="transition-transform duration-300 focus:scale-105"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10 px-4"> {/* Added px-4 for padding */}
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md mx-4"> {/* Added mx-4 for margin */}
+            <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
+              Daftar Akun Baru
+            </h2>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
+                {/* Username Field */}
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your username"
+                          type="username"
+                          {...field}
+                          className="transition-transform duration-300 focus:scale-105"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Password Field */}
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your password"
-                        type="password"
-                        {...field}
-                        className="transition-transform duration-300 focus:scale-105"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                {/* No Identitas Field */}
+                <FormField
+                  control={form.control}
+                  name="no_identitas"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>No Identitas</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your No Identitas"
+                          type="number"
+                          {...field}
+                          className="transition-transform duration-300 focus:scale-105"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                {/* Email Field */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your email"
+                          type="email"
+                          {...field}
+                          className="transition-transform duration-300 focus:scale-105"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
-                disabled={loading}
-              >
-                {loading ? "Register in progress..." : "Register"}
-              </Button>
-            </form>
-          </Form>
+                {/* Password Field */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your password"
+                          type="password"
+                          {...field}
+                          className="transition-transform duration-300 focus:scale-105"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <div className="text-center text-gray-700 mt-4">
-            Already have an account?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Login
-            </a>
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
+                  disabled={loading}
+                >
+                  {loading ? "Register in progress..." : "Register"}
+                </Button>
+              </form>
+            </Form>
+
+            <div className="text-center text-gray-700 mt-4">
+              Already have an account?{" "}
+              <a href="/login" className="text-blue-500 hover:underline">
+                Login
+              </a>
+            </div>
           </div>
         </div>
+
+        <FooterCopyright />
+        <ScrollToTopButton />
       </main>
-
-      {/* Section Footer */}
-      <FooterCopyright />
-
-      {/* Scroll to Top Button */}
-      <ScrollToTopButton />
     </div>
   );
 };
