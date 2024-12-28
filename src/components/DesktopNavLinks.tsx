@@ -17,7 +17,7 @@ import HomeIcon from './HomeIcon';
 
 function DesktopNavLinks() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
+  const [hasToken, setHasToken] = useState(!!localStorage.getItem('token'));
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
@@ -59,12 +59,6 @@ function DesktopNavLinks() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setHasToken(!!localStorage.getItem('token'));
-    }
   }, []);
 
   useEffect(() => {
