@@ -17,7 +17,7 @@ import HomeIcon from './HomeIcon';
 
 function DesktopNavLinks() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hasToken, setHasToken] = useState(!!localStorage.getItem('token'));
+  const [hasToken, setHasToken] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
@@ -59,6 +59,12 @@ function DesktopNavLinks() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHasToken(!!localStorage.getItem('token'));
+    }
   }, []);
 
   useEffect(() => {
@@ -193,7 +199,7 @@ function DesktopNavLinks() {
               >
                 <div className="flex items-center text-right">
                 <Avatar className="w-8 h-8 mr-2">
-                  <AvatarImage src="/path-to-avatar-image.jpg" alt="User Avatar" />
+                  {/* <AvatarImage src="/path-to-avatar-image.jpg" alt="User Avatar" /> */}
                   <AvatarFallback className="text-darkBlue">
                   {getInitials(name) || '-'}
                   </AvatarFallback>
