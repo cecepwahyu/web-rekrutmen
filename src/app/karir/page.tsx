@@ -13,6 +13,8 @@ import CariKarirButton from "../../components/CariKarirButton";
 import LottieAnimation from "../../components/Animations";
 import animation404 from "../../../public/animations/404.json";
 import loadingAnimation from "../../../public/animations/loading.json";
+import htmlReactParser from 'html-react-parser';
+import Head from "next/head";
 
 const ITEMS_PER_PAGE = 6; // Items per page
 
@@ -95,6 +97,9 @@ const Karir = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
+            <Head>
+                <title>Karir | Rekrutmen BPD DIY</title>
+            </Head>
             <MenuBar />
 
             <main className="pt-20 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
@@ -180,9 +185,13 @@ const Karir = () => {
                                                 />
                                             </div>
                                             <div className="w-3/4 pl-6 text-left">
-                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">{job.judulLowongan}</h2>
-                                                <p className="text-sm text-gray-600">{job.tentangPekerjaan}</p>
-                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-sm text-gray-600 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
+                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">
+                                                    {job.judulLowongan}
+                                                </h2>
+                                                {/* <p className="text-sm text-gray-600">
+                                                    <span>{htmlReactParser(job.tentangPekerjaan)}</span>
+                                                </p> */}
+                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
                                                     <div className="flex items-center">
                                                         <FontAwesomeIcon icon={faUsers} className="mr-1" />
                                                         <span>{job.posisi}</span>
