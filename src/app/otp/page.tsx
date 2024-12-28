@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/input-otp";
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
-import DekstopNavLinksAlt from "../../components/DekstopNavLinksAlt";
 import Image from "next/image";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 
@@ -27,6 +26,12 @@ const Otp = () => {
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
+
+  // Hardcoded payload for now
+  const payload = {
+    no_identitas: "3409110505990002",
+    email: "tidiv36477@pixdd.com",
+  };
 
   // Initialize the form with react-hook-form and zod resolver
   const form = useForm<OtpFormValues>({
@@ -57,12 +62,6 @@ const Otp = () => {
   const handleResendClick = async () => {
     setIsDisabled(true);
 
-    // Hardcoded payload for now
-    const payload = {
-      no_identitas: "3305110909000002",
-      email: "maker1@gmail.com",
-    };
-
     try {
       toast("Sending OTP...", {
         style: {
@@ -73,12 +72,11 @@ const Otp = () => {
         },
       });
 
-      const response = await fetch(
-        "http://localhost:8080/api/auth/resend-otp",
-        {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/resend-otp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify(payload),
         }
@@ -116,12 +114,11 @@ const Otp = () => {
   const handleOtp = async (data: OtpFormValues) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/auth/otp-verification",
-        {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/otp-verification`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({ otp: data.otp }),
         }
@@ -165,8 +162,8 @@ const Otp = () => {
   return (
     <div className="min-h-screen bg-gray-100 font-sans relative">
       <MenuBar />
-      <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
-        <div className="bg-white relative z-10">
+      <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 flex flex-col min-h-screen">
+        <div className="bg-white flex-grow relative z-10">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
             <defs>
               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -179,14 +176,14 @@ const Otp = () => {
           </svg>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32 pb-10">
+        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10">
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
             <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
               OTP Verification
             </h2>
             <p className="text-center mb-4">
               One Time Password (OTP) has been sent to your email address:{" "}
-              <b>maker1@gmail.com</b>
+              <b>{payload.email}</b>
             </p>
 
             <p className="text-center mb-4">Enter the OTP to verify it.</p>
