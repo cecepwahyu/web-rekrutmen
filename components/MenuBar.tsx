@@ -64,6 +64,7 @@ const MenuBar = () => {
                                 width={150}
                                 height={50}
                                 priority
+                                style={{ width: "auto", height: "auto" }}
                             />
                         </a>
                     </Link>
@@ -90,6 +91,7 @@ const MenuBar = () => {
                             width={150}
                             height={50}
                             priority
+                            style={{ width: "auto", height: "auto" }}
                         />
                         <button
                             onClick={handleDrawerToggle}
