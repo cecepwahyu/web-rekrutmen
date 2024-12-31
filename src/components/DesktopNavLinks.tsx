@@ -17,10 +17,11 @@ import HomeIcon from './HomeIcon';
 
 function DesktopNavLinks() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hasToken, setHasToken] = useState(!!localStorage.getItem('token'));
+  const [hasToken, setHasToken] = useState(typeof window !== 'undefined' && !!localStorage.getItem('token'));
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
@@ -62,45 +63,48 @@ function DesktopNavLinks() {
   }, []);
 
   useEffect(() => {
-    const storedName = localStorage.getItem('name');
-    if (storedName) {
-      setName(storedName);
-    }
+    if (typeof window !== 'undefined') {
+      const storedName = localStorage.getItem('name');
+      if (storedName) {
+        setName(storedName);
+      }
 
-    const fetchProfileData = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-        if (result.responseCode === '000') {
-          const idPeserta = result.data.idPeserta;
-          const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/peserta-info/${idPeserta}`, {
-            method: 'GET',
+      const fetchProfileData = async () => {
+        const token = localStorage.getItem('token');
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
               'Authorization': `Bearer ${token}`
             }
           });
-          const profileData = await profileResponse.json();
-          if (profileData.responseCode === '000') {
-            setName(profileData.data.nama);
-            localStorage.setItem('name', profileData.data.nama);
+          const result = await response.json();
+          if (result.responseCode === '000') {
+            const idPeserta = result.data.idPeserta;
+            const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/peserta-info/${idPeserta}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            const profileData = await profileResponse.json();
+            if (profileData.responseCode === '000') {
+              setName(profileData.data.nama);
+              setProfilePicture(profileData.data.profilePicture || '');
+              localStorage.setItem('name', profileData.data.nama);
+            }
           }
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+      };
 
-    fetchProfileData();
+      fetchProfileData();
+    }
   }, []);
 
   const handleProfileDropdownToggle = () => {
@@ -192,11 +196,14 @@ function DesktopNavLinks() {
               onClick={handleProfileDropdownToggle}
               >
                 <div className="flex items-center text-right">
-                <Avatar className="w-8 h-8 mr-2">
-                  {/* <AvatarImage src="/path-to-avatar-image.jpg" alt="User Avatar" /> */}
+                <Avatar className="w-8 h-8 mr-2 border-2 border-white">
+                  {profilePicture ? (
+                  <AvatarImage src={profilePicture} alt="User Avatar" />
+                  ) : (
                   <AvatarFallback className="text-darkBlue">
                   {getInitials(name) || '-'}
                   </AvatarFallback>
+                  )}
                 </Avatar>
                 <div className="mr-4">
                   <div className="font-semibold">{name || '-'}</div>
