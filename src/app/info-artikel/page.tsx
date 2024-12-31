@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
@@ -13,6 +14,7 @@ import animation404 from '../../../public/animations/404.json';
 import loadingAnimation from '../../../public/animations/loading.json';
 import LottieAnimation from "../../components/Animations";
 
+
 const InfoArtikel = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -20,10 +22,30 @@ const InfoArtikel = () => {
     const [currentPage, setCurrentPage] = useState(0); // Current page starts at 0
     const [totalPages, setTotalPages] = useState(0); // Total pages
     const [isLoading, setIsLoading] = useState(true); // State for loading animation
+    const [isAuthenticated, setIsAuthenticated] = useState(false); // State for authentication  
+    const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         const fetchArticle = async () => {
             setIsLoading(true); // Show loading animation
+
+            if (typeof window === "undefined") {
+                setIsLoading(false); // Set loading to false if not in the browser
+                return; // Exit if not in the browser
+            }
+
             const token = localStorage.getItem("token");
 
             if (!token) {
@@ -55,8 +77,10 @@ const InfoArtikel = () => {
             }
         };
 
-        fetchArticle();
-    }, [currentPage]); // Re-fetch articles when currentPage changes
+        if (isAuthenticated) {
+            fetchArticle();
+        }
+    }, [currentPage, isAuthenticated]); // Re-fetch articles when currentPage changes
 
     useEffect(() => {
         const handleScroll = () => {
@@ -80,6 +104,10 @@ const InfoArtikel = () => {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
