@@ -26,14 +26,19 @@ const Karir = () => {
     const [totalPages, setTotalPages] = useState(0); // Total pages
     const [activeTab, setActiveTab] = useState("Rekrutmen"); // Set default tab to "Rekrutmen"
     const [isLoading, setIsLoading] = useState(true); // State for loading animation
+    const [isAuthenticated, setIsAuthenticated] = useState(false); // State for authentication check
     const router = useRouter();
 
     // Check if user is authenticated when the page loads
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
 
-        if (!token) {
-            router.push("/login");
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
         }
     }, [router]);
 
@@ -41,36 +46,40 @@ const Karir = () => {
     useEffect(() => {
         const fetchJobs = async () => {
             setIsLoading(true); // Show loading animation
-            const token = localStorage.getItem("token"); // Get token from localStorage
+            if (typeof window !== "undefined") {
+                const token = localStorage.getItem("token"); // Get token from localStorage
 
-            if (!token) {
-                console.error("No token found in localStorage");
-                return; // Exit if no token is found
-            }
-
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/paginated?page=${currentPage}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
-                    },
-                });
-                const data = await response.json();
-                if (data.responseCode === "000") {
-                    setJobs(data.data.content); // Update jobs with current page content
-                    setTotalPages(data.data.totalPages); // Set total pages
+                if (!token) {
+                    console.error("No token found in localStorage");
+                    return; // Exit if no token is found
                 }
-            } catch (error) {
-                console.error("Error fetching job data:", error);
-            } finally {
-                setIsLoading(false); // Hide loading animation
+
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/paginated?page=${currentPage}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    });
+                    const data = await response.json();
+                    if (data.responseCode === "000") {
+                        setJobs(data.data.content); // Update jobs with current page content
+                        setTotalPages(data.data.totalPages); // Set total pages
+                    }
+                } catch (error) {
+                    console.error("Error fetching job data:", error);
+                } finally {
+                    setIsLoading(false); // Hide loading animation
+                }
             }
         };
 
-        fetchJobs();
-    }, [currentPage]); // Re-fetch jobs when currentPage changes
+        if (isAuthenticated) {
+            fetchJobs();
+        }
+    }, [currentPage, isAuthenticated]); // Re-fetch jobs when currentPage or isAuthenticated changes
 
     useEffect(() => {
         const handleScroll = () => {
@@ -94,6 +103,10 @@ const Karir = () => {
     const goToPreviousPage = () => {
         if (currentPage > 0) setCurrentPage(currentPage - 1);
     };
+
+    if (!isAuthenticated) {
+        return null; // Render nothing until authentication check is complete
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
@@ -121,6 +134,8 @@ const Karir = () => {
                                 width={800}
                                 height={600}
                                 className="w-[460px] h-auto rounded-lg object-contain pb-10"
+                                loading="lazy"
+                                onLoad={() => console.log('Image loaded')}
                             />
                         </div>
                     </div>
@@ -172,7 +187,7 @@ const Karir = () => {
                                     {jobs.map((job: any) => (
                                         <button
                                             key={job.idLowongan}
-                                            className="bg-white shadow-lg rounded-lg p-6 flex items-center transform hover:scale-105 transition duration-500 ease-in-out"
+                                            className="bg-white shadow-lg rounded-lg p-6 flex items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
                                             onClick={() => (window.location.href = `/karir/${job.slug}`)}
                                         >
                                             <div className="w-1/4">
@@ -188,9 +203,6 @@ const Karir = () => {
                                                 <h2 className="text-xl font-bold mb-2 text-darkBlue">
                                                     {job.judulLowongan}
                                                 </h2>
-                                                {/* <p className="text-sm text-gray-600">
-                                                    <span>{htmlReactParser(job.tentangPekerjaan)}</span>
-                                                </p> */}
                                                 <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
                                                     <div className="flex items-center">
                                                         <FontAwesomeIcon icon={faUsers} className="mr-1" />
@@ -244,6 +256,8 @@ const Karir = () => {
                                             width={150}
                                             height={150}
                                             className="rounded-lg object-contain"
+                                            loading="lazy"
+                                            onLoad={() => console.log('Image loaded')}
                                         />
                                     </div>
                                     <div className="w-3/4 pl-6 text-left">
@@ -266,6 +280,8 @@ const Karir = () => {
                                             width={150}
                                             height={150}
                                             className="rounded-lg object-contain"
+                                            loading="lazy"
+                                            onLoad={() => console.log('Image loaded')}
                                         />
                                     </div>
                                     <div className="w-3/4 pl-6 text-left">
@@ -288,6 +304,8 @@ const Karir = () => {
                                             width={150}
                                             height={150}
                                             className="rounded-lg object-contain"
+                                            loading="lazy"
+                                            onLoad={() => console.log('Image loaded')}
                                         />
                                     </div>
                                     <div className="w-3/4 pl-6 text-left">
@@ -310,6 +328,8 @@ const Karir = () => {
                                             width={150}
                                             height={150}
                                             className="rounded-lg object-contain"
+                                            loading="lazy"
+                                            onLoad={() => console.log('Image loaded')}
                                         />
                                     </div>
                                     <div className="w-3/4 pl-6 text-left">
