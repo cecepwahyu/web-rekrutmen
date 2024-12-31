@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import LottieAnimation from "../components/Animations";
 import animationFgData from '../../public/animations/fg.json';
@@ -24,13 +25,28 @@ import {
 } from "@/components/ui/accordion";
 import RandomShapes from '../components/RandomShapes';
 import { motion } from 'framer-motion';
+import loadingAnimation from '../../public/animations/loading.json'; // Import loading animation
 
 const CariKarirButton = dynamic(() => import('../components/CariKarirButton'), { ssr: false });
 
 const Home = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
-    const currentYear = new Date().getFullYear();
+    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter(); 
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -54,6 +70,14 @@ const Home = () => {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <LottieAnimation animationData={loadingAnimation} />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
