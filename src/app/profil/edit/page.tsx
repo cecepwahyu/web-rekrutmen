@@ -526,14 +526,14 @@ const EditProfil = () => {
 
             const data = await response.json();
             if (data.responseCode === "000") {
-                toast.success("Data berhasil disimpan.", { style: { backgroundColor: 'green', color: 'white' } });
+                toast.success("Data berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
                 router.push("/profil");
             } else {
-                toast.error("Gagal menyimpan data: " + data.message, { style: { backgroundColor: 'red', color: 'white' } });
+                toast.error("Gagal menyimpan data: " + data.message, { style: { backgroundColor: 'white', color: 'red' } });
             }
         } catch (error) {
             console.error("Error updating profile data:", error);
-            toast.error("Terjadi kesalahan saat menyimpan data.", { style: { backgroundColor: 'red', color: 'white' } });
+            toast.error("Terjadi kesalahan saat menyimpan data.", { style: { backgroundColor: 'white', color: 'red' } });
         } finally {
             setIsLoading(false);
         }
