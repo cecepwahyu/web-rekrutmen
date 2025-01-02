@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import MenuBar from "../../../../components/MenuBar";
 import FooterCopyright from "../../../components/FooterCopyright";
 import FooterSection from "../../../components/FooterSection";
@@ -9,20 +9,40 @@ import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
 import CariKarirButton from "../../../components/CariKarirButton";
 import LottieAnimation from "../../../components/Animations";
 import loadingAnimation from '../../../../public/animations/loading.json';
+import animation404 from '../../../../public/animations/404.json';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { FacebookShareButton, TwitterShareButton, LinkedinShareButton, WhatsappShareButton, FacebookIcon, TwitterIcon, LinkedinIcon, WhatsappIcon } from 'react-share';
 
 const DetailPengumuman = () => {
-    //const router = useRouter();
     const params = useParams();
     const id = params?.id as string; // Get slug from URL
     const [announcement, setAnnouncement] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         const fetchAnnouncement = async () => {
             setIsLoading(true);
+
+            if (typeof window === 'undefined') {
+                setIsLoading(false);
+                return;
+            }
+
             const token = localStorage.getItem("token");
 
             if (!token) {
@@ -59,6 +79,10 @@ const DetailPengumuman = () => {
         }
     }, [id]);
 
+    if (!isAuthenticated) {
+        return null;
+    }
+
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
@@ -66,7 +90,7 @@ const DetailPengumuman = () => {
                 <div className="bg-white relative z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
                         <defs>
-                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%">
                                 <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
                                 <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
                             </linearGradient>
@@ -106,6 +130,9 @@ const DetailPengumuman = () => {
                         </div>
                     ) : (
                         <div className="flex flex-col items-center mt-10">
+                            <div className="w-3/4 sm:w-3/4 lg:w-1/4">
+                                <LottieAnimation animationData={animation404} />
+                            </div>
                             <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
                                 Pengumuman tidak ditemukan
                             </p>
