@@ -1,12 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FooterCopyright from "../../components/FooterCopyright";
 import MenuBar from "../../../components/MenuBar";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 
+interface Tahapan {
+    idTahapan: number;
+    namaTahapan: string;
+    deskripsi: string;
+    isActive: boolean;
+}
+
 const Riwayat = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [steps, setSteps] = useState<Tahapan[]>([]);
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(4); // Current step: "Tes Psikologi dan TPA"
   const [applicantData, setApplicantData] = useState({
     nama: "",
@@ -15,8 +28,34 @@ const Riwayat = () => {
   });
 
   useEffect(() => {
-    const fetchApplicantData = async () => {
+    if (typeof window !== "undefined") {
       const token = localStorage.getItem('token');
+
+      if (!token) {
+        router.push('/login');
+      } else {
+        setIsAuthenticated(true);
+      }
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const fetchApplicantData = async () => {
+      setIsLoading(true);
+
+      if (typeof window === "undefined") {
+        setIsLoading(false);
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        setIsLoading(false);
+        return
+      }
+
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
           method: 'POST',
@@ -41,8 +80,8 @@ const Riwayat = () => {
           if (profileData.responseCode === '000') {
             setApplicantData({
               nama: profileData.data.nama,
-              nomorPeserta: profileData.data.noPeserta,
-              posisi: "Software Engineer",
+              nomorPeserta: profileData.data.lowonganId,
+              posisi: profileData.data.judulLowongan,
             });
           }
         }
@@ -51,21 +90,46 @@ const Riwayat = () => {
       }
     };
 
-    fetchApplicantData();
+    if (isAuthenticated) {
+      fetchApplicantData();
+    }
+  }, [currentPage, isAuthenticated]);
+
+  useEffect(() => {
+    const fetchSteps = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/list`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        if (data.responseCode === '000') {
+          setSteps(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching steps:', error);
+      }
+    };
+
+    fetchSteps();
   }, []);
 
-  const passedSteps = [1, 2, 3, 4]; // Steps that are passed
+  const passedSteps = [1, 2, 3, 4, 5]; // Steps that are passed
 
-  const steps = [
-    { id: 1, label: "Pendaftaran", status: passedSteps.includes(1) ? "Lolos" : "Belum", icon: passedSteps.includes(1) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" },
-    { id: 2, label: "Seleksi Administrasi", status: passedSteps.includes(2) ? "Lolos" : "Belum", icon: passedSteps.includes(2) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-regist-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" },
-    { id: 3, label: "Tes Potensi Dasar", status: passedSteps.includes(3) ? "Lolos" : "Belum", icon: passedSteps.includes(3) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" },
-    { id: 4, label: "Tes Kemampuan Umum", status: passedSteps.includes(4) ? "Lolos" : "Belum", icon: passedSteps.includes(4) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" },
-    { id: 5, label: "Tes Kepribadian & Wawancara Psikolog", status: passedSteps.includes(5) ? "Lolos" : "Belum", icon: passedSteps.includes(5) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" },
-    { id: 6, label: "Tes Kesehatan", status: passedSteps.includes(6) ? "Lolos" : "Belum", icon: passedSteps.includes(6) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-healt-test-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-healt-test-not-ready.svg" },
-    { id: 7, label: "Wawancara Panel", status: passedSteps.includes(7) ? "Lolos" : "Belum", icon: passedSteps.includes(7) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-user-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-user-not-ready.svg" },
-    { id: 8, label: "Penetapan & Pemberkasan", status: passedSteps.includes(8) ? "Lolos" : "Belum", icon: passedSteps.includes(8) ? "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-filling-success.svg" : "https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-filling-not-ready.svg" },
-  ];
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans relative">
@@ -74,7 +138,7 @@ const Riwayat = () => {
         <div className="bg-white relative z-10">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
             <defs>
-              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%">
                 <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
                 <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
               </linearGradient>
@@ -101,16 +165,16 @@ const Riwayat = () => {
           {/* Progress Bar Container */}
           <div className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl px-4">
             <ol className="border-s border-neutral-300 dark:border-neutral-500 md:flex md:gap-6 md:border-s-0 md:border-t-2">
-              {steps.map((step) => (
-                <li key={step.id} className="flex-1">
+              {steps.map((step, index) => (
+                <li key={step.idTahapan} className="flex-1">
                   <div className="flex-start flex items-center pt-2 md:block md:pt-0">
-                    <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${passedSteps.includes(step.id) ? 'bg-green-600 border-green-500' : 'bg-success-600 border-success-500'} md:-mt-[22px] md:me-0 md:ms-0`}>
-                      <img src={step.icon} alt={`icon ${step.label}`} />
+                    <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${passedSteps.includes(index + 1) ? 'bg-green-600 border-green-500' : 'bg-gray-300 border-gray-100'} md:-mt-[22px] md:me-0 md:ms-0`}>
+                      <span className="text-white">{index + 1}</span>
                     </div>
                     <div>
-                      <h4 className={`md:mt-2 mb-1.5 ${passedSteps.includes(step.id) ? 'text-green-600' : 'text-grey'} font-medium`}>{step.label}</h4>
-                      {step.status === "Lolos" && (
-                        <span className="py-1 px-2 inline-block bg-green-100 text-green-600 font-semibold text-xs rounded-lg">{step.status}</span>
+                      <h4 className={`md:mt-2 mb-1.5 ${passedSteps.includes(index + 1) ? 'text-green-600' : 'text-gray-700'} font-medium`}>{step.namaTahapan}</h4>
+                      {passedSteps.includes(index + 1) && (
+                        <span className="py-1 px-2 inline-block bg-green-100 text-green-600 font-semibold text-xs rounded-lg">Lolos</span>
                       )}
                     </div>
                   </div>
