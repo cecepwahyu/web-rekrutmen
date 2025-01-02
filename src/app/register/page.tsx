@@ -101,7 +101,9 @@ const Register = () => {
 
       if (result.responseCode === "000") {
         // Login successful
-        //localStorage.setItem("token", result.data.token);
+        if (typeof window !== "undefined") {
+          //localStorage.setItem("token", result.data.token);
+        }
 
         // Show success toast
         toast.success("Register successful! Redirecting...", {
