@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
@@ -27,6 +27,20 @@ const DetailArtikel = () => {
     const [showScrollToTop, setShowScrollToTop] = useState(false);
     const [article, setArticle] = useState<Article | null>(null); // Single article state
     const [isLoading, setIsLoading] = useState(true); // State for loading animation
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         if (!slug) return; // Exit if slug is not available
