@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
@@ -22,10 +23,30 @@ const Pengumuman = () => {
     const [currentPage, setCurrentPage] = useState(0); // Current page starts at 0
     const [totalPages, setTotalPages] = useState(0); // Total pages
     const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         const fetchAnnouncements = async () => {
             setIsLoading(true); // Set loading to true before fetching
+
+            if (typeof window === "undefined") {
+                setIsLoading(false); // Set loading to false if not in the browser
+                return; // Exit if not in the browser
+            }
+
             const token = localStorage.getItem("token");
 
             if (!token) {
@@ -58,8 +79,10 @@ const Pengumuman = () => {
             }
         };
 
-        fetchAnnouncements();
-    }, [currentPage]); // Re-fetch announcements when currentPage changes
+        if (isAuthenticated) {
+            fetchAnnouncements();
+        }
+    }, [currentPage, isAuthenticated]); // Re-fetch announcements when currentPage changes
 
     useEffect(() => {
         const handleScroll = () => {
@@ -83,6 +106,10 @@ const Pengumuman = () => {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
