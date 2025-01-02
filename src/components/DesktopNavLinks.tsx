@@ -196,7 +196,7 @@ function DesktopNavLinks() {
               onClick={handleProfileDropdownToggle}
               >
                 <div className="flex items-center text-right">
-                <Avatar className="w-8 h-8 mr-2 border-2 border-white">
+                <Avatar className={`w-8 h-8 mr-2 border-2 ${isScrolled ? 'border-darkBlue' : 'border-white'}`}>
                   {profilePicture ? (
                   <AvatarImage src={profilePicture} alt="User Avatar" />
                   ) : (
