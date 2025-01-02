@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
 import FooterSection from "../../components/FooterSection";
@@ -36,6 +37,7 @@ interface ProfileData {
     telp: string;
     pendidikanTerakhir: string;
     statusKawin: string;
+    profilePicture?: string; // Add profilePicture field
 }
 
 interface PengalamanData {
@@ -71,8 +73,10 @@ interface KontakData {
 }
 
 const handleChangeProfilePicture = () => {
-    // Logic to handle profile picture change
-    console.log("Change profile picture button clicked");
+    const fileInput = document.getElementById('profilePictureInput');
+    if (fileInput) {
+        fileInput.click();
+    }
 };
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
@@ -108,6 +112,34 @@ const Profile = () => {
     const [organisasiData, setOrganisasiData] = useState<OrganisasiData | null>(null);
     const [kontakData, setKontakData] = useState<KontakData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter(); // Initialize useRouter
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                router.push("/login"); // Redirect to login page if no token is found
+            } else {
+                setIsAuthenticated(true);
+            }
+        }
+    }, [router]);
+
+    const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfilePicture(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+            console.log("Selected file:", file);
+        }
+    };
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -140,6 +172,9 @@ const Profile = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     setProfileData(data.data);
+                    if (data.data.profilePicture) {
+                        setProfilePicture(data.data.profilePicture);
+                    }
                 } else {
                     console.error("Error fetching data:", data.responseMessage);
                     setProfileData(null); // Set profile data to null if not found
@@ -152,8 +187,10 @@ const Profile = () => {
             }
         };
 
-        fetchProfileData();
-    }, []);
+       if (isAuthenticated) {
+             fetchProfileData();
+        }
+    }, [currentPage, isAuthenticated]);
 
     useEffect(() => {
         const fetchPengalamanData = async () => {
@@ -193,8 +230,10 @@ const Profile = () => {
             }
         };
 
-        fetchPengalamanData();
-    }, []);
+        if (isAuthenticated) {
+            fetchPengalamanData();
+        }
+    }, [currentPage, isAuthenticated]);
 
     useEffect(() => {
         const fetchPendidikanData = async () => {
@@ -234,8 +273,10 @@ const Profile = () => {
             }
         };
 
-        fetchPendidikanData();
-    }, []);
+        if (isAuthenticated) {
+            fetchPendidikanData();
+        }
+    }, [currentPage, isAuthenticated]);
 
     useEffect(() => {
         const fetchOrganisasiData = async () => {
@@ -275,8 +316,10 @@ const Profile = () => {
             }
         };
 
-        fetchOrganisasiData();
-    }, []);
+        if (isAuthenticated) {
+            fetchOrganisasiData();
+        }
+    }, [currentPage, isAuthenticated]);
 
     useEffect(() => {
         const fetchKontakData = async () => {
@@ -303,11 +346,11 @@ const Profile = () => {
                     },
                 });
 
-                const data = await response.json();
-                if (data.responseCode === "000") {
-                    setKontakData(data.data);
+                const kontakDataResponse = await response.json();
+                if (kontakDataResponse.responseCode === "000") {
+                    setKontakData(kontakDataResponse.data);
                 } else {
-                    console.error("Error fetching data:", data.responseMessage);
+                    console.error("Error fetching data:", kontakDataResponse.responseMessage);
                     setKontakData(null); // Set kontak data to null if not found
                 }
             } catch (error) {
@@ -316,8 +359,10 @@ const Profile = () => {
             }
         };
 
-        fetchKontakData();
-    }, []);
+        if (isAuthenticated) {
+            fetchKontakData();
+        }
+    }, [currentPage, isAuthenticated]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -342,6 +387,14 @@ const Profile = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const handleUpdateDataClick = () => {
+        router.push('/profil/edit'); // Redirect to edit profile page
+    };
+
+    if (!isAuthenticated) {
+        return null;
+    }
+
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
@@ -360,7 +413,7 @@ const Profile = () => {
                 </div>
 
                 <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32">
-                    <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Profile</h1>
+                    <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Profil Pribadi</h1>
                     <br />
                     <p className="font-sans text-base font-normal leading-relaxed text-gray-800 text-center px-6 md:px-32 lg:px-56">
                         Berikut adalah informasi profil:
@@ -373,22 +426,41 @@ const Profile = () => {
                     ) : profileData ? (
                         <div className="mt-6 w-11/12 lg:w-4/5 flex flex-col space-y-6">
                             <div className="flex flex-col lg:flex-row items-center lg:items-start">
-
                                 {/* Section Profile Picture */}
                                 <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4">
                                     <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center">
-                                        <span className="text-gray-500">3x4 Rectangle</span>
+                                        {profilePicture ? (
+                                            <img
+                                                src={profilePicture}
+                                                alt="Profile Preview"
+                                                width={500}
+                                                height={500}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-gray-500">3x4 Rectangle</span>
+                                        )}
                                     </div>
                                     <button 
                                         onClick={handleChangeProfilePicture} 
                                         className="mt-4 bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400">
                                         Change Profile Picture
                                     </button>
+                                    <input 
+                                        type="file" 
+                                        id="profilePictureInput" 
+                                        style={{ display: 'none' }} 
+                                        onChange={handleProfilePictureChange} 
+                                    />
                                 </div>
 
                                 {/* Section Profile Data */}
                                 <div className="w-full lg:w-3/4 bg-white shadow-lg rounded-lg p-6 lg:ml-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">{profileData.nama || '-'}</h2>
+                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">Informasi Personal</h2>
+                                    <div className="flex items-center mb-2">
+                                        <FaUser className="mr-2 text-darkBlue" />
+                                        <p><strong>Nama:</strong> {profileData.nama || '-'}</p>
+                                    </div>
                                     <div className="flex items-center mb-2">
                                         <FaUser className="mr-2 text-darkBlue" />
                                         <p><strong>Username:</strong> {profileData.username || '-'}</p>
@@ -452,7 +524,7 @@ const Profile = () => {
                                             </div>
                                             <div className="flex items-center mb-2">
                                                 <FaCalendar className="mr-2 text-darkBlue" />
-                                                <p><strong>Periode Kerja:</strong> {pengalamanData.periodeKerja || '-'}</p>
+                                                <p><strong>Periode Kerja:</strong> {pengalamanData.periodeKerja ? `${new Date(pengalamanData.periodeKerja.split(' to ')[0]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} s/d ${new Date(pengalamanData.periodeKerja.split(' to ')[1]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}` : '-'}</p>
                                             </div>
                                             <div className="flex items-center mb-2">
                                                 <FaPen className="mr-2 text-darkBlue" />
@@ -569,7 +641,7 @@ const Profile = () => {
                             </div>
 
                             <button 
-                                onClick={handleChangeProfilePicture} 
+                                onClick={handleUpdateDataClick} // Update onClick handler
                                 className="mt-4 bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400">
                                 Update Data
                             </button>
