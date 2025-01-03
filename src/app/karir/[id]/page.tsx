@@ -105,9 +105,9 @@ const DetailKarir = () => {
             const token = localStorage.getItem('token');
 
             if (!token) return;
-            
+
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/list`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/slug/${slug}/tahapan`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -118,11 +118,20 @@ const DetailKarir = () => {
 
                 const data = await response.json();
                 if (data.responseCode === '000') {
-                    const sortedTahapan = data.data.sort((a: Tahapan, b: Tahapan) => a.idTahapan - b.idTahapan);
-                    setTahapan(sortedTahapan);
+                    const tahapanData = data.data.map((item: any) => ({
+                        idTahapan: item[2],
+                        namaTahapan: item[4],
+                        deskripsi: item[5],
+                        sortOrder: item[3],
+                        isActive: false,
+                    }));
+                    tahapanData.sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+                    setTahapan(tahapanData);
                 }
             } catch (error) {
                 console.error('Error fetching Tahapan Seleksi:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
