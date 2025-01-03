@@ -1,10 +1,15 @@
 // components/CariKarirButton.tsx
 
 const CariKarirButton = () => {
+    const handleClick = () => {
+        window.location.href = '/karir';
+    };
+
     return (
         <button
             className="fixed bottom-8 right-8 bg-blue-400 hover:bg-blue-300 text-white px-4 py-2 rounded-full shadow-lg flex items-center transition-opacity duration-300 z-50"
             aria-label="Temukan Karir"
+            onClick={handleClick}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
