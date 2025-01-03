@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faUsers, faSearch } from "@fortawesome/free-solid-svg-icons";
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
 import FooterSection from "../../components/FooterSection";
@@ -18,15 +18,26 @@ import Head from "next/head";
 
 const ITEMS_PER_PAGE = 6; // Items per page
 
+interface Job {
+    idLowongan: string;
+    judulLowongan: string;
+    posisi: string;
+    periodeAwal: string;
+    periodeAkhir: string;
+    slug: string;
+}
+
 const Karir = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
-    const [jobs, setJobs] = useState([]); // State for fetched jobs
+    const [jobs, setJobs] = useState<Job[]>([]); // State for fetched jobs
+    const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); // State for filtered jobs
     const [currentPage, setCurrentPage] = useState(0); // Current page starts at 0
     const [totalPages, setTotalPages] = useState(0); // Total pages
     const [activeTab, setActiveTab] = useState("Rekrutmen"); // Set default tab to "Rekrutmen"
     const [isLoading, setIsLoading] = useState(true); // State for loading animation
     const [isAuthenticated, setIsAuthenticated] = useState(false); // State for authentication check
+    const [searchTerm, setSearchTerm] = useState(""); // State for search term
     const router = useRouter();
 
     // Check if user is authenticated when the page loads
@@ -66,6 +77,7 @@ const Karir = () => {
                     const data = await response.json();
                     if (data.responseCode === "000") {
                         setJobs(data.data.content); // Update jobs with current page content
+                        setFilteredJobs(data.data.content); // Update filtered jobs with current page content
                         setTotalPages(data.data.totalPages); // Set total pages
                     }
                 } catch (error) {
@@ -91,6 +103,13 @@ const Karir = () => {
             window.removeEventListener("scroll", handleScroll);
         };
     }, []);
+
+    useEffect(() => {
+        const filtered = jobs.filter(job =>
+            job.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredJobs(filtered);
+    }, [searchTerm, jobs]);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -151,6 +170,20 @@ const Karir = () => {
                         Kami sedang membuka kesempatan bekerja untuk posisi berikut ini:
                     </p>
 
+                    {/* Search Bar */}
+                    <div className="flex justify-center mb-4 mt-6 w-full px-4">
+                        <div className="relative w-full max-w-md">
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Cari Posisi..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-3 text-gray-400" />
+                        </div>
+                    </div>
+
                     {/* Tab Buttons */}
                     <div className="flex justify-center mb-4 mt-6">
                         <button
@@ -172,7 +205,7 @@ const Karir = () => {
                             <LottieAnimation animationData={loadingAnimation} />
                         </div>
                     ) : activeTab === "Rekrutmen" ? (
-                        jobs.length === 0 ? (
+                        filteredJobs.length === 0 ? (
                             <div className="flex flex-col items-center mt-10">
                                 <div className="w-3/4 sm:w-3/4 lg:w-1/4">
                                     <LottieAnimation animationData={animation404} />
@@ -184,7 +217,7 @@ const Karir = () => {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 w-11/12 lg:w-4/5 pb-10">
-                                    {jobs.map((job: any) => (
+                                    {filteredJobs.map((job) => (
                                         <button
                                             key={job.idLowongan}
                                             className="bg-white shadow-lg rounded-lg p-6 flex items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
