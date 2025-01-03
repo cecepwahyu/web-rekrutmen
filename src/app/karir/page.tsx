@@ -25,6 +25,8 @@ interface Job {
     periodeAwal: string;
     periodeAkhir: string;
     slug: string;
+    tentangPekerjaan?: string; // Add tentangPekerjaan property
+    status: string; // Add status property
 }
 
 const Karir = () => {
@@ -32,6 +34,8 @@ const Karir = () => {
     const [showScrollToTop, setShowScrollToTop] = useState(false);
     const [jobs, setJobs] = useState<Job[]>([]); // State for fetched jobs
     const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); // State for filtered jobs
+    const [rekrutmenJobs, setRekrutmenJobs] = useState<Job[]>([]); // State for Rekrutmen jobs
+    const [jobDescJobs, setJobDescJobs] = useState<Job[]>([]); // State for Job Desc jobs
     const [currentPage, setCurrentPage] = useState(0); // Current page starts at 0
     const [totalPages, setTotalPages] = useState(0); // Total pages
     const [activeTab, setActiveTab] = useState("Rekrutmen"); // Set default tab to "Rekrutmen"
@@ -76,8 +80,11 @@ const Karir = () => {
                     });
                     const data = await response.json();
                     if (data.responseCode === "000") {
-                        setJobs(data.data.content); // Update jobs with current page content
-                        setFilteredJobs(data.data.content); // Update filtered jobs with current page content
+                        const allJobs: Job[] = data.data.content; // Explicitly define type
+                        setJobs(allJobs); // Update jobs with current page content
+                        setFilteredJobs(allJobs); // Update filtered jobs with current page content
+                        setRekrutmenJobs(allJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
+                        setJobDescJobs(allJobs.filter((job: Job) => job.status === "2")); // Filter Job Desc jobs
                         setTotalPages(data.data.totalPages); // Set total pages
                     }
                 } catch (error) {
@@ -108,8 +115,13 @@ const Karir = () => {
         const filtered = jobs.filter(job =>
             job.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase())
         );
-        setFilteredJobs(filtered);
-    }, [searchTerm, jobs]);
+
+        if (activeTab === "Rekrutmen") {
+            setFilteredJobs(filtered.filter(job => job.status === "1"));
+        } else if (activeTab === "Job Desc") {
+            setFilteredJobs(filtered.filter(job => job.status === "2"));
+        }
+    }, [searchTerm, jobs, activeTab]);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -217,7 +229,7 @@ const Karir = () => {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 w-11/12 lg:w-4/5 pb-10">
-                                    {filteredJobs.map((job) => (
+                                    {filteredJobs.map((job: Job) => (
                                         <button
                                             key={job.idLowongan}
                                             className="bg-white shadow-lg rounded-lg p-6 flex items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
@@ -276,101 +288,43 @@ const Karir = () => {
                         )
                     ) : (
                         <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 pb-10">
-                            {/* Magang Teknologi Informasi */}
-                            <div className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
-                                <button
-                                    className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                    onClick={() => window.location.href = '/magang/#'}
-                                >
-                                    <div className="w-1/4">
-                                        <Image
-                                            src="/images/magang-ti.jpeg"
-                                            alt="Magang"
-                                            width={150}
-                                            height={150}
-                                            className="rounded-lg object-contain"
-                                            loading="lazy"
-                                            onLoad={() => console.log('Image loaded')}
-                                        />
+                            {filteredJobs.length === 0 ? (
+                                <div className="flex flex-col items-center mt-10">
+                                    <div className="w-3/4 sm:w-3/4 lg:w-1/4">
+                                        <LottieAnimation animationData={animation404} />
                                     </div>
-                                    <div className="w-3/4 pl-6 text-left">
-                                        <h2 className="text-xl font-bold mb-2 text-darkBlue">Programmer</h2>
-                                        <p className="text-black">Kembangkan keterampilan IT dalam proyek perbankan dan pemeliharaan sistem.</p>
+                                    <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
+                                        Job descriptions are not available
+                                    </p>
+                                </div>
+                            ) : (
+                                filteredJobs.map((job: Job) => (
+                                    <div key={job.idLowongan} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
+                                        <button
+                                            className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
+                                            onClick={() => window.location.href = `/karir/${job.slug}`}
+                                        >
+                                            <div className="w-1/4">
+                                                <Image
+                                                    src="/images/magang.png"
+                                                    alt={job.judulLowongan}
+                                                    width={150}
+                                                    height={150}
+                                                    className="rounded-lg object-contain"
+                                                    loading="lazy"
+                                                    onLoad={() => console.log('Image loaded')}
+                                                />
+                                            </div>
+                                            <div className="w-3/4 pl-6 text-left">
+                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">{job.judulLowongan}</h2>
+                                                <span className="text-black">
+                                                    {(job.tentangPekerjaan || '').replace(/<[^>]+>/g, '').replace(/\n/g, ' ').slice(0, 100) + (job.tentangPekerjaan && job.tentangPekerjaan.length > 100 ? '...' : '')}
+                                                </span>
+                                            </div>
+                                        </button>
                                     </div>
-                                </button>
-                            </div>
-
-                            {/* Magang Customer Service */}
-                            <div className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
-                                <button
-                                    className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                    onClick={() => window.location.href = '/magang/#'}
-                                >
-                                    <div className="w-1/4">
-                                        <Image
-                                            src="/images/magang-cs.jpg"
-                                            alt="Magang"
-                                            width={150}
-                                            height={150}
-                                            className="rounded-lg object-contain"
-                                            loading="lazy"
-                                            onLoad={() => console.log('Image loaded')}
-                                        />
-                                    </div>
-                                    <div className="w-3/4 pl-6 text-left">
-                                        <h2 className="text-xl font-bold mb-2 text-darkBlue">Customer Service</h2>
-                                        <p className="text-black">Belajar menangani transaksi perbankan, layani nasabah dengan profesional dan ramah.</p>
-                                    </div>
-                                </button>
-                            </div>
-
-                            {/* Magang Teller */}
-                            <div className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
-                                <button
-                                    className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                    onClick={() => window.location.href = '/magang/#'}
-                                >
-                                    <div className="w-1/4">
-                                        <Image
-                                            src="/images/magang-teller.jpg"
-                                            alt="Magang"
-                                            width={150}
-                                            height={150}
-                                            className="rounded-lg object-contain"
-                                            loading="lazy"
-                                            onLoad={() => console.log('Image loaded')}
-                                        />
-                                    </div>
-                                    <div className="w-3/4 pl-6 text-left">
-                                        <h2 className="text-xl font-bold mb-2 text-darkBlue">Teller</h2>
-                                        <p className="text-black">Layani nasabah, tangani keluhan, dan jawab pertanyaan produk bank.</p>
-                                    </div>
-                                </button>
-                            </div>
-
-                            {/* Magang Kasir */}
-                            <div className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
-                                <button
-                                    className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                    onClick={() => window.location.href = '/magang/#'}
-                                >
-                                    <div className="w-1/4">
-                                        <Image
-                                            src="/images/magang-kasir.jpg"
-                                            alt="Magang"
-                                            width={150}
-                                            height={150}
-                                            className="rounded-lg object-contain"
-                                            loading="lazy"
-                                            onLoad={() => console.log('Image loaded')}
-                                        />
-                                    </div>
-                                    <div className="w-3/4 pl-6 text-left">
-                                        <h2 className="text-xl font-bold mb-2 text-darkBlue">Kasir</h2>
-                                        <p className="text-black">Kelola uang tunai, verifikasi transaksi, dan pelaporan keuangan dengan teliti.</p>
-                                    </div>
-                                </button>
-                            </div>
+                                ))
+                            )}
                         </div>
                     )}
                 </div>
