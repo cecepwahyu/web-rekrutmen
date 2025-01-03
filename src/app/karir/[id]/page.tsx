@@ -15,6 +15,16 @@ import LottieAnimation from '../../../components/Animations';
 import loadingAnimation from '../../../../public/animations/loading.json';
 import animation404 from '../../../../public/animations/404.json';
 import { toast } from 'sonner';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+  } from "@/components/ui/dialog"
+import { useForm } from 'react-hook-form';
 
 interface Article {
     judulLowongan: string;
@@ -65,11 +75,23 @@ const DetailKarir = () => {
     const [tahapan, setTahapan] = useState<Tahapan[]>([]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { register, handleSubmit, reset } = useForm();
     const router = useRouter();
+    const [idPeserta, setIdPeserta] = useState<string | null>(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         setIsAuthenticated(!!token);
+
+        const fetchIdPeserta = async () => {
+            if (token) {
+                const id = await getIdFromToken(token);
+                setIdPeserta(id);
+            }
+        };
+
+        fetchIdPeserta();
     }, []);
 
     useEffect(() => {
@@ -142,10 +164,10 @@ const DetailKarir = () => {
     useEffect(() => {
         const fetchLockStatus = async () => {
             const token = localStorage.getItem('token');
-            if (!token) return;
+            if (!token || !idPeserta) return;
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/lock-status/45`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/lock-status/${idPeserta}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -164,37 +186,97 @@ const DetailKarir = () => {
         };
 
         fetchLockStatus();
-    }, []);
+    }, [idPeserta]);
 
-    const handleApply = async () => {
+    const handleApply = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleFileSubmit = async (data: any, endpoint: string, fieldName: string) => {
         const token = localStorage.getItem('token');
         if (!token) return;
-
+    
         const idPeserta = await getIdFromToken(token);
         if (!idPeserta) return;
+    
+        const file = data[fieldName][0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = async () => {
+            const base64data = reader.result as string;
+            const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove file extension
+            const fileType = `.${file.name.split('.').pop()}`; // Add dot to file type
+    
+            const payload = {
+                document_data: base64data,
+                file_name: fileName,
+                file_type: fileType
+            };
+    
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+    
+                const responseData = await response.json();
+                if (responseData.responseCode === '000') {
+                    toast.success("Document submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
+                    reset();
+                    // Change the input field to a preview button
+                    const inputField = document.querySelector(`input[name="${fieldName}"]`);
+                    if (inputField) {
+                        const previewButton = document.createElement('button');
+                        previewButton.textContent = 'Preview';
+                        previewButton.className = 'bg-blue-500 text-white py-2 px-4 rounded-lg';
+                        previewButton.onclick = () => window.open(URL.createObjectURL(file), '_blank');
+                        inputField.replaceWith(previewButton);
+                    }
+                } else {
+                    toast.error("Failed to submit document: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+                }
+            } catch (error) {
+                console.error('Error submitting document:', error);
+                alert('An error occurred. Please try again.');
+            }
+        };
+    };
 
+    const handleApplyNow = async () => {
+        const token = localStorage.getItem('token');
+        if (!token || !idPeserta) return;
+    
+        const payload = {
+            id_peserta: idPeserta
+        };
+    
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/${slug}/apply`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/programmer-senior/apply`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                     Accept: 'application/json',
                 },
-                body: JSON.stringify({ id_peserta: idPeserta }),
+                body: JSON.stringify(payload),
             });
-
-            const data = await response.json();
-            if (data.responseCode === '000') {
-                toast.success("Berhasil mendaftar!", { style: { backgroundColor: 'white', color: 'green' } });
+    
+            const responseData = await response.json();
+            if (responseData.responseCode === '000') {
+                toast.success("Application submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
                 setTimeout(() => {
                     router.push('/karir');
                 }, 3000);
             } else {
-                toast.error("Gagal menyimpan data: " + data.message, { style: { backgroundColor: 'white', color: 'red' } });
+                toast.error("Failed to submit application: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
             }
         } catch (error) {
-            console.error('Error applying:', error);
+            console.error('Error submitting application:', error);
             alert('An error occurred. Please try again.');
         }
     };
@@ -296,15 +378,136 @@ const DetailKarir = () => {
                                             </a>
                                         </div>
                                         <div className="flex justify-center mt-8">
-                                            <button
-                                                className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                                                    isLocked ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-700 hover:scale-105'
-                                                }`}
-                                                onClick={isLocked ? undefined : handleApply}
-                                                disabled={isLocked}
-                                            >
-                                                {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
-                                            </button>
+                                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                                <DialogTrigger asChild>
+                                                    <button
+                                                        className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${isLocked ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-700 hover:scale-105'}`}
+                                                        onClick={isLocked ? undefined : handleApply}
+                                                        disabled={isLocked}
+                                                    >
+                                                        {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
+                                                    </button>
+                                                </DialogTrigger>
+                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw]">
+                                                    <DialogTitle>Submit Berkas Lamaran</DialogTitle>
+                                                    <DialogDescription>
+                                                        Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.
+                                                    </DialogDescription>
+                                                    <div className="flex flex-col gap-4">
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-ktp', 'file'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload KTP</label>
+                                                                <input type="file" {...register('file')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-pasfoto', 'photo'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Pasfoto</label>
+                                                                <input type="file" {...register('photo')} accept="image/*" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-skck', 'skck'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload SKCK</label>
+                                                                <input type="file" {...register('skck')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-toefl', 'toefl'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload TOEFL</label>
+                                                                <input type="file" {...register('toefl')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-kk', 'kk'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload KK</label>
+                                                                <input type="file" {...register('kk')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-suratsehat', 'suratsehat'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Surat Sehat</label>
+                                                                <input type="file" {...register('suratsehat')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-cv', 'cv'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload CV</label>
+                                                                <input type="file" {...register('cv')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-suratlamaran', 'suratlamaran'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Surat Lamaran</label>
+                                                                <input type="file" {...register('suratlamaran')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-suratpernyataan', 'suratpernyataan'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Surat Pernyataan</label>
+                                                                <input type="file" {...register('suratpernyataan')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-ijazah', 'ijazah'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Ijazah</label>
+                                                                <input type="file" {...register('ijazah')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-transkrip', 'transkrip'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Transkrip</label>
+                                                                <input type="file" {...register('transkrip')} accept="application/pdf" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-fotofullbadan', 'fotofullbadan'))} className="flex items-center">
+                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
+                                                                <label className="block text-sm font-medium text-gray-700">Upload Foto Full Badan</label>
+                                                                <input type="file" {...register('fotofullbadan')} accept="image/*" required className="mt-1 block w-full" />
+                                                            </div>
+                                                            <DialogFooter className="ml-4">
+                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                        <div className="flex justify-end mt-4">
+                                                            <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg">Apply Now</button>
+                                                        </div>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
                                         </div>
                                         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div className="col-span-2">
