@@ -163,7 +163,9 @@ const Register = () => {
                   name="nama"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nama</FormLabel>
+                      <FormLabel>
+                        Nama <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your name"
@@ -183,7 +185,9 @@ const Register = () => {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>
+                        Username <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your username"
@@ -203,7 +207,9 @@ const Register = () => {
                   name="no_identitas"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>No Identitas</FormLabel>
+                      <FormLabel>
+                        No Identitas <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your No Identitas"
@@ -223,7 +229,9 @@ const Register = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>
+                        Email Address <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your email"
@@ -243,7 +251,9 @@ const Register = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>
+                        Password <span className="text-red-500">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your password"
