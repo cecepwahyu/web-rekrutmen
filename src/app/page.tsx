@@ -66,8 +66,17 @@ const Home = () => {
             if (token) {
                 setIsAuthenticated(true);
             }
+            setIsLoading(false); // Set loading to false after checking authentication
         }
     }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <LottieAnimation animationData={loadingAnimation} width="200px" height="200px" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
