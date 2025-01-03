@@ -26,6 +26,7 @@ const Riwayat = () => {
     nomorPeserta: "",
     posisi: "Software Engineer",
   });
+  const [announcementContent, setAnnouncementContent] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -125,6 +126,35 @@ const Riwayat = () => {
     fetchSteps();
   }, []);
 
+  useEffect(() => {
+    const fetchAnnouncementContent = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/announcements/content`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ id_lowongan: 52 })
+        });
+        const data = await response.text();
+        setAnnouncementContent(data);
+      } catch (error) {
+        console.error('Error fetching announcement content:', error);
+      }
+    };
+
+    fetchAnnouncementContent();
+  }, []);
+
   const passedSteps = [1, 2, 3, 4, 5]; // Steps that are passed
 
   if (!isAuthenticated) {
@@ -197,15 +227,7 @@ const Riwayat = () => {
                 <p className="font-semibold text-darkBlue text-lg mb-4">Informasi Test</p>
 
                 {/* Details */}
-                <p className="mb-2">Bagi pendaftar yang dinyatakan <span className="font-semibold bg-green-100 text-green-600">LOLOS</span> diharapkan datang di:</p>
-                <p className="mb-1"><span className="font-semibold">Hari/Tanggal:</span> [Isi Hari/Tanggal]</p>
-                <p className="mb-1"><span className="font-semibold">Tempat:</span> [Isi Tempat]</p>
-                <p className="mb-3"><span className="font-semibold">Waktu:</span> [Isi Waktu]</p>
-                <p className="mb-4">Bagi pendaftar yang <span className="font-semibold bg-green-100 text-green-600">LOLOS</span> Seleksi Tes Praktik Teknologi Informasi akan diberitahukan melalui Website PT Bank BPD DIY pada tanggal <span className="font-semibold">06 Desember 2024 Pukul 16.00 WIB.</span></p>
-                <p className="mb-4"><span className="font-semibold">Catatan: Pendaftar tidak diperkenankan menggunakan kendaraan roda 4 mengingat terbatasnya area parkir.</span></p>
-                <p className="mb-4">Demikian, Terima kasih.</p>
-                <p className="mb-8"><span className="font-semibold">Yogyakarta, 30 November 2024</span></p>
-                <p className="mb-8"><span className="font-semibold">Tim Penerimaan Pegawai</span></p>
+                <div dangerouslySetInnerHTML={{ __html: announcementContent }} />
               </div>
             </div>
           </div>
