@@ -20,6 +20,7 @@ import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import Image from 'next/image';
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -67,10 +68,10 @@ const Login = () => {
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [forgotPasswordRecaptchaToken, setForgotPasswordRecaptchaToken] = useState<string | null>(null);
   const [captcha, setCaptcha] = useState(generateCaptcha());
-  const [captchaImage, setCaptchaImage] = useState(createCaptchaImage(captcha));
+  const [captchaImage, setCaptchaImage] = useState<string | null>(null);
   const [captchaInput, setCaptchaInput] = useState("");
   const [forgotPasswordCaptcha, setForgotPasswordCaptcha] = useState(generateCaptcha());
-  const [forgotPasswordCaptchaImage, setForgotPasswordCaptchaImage] = useState(createCaptchaImage(forgotPasswordCaptcha));
+  const [forgotPasswordCaptchaImage, setForgotPasswordCaptchaImage] = useState<string | null>(null);
   const [forgotPasswordCaptchaInput, setForgotPasswordCaptchaInput] = useState("");
   const router = useRouter();
 
@@ -105,12 +106,11 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    setCaptchaImage(createCaptchaImage(captcha));
-  }, [captcha]);
-
-  useEffect(() => {
-    setForgotPasswordCaptchaImage(createCaptchaImage(forgotPasswordCaptcha));
-  }, [forgotPasswordCaptcha]);
+    if (typeof window !== 'undefined') {
+      setCaptchaImage(createCaptchaImage(captcha));
+      setForgotPasswordCaptchaImage(createCaptchaImage(forgotPasswordCaptcha));
+    }
+  }, [captcha, forgotPasswordCaptcha]);
 
   const regenerateCaptcha = () => {
     const newCaptcha = generateCaptcha();
@@ -313,7 +313,9 @@ const Login = () => {
                 </div>
 
                 <div className="flex flex-col items-center space-y-2">
-                  <img src={captchaImage} alt="CAPTCHA" className="border p-2" />
+                  {captchaImage && (
+                    <Image src={captchaImage} alt="CAPTCHA" width={150} height={50} className="border p-2" />
+                  )}
                   <button type="button" onClick={regenerateCaptcha} className="text-xs text-blue-500 hover:underline">
                     Regenerate CAPTCHA
                   </button>
@@ -369,7 +371,9 @@ const Login = () => {
               className="transition-transform duration-300 focus:scale-105"
             />
             <div className="flex flex-col items-center space-y-2">
-              <img src={forgotPasswordCaptchaImage} alt="CAPTCHA" className="border p-2" />
+              {forgotPasswordCaptchaImage && (
+                <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={150} height={50} className="border p-2" />
+              )}
               <button type="button" onClick={regenerateForgotPasswordCaptcha} className="text-xs text-blue-500 hover:underline">
                 Regenerate CAPTCHA
               </button>
