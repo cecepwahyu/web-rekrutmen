@@ -59,8 +59,8 @@ const AccountVerication = () => {
 
     // Hardcoded payload for now
     const payload = {
-      no_identitas: "3305110909000002",
-      email: "maker1@gmail.com",
+      no_identitas: "3806110908990003",
+      email: "tidiv36477@pixdd.com",
     };
 
     try {
@@ -79,6 +79,7 @@ const AccountVerication = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify(payload),
         }
@@ -122,6 +123,7 @@ const AccountVerication = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({ otp: data.otp }),
         }
