@@ -476,10 +476,11 @@ const Profile = () => {
                         className="w-full h-48 border-2 border-dashed border-gray-300 flex justify-center items-center mb-4"
                     >
                         {newProfilePicture ? (
-                            <img
+                            <Image
                                 src={newProfilePicture}
                                 alt="New Profile Preview"
-                                className="w-full h-full object-cover"
+                                layout="fill"
+                                objectFit="cover"
                                 style={{ aspectRatio: '4 / 3' }} // Ensure 3x4 aspect ratio
                             />
                         ) : (
@@ -534,7 +535,7 @@ const Profile = () => {
                                 <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4">
                                     <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center">
                                         {profilePicture ? (
-                                            <img
+                                            <Image
                                                 src={profilePicture}
                                                 alt="Profile Preview"
                                                 width={500}
