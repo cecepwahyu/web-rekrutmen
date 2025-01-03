@@ -29,14 +29,12 @@ const Riwayat = () => {
   const [announcementContent, setAnnouncementContent] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-      if (!token) {
-        router.push('/login');
-      } else {
-        setIsAuthenticated(true);
-      }
+    if (!token) {
+      router.push('/login');
+    } else {
+      setIsAuthenticated(true);
     }
   }, [router]);
 
@@ -44,17 +42,12 @@ const Riwayat = () => {
     const fetchApplicantData = async () => {
       setIsLoading(true);
 
-      if (typeof window === "undefined") {
-        setIsLoading(false);
-        return;
-      }
-
       const token = localStorage.getItem('token');
 
       if (!token) {
         console.error("No token found in localStorage");
         setIsLoading(false);
-        return
+        return;
       }
 
       try {
@@ -88,6 +81,8 @@ const Riwayat = () => {
         }
       } catch (error) {
         console.error("Error fetching applicant data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
