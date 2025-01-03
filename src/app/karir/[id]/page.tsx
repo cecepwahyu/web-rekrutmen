@@ -79,6 +79,7 @@ const DetailKarir = () => {
     const { register, handleSubmit, reset } = useForm();
     const router = useRouter();
     const [idPeserta, setIdPeserta] = useState<string | null>(null);
+    const [idUserDocuments, setIdUserDocuments] = useState<number[]>([]);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -188,6 +189,31 @@ const DetailKarir = () => {
         fetchLockStatus();
     }, [idPeserta]);
 
+    useEffect(() => {
+        const fetchUserDocuments = async () => {
+            const token = localStorage.getItem('token');
+            if (!token || !idPeserta) return;
+
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/documents`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+                setIdUserDocuments(data);
+            } catch (error) {
+                console.error('Error fetching user documents:', error);
+            }
+        };
+
+        fetchUserDocuments();
+    }, [idPeserta]);
+
     const handleApply = () => {
         setIsDialogOpen(true);
     };
@@ -214,7 +240,7 @@ const DetailKarir = () => {
             };
     
             try {
-                const response = await fetch(endpoint, {
+                const response = await fetch(endpoint.replace('45', idPeserta), {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -252,7 +278,8 @@ const DetailKarir = () => {
         if (!token || !idPeserta) return;
     
         const payload = {
-            id_peserta: idPeserta
+            id_peserta: idPeserta,
+            id_user_documents: idUserDocuments
         };
     
         try {
