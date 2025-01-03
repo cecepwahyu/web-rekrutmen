@@ -29,8 +29,8 @@ const Otp = () => {
 
   // Hardcoded payload for now
   const payload = {
-    no_identitas: "3409110505990002",
-    email: "tidiv36477@pixdd.com",
+    no_identitas: "4303110709990015",
+    email: "cefadic468@owube.com",
   };
 
   // Initialize the form with react-hook-form and zod resolver
