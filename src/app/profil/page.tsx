@@ -10,9 +10,10 @@ import CariKarirButton from "../../components/CariKarirButton";
 import LottieAnimation from "../../components/Animations";
 import loadingAnimation from '../../../public/animations/loading.json';
 import animation404 from '../../../public/animations/404.json';
-import { FaUser, FaEnvelope, FaIdCard, FaIdBadge, FaRegCheckSquare, FaMedal, FaCalendar, FaPen, FaMapMarkerAlt, FaPhone, FaGraduationCap, FaHeart, FaBuilding, FaBriefcase, FaBook, FaUsers, FaAddressBook } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaIdCard, FaIdBadge, FaRegCheckSquare, FaMedal, FaCalendar, FaPen, FaMapMarkerAlt, FaPhone, FaGraduationCap, FaHeart, FaBuilding, FaBriefcase, FaBook, FaUsers, FaAddressBook, FaTimes } from 'react-icons/fa';
 import Image from 'next/image';
 import type { StaticImageData } from 'next/image';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const dummyProfilePic: StaticImageData = require('../../../public/images/dummyProfilePic.jpg');
 
@@ -72,13 +73,6 @@ interface KontakData {
     alamatKontak: String;
 }
 
-const handleChangeProfilePicture = () => {
-    const fileInput = document.getElementById('profilePictureInput');
-    if (fileInput) {
-        fileInput.click();
-    }
-};
-
 const getIdFromToken = async (token: string): Promise<string | null> => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
@@ -103,6 +97,41 @@ const getIdFromToken = async (token: string): Promise<string | null> => {
     }
 };
 
+const updateProfilePicture = async (base64Image: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        console.error("No token found in localStorage");
+        return;
+    }
+
+    const id = await getIdFromToken(token);
+    if (!id) {
+        console.error("Invalid token");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/update-profile-picture`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ base64_image: base64Image }),
+        });
+
+        const data = await response.json();
+        if (data.responseCode === "000") {
+            console.log("Profile picture updated successfully");
+        } else {
+            console.error("Error updating profile picture:", data.responseMessage);
+        }
+    } catch (error) {
+        console.error("Error updating profile picture:", error);
+    }
+};
+
 const Profile = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -115,7 +144,53 @@ const Profile = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog
+    const [newProfilePicture, setNewProfilePicture] = useState<string | null>(null); // State for new profile picture
     const router = useRouter(); // Initialize useRouter
+
+    const handleChangeProfilePicture = () => {
+        setIsDialogOpen(true); // Open dialog directly
+    };
+
+    const handleProfilePictureDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64Image = reader.result as string;
+                setNewProfilePicture(base64Image);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+    };
+
+    const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64Image = reader.result as string;
+                setNewProfilePicture(base64Image);
+                setIsDialogOpen(true); // Open dialog to preview new profile picture
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSaveProfilePicture = () => {
+        if (newProfilePicture) {
+            setProfilePicture(newProfilePicture);
+            updateProfilePicture(newProfilePicture).then(() => {
+                router.push("/profil");
+            });
+            setIsDialogOpen(false); // Close dialog after saving
+        }
+    };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -128,18 +203,6 @@ const Profile = () => {
             }
         }
     }, [router]);
-
-    const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfilePicture(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-            console.log("Selected file:", file);
-        }
-    };
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -397,6 +460,47 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
+            {/* Dialog for previewing new profile picture */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                    <button style={{ display: 'none' }}></button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Preview Profile Picture</DialogTitle>
+                        <DialogDescription>Preview and save your new profile picture. You can also drag and drop an image here or select an image.</DialogDescription>
+                    </DialogHeader>
+                    <div
+                        onDrop={handleProfilePictureDrop}
+                        onDragOver={handleDragOver}
+                        className="w-full h-48 border-2 border-dashed border-gray-300 flex justify-center items-center mb-4"
+                    >
+                        {newProfilePicture ? (
+                            <img
+                                src={newProfilePicture}
+                                alt="New Profile Preview"
+                                className="w-full h-full object-cover"
+                                style={{ aspectRatio: '4 / 3' }} // Ensure 3x4 aspect ratio
+                            />
+                        ) : (
+                            <span className="text-gray-500">Drag and drop an image here or select an image</span>
+                        )}
+                    </div>
+                    <input 
+                        type="file" 
+                        onChange={handleProfilePictureChange} 
+                        className="mb-4"
+                    />
+                    <DialogFooter>
+                        <button
+                            onClick={handleSaveProfilePicture}
+                            className="bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400"
+                        >
+                            Save
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <MenuBar />
             <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
                 <div className="bg-white relative z-10">
