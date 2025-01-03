@@ -18,7 +18,6 @@ import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import { Input } from "@/components/ui/input";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
@@ -32,6 +31,32 @@ const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
 
 type LoginFormValues = z.infer<typeof formSchema>;
 
+const generateCaptcha = () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let captcha = "";
+  for (let i = 0; i < 6; i++) {
+    captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return captcha;
+};
+
+const createCaptchaImage = (captcha: string) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 150;
+  canvas.height = 50;
+  const ctx = canvas.getContext("2d");
+
+  if (ctx) {
+    ctx.fillStyle = "#f2f2f2";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "#000";
+    ctx.fillText(captcha, 10, 35);
+  }
+
+  return canvas.toDataURL("image/png");
+};
+
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -41,6 +66,12 @@ const Login = () => {
   const [forgotPasswordIdentitas, setForgotPasswordIdentitas] = useState("");
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [forgotPasswordRecaptchaToken, setForgotPasswordRecaptchaToken] = useState<string | null>(null);
+  const [captcha, setCaptcha] = useState(generateCaptcha());
+  const [captchaImage, setCaptchaImage] = useState(createCaptchaImage(captcha));
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [forgotPasswordCaptcha, setForgotPasswordCaptcha] = useState(generateCaptcha());
+  const [forgotPasswordCaptchaImage, setForgotPasswordCaptchaImage] = useState(createCaptchaImage(forgotPasswordCaptcha));
+  const [forgotPasswordCaptchaInput, setForgotPasswordCaptchaInput] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -73,6 +104,26 @@ const Login = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setCaptchaImage(createCaptchaImage(captcha));
+  }, [captcha]);
+
+  useEffect(() => {
+    setForgotPasswordCaptchaImage(createCaptchaImage(forgotPasswordCaptcha));
+  }, [forgotPasswordCaptcha]);
+
+  const regenerateCaptcha = () => {
+    const newCaptcha = generateCaptcha();
+    setCaptcha(newCaptcha);
+    setCaptchaImage(createCaptchaImage(newCaptcha));
+  };
+
+  const regenerateForgotPasswordCaptcha = () => {
+    const newCaptcha = generateCaptcha();
+    setForgotPasswordCaptcha(newCaptcha);
+    setForgotPasswordCaptchaImage(createCaptchaImage(newCaptcha));
+  };
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,8 +133,8 @@ const Login = () => {
   });
 
   const handleLogin = async (data: LoginFormValues) => {
-    if (!recaptchaToken) {
-      toast.error("Please complete the reCAPTCHA.");
+    if (captchaInput !== captcha) {
+      toast.error("Invalid CAPTCHA. Please try again.");
       return;
     }
 
@@ -146,6 +197,11 @@ const Login = () => {
   };
 
   const handleForgotPassword = async () => {
+    if (forgotPasswordCaptchaInput !== forgotPasswordCaptcha) {
+      toast.error("Invalid CAPTCHA. Please try again.");
+      return;
+    }
+
     if (!forgotPasswordEmail || !forgotPasswordIdentitas) {
       toast.error("Please enter your email and identification number.");
       return;
@@ -256,10 +312,16 @@ const Login = () => {
                   </button>
                 </div>
 
-                <div className="flex justify-center">
-                  <ReCAPTCHA
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={handleRecaptchaChange}
+                <div className="flex flex-col items-center space-y-2">
+                  <img src={captchaImage} alt="CAPTCHA" className="border p-2" />
+                  <button type="button" onClick={regenerateCaptcha} className="text-xs text-blue-500 hover:underline">
+                    Regenerate CAPTCHA
+                  </button>
+                  <Input
+                    placeholder="Enter CAPTCHA"
+                    value={captchaInput}
+                    onChange={(e) => setCaptchaInput(e.target.value)}
+                    className="transition-transform duration-300 focus:scale-105"
                   />
                 </div>
 
@@ -306,10 +368,16 @@ const Login = () => {
               onChange={(e) => setForgotPasswordIdentitas(e.target.value)}
               className="transition-transform duration-300 focus:scale-105"
             />
-            <div className="flex justify-center">
-              <ReCAPTCHA
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={handleForgotPasswordRecaptchaChange}
+            <div className="flex flex-col items-center space-y-2">
+              <img src={forgotPasswordCaptchaImage} alt="CAPTCHA" className="border p-2" />
+              <button type="button" onClick={regenerateForgotPasswordCaptcha} className="text-xs text-blue-500 hover:underline">
+                Regenerate CAPTCHA
+              </button>
+              <Input
+                placeholder="Enter CAPTCHA"
+                value={forgotPasswordCaptchaInput}
+                onChange={(e) => setForgotPasswordCaptchaInput(e.target.value)}
+                className="transition-transform duration-300 focus:scale-105"
               />
             </div>
           </div>
