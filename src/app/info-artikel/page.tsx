@@ -194,12 +194,12 @@ const InfoArtikel = () => {
                                                 : <span dangerouslySetInnerHTML={{ __html: article.isi }} />
                                             }
                                         </p>
-                                        <div className="flex items-center text-sm text-gray-600 space-x-4">
+                                        {/* <div className="flex items-center text-sm text-gray-600 space-x-4">
                                             <div className="flex items-center">
                                                 <FontAwesomeIcon icon={faTag} className="mr-1" />
                                                 <span>Keuangan</span>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </button>
                             ))}
