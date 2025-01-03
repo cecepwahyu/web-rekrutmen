@@ -22,6 +22,7 @@ import Image from "next/image";
 
 // Define the form schema using zod
 const formSchema = z.object({
+  nama: z.string().min(1, "Nama is required."),
   username: z.string().min(3, "Username must be at least 6 characters."),
   no_identitas: z.string().min(16, "NIK must be at least 16 characters."),
   email: z.string().email("Please enter a valid email."),
@@ -56,6 +57,7 @@ const Register = () => {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      nama: "",
       username: "",
       no_identitas: "",
       email: "",
@@ -155,6 +157,26 @@ const Register = () => {
             </h2>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
+                {/* Nama Field */}
+                <FormField
+                  control={form.control}
+                  name="nama"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nama</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your name"
+                          type="text"
+                          {...field}
+                          className="transition-transform duration-300 focus:scale-105"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 {/* Username Field */}
                 <FormField
                   control={form.control}
