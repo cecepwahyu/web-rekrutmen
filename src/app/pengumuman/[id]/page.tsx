@@ -113,7 +113,7 @@ const DetailPengumuman = () => {
                             </p>
                             <div className="mt-6 text-gray-800" dangerouslySetInnerHTML={{ __html: announcement.isi }} />
                             <div className="mt-6 flex items-center space-x-4">
-                                <span className="text-gray-600">Share this:</span>
+                                <span className="text-gray-600 font-bold">Share this:</span>
                                 <FacebookShareButton url={window.location.href} className="hover:opacity-75 transition-opacity duration-300">
                                     <FacebookIcon size={32} round />
                                 </FacebookShareButton>
