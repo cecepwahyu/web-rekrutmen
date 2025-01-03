@@ -36,17 +36,17 @@ const Home = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter(); 
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const token = localStorage.getItem("token");
+    // useEffect(() => {
+    //     if (typeof window !== "undefined") {
+    //         const token = localStorage.getItem("token");
 
-            if (!token) {
-                router.push("/login");
-            } else {
-                setIsAuthenticated(true);
-            }
-        }
-    }, [router]);
+    //         if (!token) {
+    //             router.push("/login");
+    //         } else {
+    //             setIsAuthenticated(true);
+    //         }
+    //     }
+    // }, [router]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -71,13 +71,13 @@ const Home = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    if (!isAuthenticated) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <LottieAnimation animationData={loadingAnimation} />
-            </div>
-        );
-    }
+    // if (!isAuthenticated) {
+    //     return (
+    //         <div className="flex justify-center items-center min-h-screen">
+    //             <LottieAnimation animationData={loadingAnimation} />
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
