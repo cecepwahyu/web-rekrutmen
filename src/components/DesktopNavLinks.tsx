@@ -112,8 +112,11 @@ function DesktopNavLinks() {
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    setLoading(true);
+    setTimeout(() => {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }, 500);
   };
 
   const handleLogoutClick = () => {
@@ -125,6 +128,13 @@ function DesktopNavLinks() {
   };
 
   const handleLinkClick = (href: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      window.location.href = href;
+    }, 500);
+  };
+
+  const handleProfileClick = (href: string) => {
     setLoading(true);
     setTimeout(() => {
       window.location.href = href;
@@ -217,20 +227,10 @@ function DesktopNavLinks() {
               {isProfileDropdownOpen && (
               <ul className="absolute mt-2 w-48 bg-white shadow-lg rounded-md z-50">
                 <li>
-                  <Link href="/profil" legacyBehavior passHref>
-                    <a className="block px-4 py-2 text-darkBlue hover:bg-gray-100 hover:rounded-md flex items-center">
-                      <FontAwesomeIcon icon={faUserCircle} className='mr-2'/>
-                      <span className="ml-2">Profil</span>
-                    </a>
-                  </Link>
-                </li>
-                <li>
                   <button
                     className="block w-full text-left px-4 py-2 text-darkBlue hover:bg-gray-100 hover:rounded-md flex items-center"
-                    onClick={handleLogoutClick}
+                    onClick={() => handleProfileClick('/profil')}
                   >
-                    <FontAwesomeIcon icon={faSignOutAlt} className='mr-2'/>
-                    <span className="ml-2">Keluar</span>
                   </button>
                 </li>
               </ul>
