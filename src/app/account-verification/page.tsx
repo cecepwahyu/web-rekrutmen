@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/input-otp";
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
-import DekstopNavLinksAlt from "../../components/DekstopNavLinksAlt";
 import Image from "next/image";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 
@@ -23,10 +22,16 @@ const formSchema = z.object({
 
 type OtpFormValues = z.infer<typeof formSchema>;
 
-const AccountVerication = () => {
+const AccountVerification = () => {
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
+
+  // Hardcoded payload for now
+  const payload = {
+    no_identitas: "4303110709990015",
+    email: "cefadic468@owube.com",
+  };
 
   // Initialize the form with react-hook-form and zod resolver
   const form = useForm<OtpFormValues>({
@@ -57,12 +62,6 @@ const AccountVerication = () => {
   const handleResendClick = async () => {
     setIsDisabled(true);
 
-    // Hardcoded payload for now
-    const payload = {
-      no_identitas: "3806110908990003",
-      email: "tidiv36477@pixdd.com",
-    };
-
     try {
       toast("Sending OTP...", {
         style: {
@@ -73,9 +72,7 @@ const AccountVerication = () => {
         },
       });
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/resend-otp`,
-        {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/resend-otp`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -117,9 +114,7 @@ const AccountVerication = () => {
   const handleOtp = async (data: OtpFormValues) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/otp-verification`,
-        {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/otp-verification`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -165,10 +160,10 @@ const AccountVerication = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white font-sans relative">
+    <div className="min-h-screen bg-gray-100 font-sans relative">
       <MenuBar />
-      <main className="flex-grow pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
-        <div className="relative z-10">
+      <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 flex flex-col min-h-screen">
+        <div className="bg-white flex-grow relative z-10">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
             <defs>
               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -181,13 +176,14 @@ const AccountVerication = () => {
           </svg>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-full h-min-[400px] relative z-10 -mt-32 pb-10">
+        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10">
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
             <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
-              Account Verification
+              OTP Verification
             </h2>
             <p className="text-center mb-4">
-              One Time Password (OTP) has been sent to your email address{" "}
+              One Time Password (OTP) has been sent to your email address:{" "}
+              <b>{payload.email}</b>
             </p>
 
             <p className="text-center mb-4">Enter the OTP to verify it.</p>
@@ -234,11 +230,12 @@ const AccountVerication = () => {
             </div>
           </div>
         </div>
+
+        <FooterCopyright />
+        <ScrollToTopButton />
       </main>
-      <FooterCopyright />
-      <ScrollToTopButton />
     </div>
   );
 };
 
-export default AccountVerication;
+export default AccountVerification;
