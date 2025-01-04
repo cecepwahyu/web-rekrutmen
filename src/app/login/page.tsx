@@ -58,6 +58,16 @@ const createCaptchaImage = (captcha: string) => {
   return canvas.toDataURL("image/png");
 };
 
+const handleKeyDown = (e: React.KeyboardEvent, nextFieldId: string) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const nextField = document.getElementById(nextFieldId);
+    if (nextField) {
+      nextField.focus();
+    }
+  }
+};
+
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -276,6 +286,7 @@ const Login = () => {
                           type="email"
                           {...field}
                           className="transition-transform duration-300 focus:scale-105"
+                          onKeyDown={(e) => handleKeyDown(e, "password")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -296,6 +307,8 @@ const Login = () => {
                           type="password"
                           {...field}
                           className="transition-transform duration-300 focus:scale-105"
+                          id="password"
+                          onKeyDown={(e) => handleKeyDown(e, "captchaInput")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -324,6 +337,8 @@ const Login = () => {
                     value={captchaInput}
                     onChange={(e) => setCaptchaInput(e.target.value)}
                     className="transition-transform duration-300 focus:scale-105"
+                    id="captchaInput"
+                    onKeyDown={(e) => handleKeyDown(e, "loginButton")}
                   />
                 </div>
 
@@ -332,6 +347,7 @@ const Login = () => {
                   type="submit"
                   className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
                   disabled={loading}
+                  id="loginButton"
                 >
                   {loading ? "Logging in..." : "Login"}
                 </Button>
