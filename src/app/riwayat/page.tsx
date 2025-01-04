@@ -20,13 +20,15 @@ const Riwayat = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [steps, setSteps] = useState<Tahapan[]>([]);
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(4); // Current step: "Tes Psikologi dan TPA"
+  const [currentStep, setCurrentStep] = useState(2); // Current step: "Tes Psikologi dan TPA"
   const [applicantData, setApplicantData] = useState({
     nama: "",
     nomorPeserta: "",
-    posisi: "Software Engineer",
+    posisi: "",
+    idLowongan: null,
   });
-  const [announcementContent, setAnnouncementContent] = useState("");
+  const [announcementContent, setAnnouncementContent] = useState("Pesan tidak ditemukan");
+  const [currentSortOrder, setCurrentSortOrder] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -74,8 +76,9 @@ const Riwayat = () => {
           if (profileData.responseCode === '000') {
             setApplicantData({
               nama: profileData.data.nama || "Tidak ada lamaran",
-              nomorPeserta: profileData.data.lowonganId || "Tidak ada lamaran",
+              nomorPeserta: profileData.data.kodeLowongan || "Tidak ada lamaran",
               posisi: profileData.data.judulLowongan || "Tidak ada lamaran",
+              idLowongan: profileData.data.idLowongan || null,
             });
           }
         }
@@ -101,7 +104,7 @@ const Riwayat = () => {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/list`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/id/${applicantData.idLowongan}/tahapan`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -111,22 +114,32 @@ const Riwayat = () => {
         });
         const data = await response.json();
         if (data.responseCode === '000') {
-          setSteps(data.data);
+          const stepsData = data.data.map((step: any) => ({
+            idTahapan: step[2],
+            namaTahapan: step[4],
+            deskripsi: step[5],
+            isActive: false // You can set this based on your logic
+          }));
+          setSteps(stepsData);
         }
       } catch (error) {
         console.error('Error fetching steps:', error);
       }
     };
 
-    fetchSteps();
-  }, []);
+    if (applicantData.idLowongan) {
+      fetchSteps();
+    }
+  }, [applicantData.idLowongan]);
 
   useEffect(() => {
     const fetchAnnouncementContent = async () => {
+      setIsLoading(true);
       const token = localStorage.getItem('token');
 
       if (!token) {
         console.error("No token found in localStorage");
+        setIsLoading(false);
         return;
       }
 
@@ -138,19 +151,56 @@ const Riwayat = () => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ id_lowongan: 52 })
+          body: JSON.stringify({ id_lowongan: applicantData.idLowongan }) // Use dynamic idLowongan
         });
         const data = await response.text();
-        setAnnouncementContent(data);
+        setAnnouncementContent(data || "Pesan tidak ditemukan");
       } catch (error) {
         console.error('Error fetching announcement content:', error);
+        setAnnouncementContent("Pesan tidak ditemukan");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchAnnouncementContent();
-  }, []);
+    if (applicantData.idLowongan) {
+      fetchAnnouncementContent();
+    }
+  }, [applicantData.idLowongan]);
 
-  const passedSteps = [1, 2, 3, 4, 5]; // Steps that are passed
+  useEffect(() => {
+    const fetchCurrentSortOrder = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/progress/tahapan/${applicantData.idLowongan}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        if (data.responseCode === '000') {
+          setCurrentSortOrder(data.data.currentSortOrder);
+        }
+      } catch (error) {
+        console.error('Error fetching current sort order:', error);
+      }
+    };
+
+    if (applicantData.idLowongan) {
+      fetchCurrentSortOrder();
+    }
+  }, [applicantData.idLowongan]);
+
+  const passedSteps = Array.from({ length: currentSortOrder }, (_, i) => i + 1);
 
   if (!isAuthenticated) {
     return null;
