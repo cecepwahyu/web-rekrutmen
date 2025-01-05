@@ -177,16 +177,16 @@ const Otp = () => {
         </div>
 
         <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-            <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md border-t-8 border-darkBlue">
+            <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">
               OTP Verification
             </h2>
-            <p className="text-center mb-4">
+            <p className="text-center mb-4 text-gray-700">
               One Time Password (OTP) has been sent to your email address:{" "}
               <b>{payload.email}</b>
             </p>
 
-            <p className="text-center mb-4">Enter the OTP to verify it.</p>
+            <p className="text-center mb-4 text-gray-700">Enter the OTP to verify it.</p>
 
             <form onSubmit={form.handleSubmit(handleOtp)} className="space-y-4">
               <div className="flex items-center justify-center">
