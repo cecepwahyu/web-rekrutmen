@@ -69,6 +69,13 @@ const Register = () => {
     },
   });
 
+  // Custom input handler for No Identitas field
+  const handleNoIdentitasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.length <= 16) {
+      form.setValue("no_identitas", e.target.value);
+    }
+  };
+
   // Handle form submission
   const handleRegister = async (data: RegisterFormValues) => {
     setLoading(true);
@@ -139,9 +146,9 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans relative">
-      <MenuBar />
       <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 flex flex-col min-h-screen">
-        <div className="bg-white flex-grow relative z-10">
+        <MenuBar />
+        <div className="bg-white flex-grow relative z-10 shadow-lg rounded-b-3xl">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
             <defs>
               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -154,9 +161,9 @@ const Register = () => {
           </svg>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10 px-4"> {/* Added px-4 for padding */}
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md mx-4"> {/* Added mx-4 for margin */}
-            <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
+        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10 px-4">
+          <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md mx-4 transform transition-all duration-500 hover:scale-105">
+            <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">
               Daftar Akun Baru
             </h2>
             <Form {...form}>
@@ -175,7 +182,7 @@ const Register = () => {
                           placeholder="Enter your name"
                           type="text"
                           {...field}
-                          className="transition-transform duration-300 focus:scale-105"
+                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
                         />
                       </FormControl>
                       <FormMessage />
@@ -197,7 +204,7 @@ const Register = () => {
                           placeholder="Enter your username"
                           type="username"
                           {...field}
-                          className="transition-transform duration-300 focus:scale-105"
+                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
                         />
                       </FormControl>
                       <FormMessage />
@@ -212,14 +219,15 @@ const Register = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        No Identitas <span className="text-red-500">*</span>
+                        No Identitas (KTP) <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your No Identitas"
                           type="number"
-                          {...field}
-                          className="transition-transform duration-300 focus:scale-105"
+                          value={field.value}
+                          onChange={handleNoIdentitasChange}
+                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
                         />
                       </FormControl>
                       <FormMessage />
@@ -241,7 +249,7 @@ const Register = () => {
                           placeholder="Enter your email"
                           type="email"
                           {...field}
-                          className="transition-transform duration-300 focus:scale-105"
+                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
                         />
                       </FormControl>
                       <FormMessage />
@@ -263,7 +271,7 @@ const Register = () => {
                           placeholder="Enter your password"
                           type="password"
                           {...field}
-                          className="transition-transform duration-300 focus:scale-105"
+                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
                         />
                       </FormControl>
                       <FormMessage />
@@ -283,7 +291,7 @@ const Register = () => {
             </Form>
 
             <div className="text-center text-gray-700 mt-4">
-              Already have an account?{" "}
+              Sudah memiliki Akun?{" "}
               <a href="/login" className="text-blue-500 hover:underline">
                 Login
               </a>
