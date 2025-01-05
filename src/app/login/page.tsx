@@ -32,27 +32,47 @@ const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
 
 type LoginFormValues = z.infer<typeof formSchema>;
 
-const generateCaptcha = () => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let captcha = "";
-  for (let i = 0; i < 6; i++) {
-    captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return captcha;
+const generateMathCaptcha = () => {
+  const num1 = Math.floor(Math.random() * 10);
+  const num2 = Math.floor(Math.random() * 10);
+  const operator = Math.random() > 0.5 ? "+" : "-";
+  const question = `${num1} ${operator} ${num2}`;
+  const answer = operator === "+" ? num1 + num2 : num1 - num2;
+  return { question, answer: answer.toString() };
 };
 
-const createCaptchaImage = (captcha: string) => {
+const createMathCaptchaImage = (question: string) => {
   const canvas = document.createElement("canvas");
-  canvas.width = 150;
-  canvas.height = 50;
+  canvas.width = 200;
+  canvas.height = 70;
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
+    // Background
     ctx.fillStyle = "#f2f2f2";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Add some noise
+    for (let i = 0; i < 50; i++) {
+      ctx.fillStyle = `rgba(0,0,0,${Math.random()})`;
+      ctx.beginPath();
+      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Text
     ctx.font = "30px Arial";
     ctx.fillStyle = "#000";
-    ctx.fillText(captcha, 10, 35);
+    ctx.fillText(question, 20, 45);
+
+    // Add some lines
+    for (let i = 0; i < 5; i++) {
+      ctx.strokeStyle = `rgba(0,0,0,${Math.random()})`;
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+      ctx.stroke();
+    }
   }
 
   return canvas.toDataURL("image/png");
@@ -77,10 +97,10 @@ const Login = () => {
   const [forgotPasswordIdentitas, setForgotPasswordIdentitas] = useState("");
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [forgotPasswordRecaptchaToken, setForgotPasswordRecaptchaToken] = useState<string | null>(null);
-  const [captcha, setCaptcha] = useState(generateCaptcha());
+  const [captcha, setCaptcha] = useState(generateMathCaptcha());
   const [captchaImage, setCaptchaImage] = useState<string | null>(null);
   const [captchaInput, setCaptchaInput] = useState("");
-  const [forgotPasswordCaptcha, setForgotPasswordCaptcha] = useState(generateCaptcha());
+  const [forgotPasswordCaptcha, setForgotPasswordCaptcha] = useState(generateMathCaptcha());
   const [forgotPasswordCaptchaImage, setForgotPasswordCaptchaImage] = useState<string | null>(null);
   const [forgotPasswordCaptchaInput, setForgotPasswordCaptchaInput] = useState("");
   const router = useRouter();
@@ -117,21 +137,21 @@ const Login = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setCaptchaImage(createCaptchaImage(captcha));
-      setForgotPasswordCaptchaImage(createCaptchaImage(forgotPasswordCaptcha));
+      setCaptchaImage(createMathCaptchaImage(captcha.question));
+      setForgotPasswordCaptchaImage(createMathCaptchaImage(forgotPasswordCaptcha.question));
     }
   }, [captcha, forgotPasswordCaptcha]);
 
   const regenerateCaptcha = () => {
-    const newCaptcha = generateCaptcha();
+    const newCaptcha = generateMathCaptcha();
     setCaptcha(newCaptcha);
-    setCaptchaImage(createCaptchaImage(newCaptcha));
+    setCaptchaImage(createMathCaptchaImage(newCaptcha.question));
   };
 
   const regenerateForgotPasswordCaptcha = () => {
-    const newCaptcha = generateCaptcha();
+    const newCaptcha = generateMathCaptcha();
     setForgotPasswordCaptcha(newCaptcha);
-    setForgotPasswordCaptchaImage(createCaptchaImage(newCaptcha));
+    setForgotPasswordCaptchaImage(createMathCaptchaImage(newCaptcha.question));
   };
 
   const form = useForm<LoginFormValues>({
@@ -143,7 +163,7 @@ const Login = () => {
   });
 
   const handleLogin = async (data: LoginFormValues) => {
-    if (captchaInput !== captcha) {
+    if (captchaInput !== captcha.answer) {
       toast.error("Invalid CAPTCHA. Please try again.");
       return;
     }
@@ -207,7 +227,7 @@ const Login = () => {
   };
 
   const handleForgotPassword = async () => {
-    if (forgotPasswordCaptchaInput !== forgotPasswordCaptcha) {
+    if (forgotPasswordCaptchaInput !== forgotPasswordCaptcha.answer) {
       toast.error("Invalid CAPTCHA. Please try again.");
       return;
     }
@@ -269,7 +289,7 @@ const Login = () => {
         <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10">
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md mx-4">
             <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
-              Login to Your Account
+              Masuk ke akun Anda
             </h2>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
@@ -279,7 +299,7 @@ const Login = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel className="font-bold">Email</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your email"
@@ -300,7 +320,7 @@ const Login = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="font-bold">Password</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your password"
@@ -321,13 +341,13 @@ const Login = () => {
                     className="text-xs text-blue-500 hover:underline"
                     onClick={() => setIsForgotPasswordOpen(true)}
                   >
-                    Forgot Password?
+                    Lupa Password?
                   </button>
                 </div>
 
                 <div className="flex flex-col items-center space-y-2">
                   {captchaImage && (
-                    <Image src={captchaImage} alt="CAPTCHA" width={150} height={50} className="border p-2" />
+                    <Image src={captchaImage} alt="CAPTCHA" width={200} height={70} className="border p-2 rounded-md shadow-md" />
                   )}
                   <button type="button" onClick={regenerateCaptcha} className="text-xs text-blue-500 hover:underline">
                     Regenerate CAPTCHA
@@ -388,7 +408,7 @@ const Login = () => {
             />
             <div className="flex flex-col items-center space-y-2">
               {forgotPasswordCaptchaImage && (
-                <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={150} height={50} className="border p-2" />
+                <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={200} height={70} className="border p-2 rounded-md shadow-md" />
               )}
               <button type="button" onClick={regenerateForgotPasswordCaptcha} className="text-xs text-blue-500 hover:underline">
                 Regenerate CAPTCHA
