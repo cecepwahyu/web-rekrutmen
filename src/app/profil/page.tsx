@@ -239,7 +239,7 @@ const Profile = () => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}`, {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json", // Ensure Content-Type is set
                         "Authorization": `Bearer ${token}`,
                         Accept: "application/json",
                     },
@@ -252,7 +252,7 @@ const Profile = () => {
                         setProfilePicture(data.data.profilePicture);
                     }
                 } else {
-                    console.error("Error fetching data:", data.responseMessage);
+                    //console.error("Error fetching data:", data.responseMessage);
                     setProfileData(null); // Set profile data to null if not found
                 }
             } catch (error) {
@@ -287,17 +287,20 @@ const Profile = () => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pengalaman/${id}`, {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json", // Ensure Content-Type is set
                         "Authorization": `Bearer ${token}`,
                         Accept: "application/json",
                     },
                 });
 
                 const data = await response.json();
-                if (data.responseCode === "000") {
+                if (data.responseCode === "000" && data.data) {
                     setPengalamanData(data.data);
+                } else if (data.responseCode === "404") {
+                    console.log("Data not found");
+                    setPengalamanData(null); // Set pengalaman data to null if not found
                 } else {
-                    console.error("Error fetching data:", data.responseMessage);
+                    //console.error("Error fetching data:", data.responseMessage);
                     setPengalamanData(null); // Set pengalaman data to null if not found
                 }
             } catch (error) {
@@ -330,7 +333,7 @@ const Profile = () => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pendidikan/${id}`, {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json", // Ensure Content-Type is set
                         "Authorization": `Bearer ${token}`,
                         Accept: "application/json",
                     },
@@ -340,11 +343,11 @@ const Profile = () => {
                 if (data.responseCode === "000") {
                     setPendidikanData(data.data);
                 } else {
-                    console.error("Error fetching data:", data.responseMessage);
+                    //console.error("Error fetching data:", data.responseMessage);
                     setPendidikanData(null); // Set pendidikan data to null if not found
                 }
             } catch (error) {
-                console.error("Error fetching pendidikan data:", error);
+                //console.error("Error fetching pendidikan data:", error);
                 setPendidikanData(null); // Set pendidikan data to null if error occurs
             }
         };
@@ -373,7 +376,7 @@ const Profile = () => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/organisasi/${id}`, {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json", // Ensure Content-Type is set
                         "Authorization": `Bearer ${token}`,
                         Accept: "application/json",
                     },
@@ -383,7 +386,7 @@ const Profile = () => {
                 if (data.responseCode === "000") {
                     setOrganisasiData(data.data);
                 } else {
-                    console.error("Error fetching data:", data.responseMessage);
+                    //console.error("Error fetching data:", data.responseMessage);
                     setOrganisasiData(null); // Set organisasi data to null if not found
                 }
             } catch (error) {
@@ -416,7 +419,7 @@ const Profile = () => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}`, {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json", // Ensure Content-Type is set
                         "Authorization": `Bearer ${token}`,
                         Accept: "application/json",
                     },
@@ -426,7 +429,7 @@ const Profile = () => {
                 if (kontakDataResponse.responseCode === "000") {
                     setKontakData(kontakDataResponse.data);
                 } else {
-                    console.error("Error fetching data:", kontakDataResponse.responseMessage);
+                    //console.error("Error fetching data:", kontakDataResponse.responseMessage);
                     setKontakData(null); // Set kontak data to null if not found
                 }
             } catch (error) {
