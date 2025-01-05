@@ -13,6 +13,7 @@ import {
     NavigationMenuTrigger,
     NavigationMenuViewport,
   } from "@/components/ui/navigation-menu"
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import HomeIcon from './HomeIcon';
 
 function DesktopNavLinks() {
@@ -232,17 +233,42 @@ function DesktopNavLinks() {
                     onClick={() => handleProfileClick('/profil')}
                   >
                     <FontAwesomeIcon icon={faUserCircle} className="mr-2" />
-                    Profile
+                    Profil
                   </button>
                 </li>
                 <li>
-                  <button
-                    className="block w-full text-left px-4 py-2 text-darkBlue hover:bg-gray-100 hover:rounded-md flex items-center"
-                    onClick={handleLogoutClick}
-                  >
-                    <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-                    Logout
-                  </button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-darkBlue hover:bg-gray-100 hover:rounded-md flex items-center"
+                      >
+                        <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+                        Keluar
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Are you sure you want to log out?</DialogTitle>
+                        <DialogDescription>
+                          This action will log you out of your account.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <button
+                          className="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200"
+                          onClick={() => setShowLogoutConfirm(false)}
+                        >
+                          Batal
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-200"
+                          onClick={handleSignOut}
+                        >
+                          Keluar
+                        </button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </li>
               </ul>
               )}
@@ -262,27 +288,6 @@ function DesktopNavLinks() {
         )}
       </NavigationMenuList>
       {loading && <div className="fixed top-0 left-0 w-full h-1 bg-blue-500 animate-pulse"></div>}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out">
-          <div className="bg-white p-6 rounded-lg shadow-lg transform transition-transform duration-300 ease-in-out scale-95">
-            <p className="text-lg font-semibold mb-4">Are you sure you want to log out?</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                className="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200"
-                onClick={handleCancelLogout}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-200"
-                onClick={handleSignOut}
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </NavigationMenu>
   );
 }
