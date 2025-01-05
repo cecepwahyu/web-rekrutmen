@@ -152,23 +152,6 @@ const Profile = () => {
         setIsDialogOpen(true); // Open dialog directly
     };
 
-    const handleProfilePictureDrop = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64Image = reader.result as string;
-                setNewProfilePicture(base64Image);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-    };
-
     const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -176,19 +159,49 @@ const Profile = () => {
             reader.onloadend = () => {
                 const base64Image = reader.result as string;
                 setNewProfilePicture(base64Image);
-                setIsDialogOpen(true); // Open dialog to preview new profile picture
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleSaveProfilePicture = () => {
+    const handleSaveProfilePicture = async () => {
         if (newProfilePicture) {
-            setProfilePicture(newProfilePicture);
-            updateProfilePicture(newProfilePicture).then(() => {
-                router.push("/profil");
-            });
-            setIsDialogOpen(false); // Close dialog after saving
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found in localStorage");
+                return;
+            }
+
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/update-profile-picture`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                    body: JSON.stringify({ base64_image: newProfilePicture }),
+                });
+
+                const data = await response.json();
+                if (data.responseCode === "000") {
+                    console.log("Profile picture updated successfully");
+                    setProfilePicture(newProfilePicture);
+                    router.push("/profil");
+                } else {
+                    console.error("Error updating profile picture:", data.responseMessage);
+                }
+            } catch (error) {
+                console.error("Error updating profile picture:", error);
+            } finally {
+                setIsDialogOpen(false); // Close dialog after saving
+            }
         }
     };
 
@@ -467,26 +480,9 @@ const Profile = () => {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Preview Profile Picture</DialogTitle>
-                        <DialogDescription>Preview and save your new profile picture. You can also drag and drop an image here or select an image.</DialogDescription>
+                        <DialogTitle>Change Profile Picture</DialogTitle>
+                        <DialogDescription>Select an image to update your profile picture.</DialogDescription>
                     </DialogHeader>
-                    <div
-                        onDrop={handleProfilePictureDrop}
-                        onDragOver={handleDragOver}
-                        className="w-full h-48 border-2 border-dashed border-gray-300 flex justify-center items-center mb-4"
-                    >
-                        {newProfilePicture ? (
-                            <Image
-                                src={newProfilePicture}
-                                alt="New Profile Preview"
-                                layout="fill"
-                                objectFit="cover"
-                                style={{ aspectRatio: '4 / 3' }} // Ensure 3x4 aspect ratio
-                            />
-                        ) : (
-                            <span className="text-gray-500">Drag and drop an image here or select an image</span>
-                        )}
-                    </div>
                     <input 
                         type="file" 
                         onChange={handleProfilePictureChange} 
@@ -494,10 +490,10 @@ const Profile = () => {
                     />
                     <DialogFooter>
                         <button
-                            onClick={handleSaveProfilePicture}
+                            onClick={handleSaveProfilePicture} // Save profile picture
                             className="bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400"
                         >
-                            Save
+                            Simpan
                         </button>
                     </DialogFooter>
                 </DialogContent>
