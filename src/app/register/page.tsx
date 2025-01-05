@@ -78,6 +78,14 @@ const Register = () => {
 
   // Handle form submission
   const handleRegister = async (data: RegisterFormValues) => {
+    // Check if any field is empty
+    const emptyFields = Object.entries(data).filter(([key, value]) => !value);
+    if (emptyFields.length > 0) {
+      const fieldNames = emptyFields.map(([key]) => key).join(", ");
+      alert(`Please fill in the following fields: ${fieldNames}`);
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`, {
@@ -128,9 +136,9 @@ const Register = () => {
           },
         });
 
-        // Redirect to another page after a short delay
+        // Redirect to account verification page after a short delay
         setTimeout(() => {
-          window.location.href = "/login";
+          window.location.href = "/account-verification";
         }, 2000);
       } else {
         // Show error toast for server validation error
