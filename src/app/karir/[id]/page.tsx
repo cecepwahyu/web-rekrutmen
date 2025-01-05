@@ -25,6 +25,7 @@ import {
     DialogFooter,
   } from "@/components/ui/dialog"
 import { useForm } from 'react-hook-form';
+import { motion } from 'framer-motion';
 
 interface Article {
     judulLowongan: string;
@@ -67,6 +68,12 @@ const getIdFromToken = async (token: string): Promise<string | null> => {
     }
 };
 
+const getHeaders = (token: string) => ({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+});
+
 const DetailKarir = () => {
     const params = useParams();
     const slug = params?.id as string;
@@ -80,6 +87,7 @@ const DetailKarir = () => {
     const router = useRouter();
     const [idPeserta, setIdPeserta] = useState<string | null>(null);
     const [idUserDocuments, setIdUserDocuments] = useState<number[]>([]);
+    const [requiredDocuments, setRequiredDocuments] = useState<any[]>([]);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -105,11 +113,7 @@ const DetailKarir = () => {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/${slug}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json',
-                    },
+                    headers: getHeaders(token),
                 });
 
                 const data = await response.json();
@@ -132,11 +136,7 @@ const DetailKarir = () => {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/slug/${slug}/tahapan`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json',
-                    },
+                    headers: getHeaders(token),
                 });
 
                 const data = await response.json();
@@ -170,11 +170,7 @@ const DetailKarir = () => {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/lock-status/${idPeserta}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json',
-                    },
+                    headers: getHeaders(token),
                 });
 
                 const data = await response.json();
@@ -197,11 +193,7 @@ const DetailKarir = () => {
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/documents`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json',
-                    },
+                    headers: getHeaders(token),
                 });
 
                 const data = await response.json();
@@ -213,6 +205,29 @@ const DetailKarir = () => {
 
         fetchUserDocuments();
     }, [idPeserta]);
+
+    useEffect(() => {
+        const fetchRequiredDocuments = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/dokumen/slug/${slug}`, {
+                    method: 'GET',
+                    headers: getHeaders(token),
+                });
+
+                const data = await response.json();
+                if (data.responseCode === '000') {
+                    setRequiredDocuments(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching required documents:', error);
+            }
+        };
+
+        fetchRequiredDocuments();
+    }, [slug]);
 
     const handleApply = () => {
         setIsDialogOpen(true);
@@ -226,6 +241,11 @@ const DetailKarir = () => {
         if (!idPeserta) return;
     
         const file = data[fieldName][0];
+        if (!(file instanceof File)) {
+            console.error('File is not of type File');
+            return;
+        }
+    
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = async () => {
@@ -240,7 +260,7 @@ const DetailKarir = () => {
             };
     
             try {
-                const response = await fetch(endpoint.replace('45', idPeserta), {
+                const response = await fetch(endpoint.replace('{idPeserta}', idPeserta), {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -276,12 +296,36 @@ const DetailKarir = () => {
     const handleApplyNow = async () => {
         const token = localStorage.getItem('token');
         if (!token || !idPeserta) return;
-    
+
+        let allDocumentsUploaded = true;
+
+        requiredDocuments.forEach(doc => {
+            const docName = doc[3].toLowerCase().replace(/\s+/g, '-');
+            const inputField = document.querySelector(`input[name="${docName}"]`);
+            const errorMessage = document.querySelector(`#error-${docName}`);
+
+            if (inputField !== null) {
+                allDocumentsUploaded = false;
+                inputField.classList.add('border-red-500');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Please upload this document.';
+                }
+            } else {
+                if (errorMessage) {
+                    errorMessage.textContent = '';
+                }
+            }
+        });
+
+        if (!allDocumentsUploaded) {
+            return;
+        }
+
         const payload = {
             id_peserta: idPeserta,
             id_user_documents: idUserDocuments
         };
-    
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/programmer-senior/apply`, {
                 method: 'POST',
@@ -292,7 +336,7 @@ const DetailKarir = () => {
                 },
                 body: JSON.stringify(payload),
             });
-    
+
             const responseData = await response.json();
             if (responseData.responseCode === '000') {
                 toast.success("Application submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
@@ -313,7 +357,7 @@ const DetailKarir = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans relative">
+        <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 font-sans relative">
             <MenuBar />
             <div className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
                 <div className="bg-white relative z-10">
@@ -348,7 +392,12 @@ const DetailKarir = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="w-11/12 lg:w-4/5 mt-6 mb-10">
+                            <motion.div 
+                                className="w-11/12 lg:w-4/5 mt-6 mb-10"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
                                 <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                     <div className="p-4">
                                         <h1 className="text-darkBlue font-semibold text-3xl mt-8 mb-4 md:mt-6 md:mb-6 text-center">
@@ -415,122 +464,26 @@ const DetailKarir = () => {
                                                         {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
                                                     </button>
                                                 </DialogTrigger>
-                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw]">
-                                                    <DialogTitle>Submit Berkas Lamaran</DialogTitle>
-                                                    <DialogDescription>
+                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6">
+                                                    <DialogTitle className="text-lg md:text-xl font-semibold">Submit Berkas Lamaran</DialogTitle>
+                                                    <DialogDescription className="text-sm md:text-base mt-2">
                                                         Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.
                                                     </DialogDescription>
-                                                    <div className="flex flex-col gap-4">
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-ktp', 'file'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload KTP</label>
-                                                                <input type="file" {...register('file')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-pasfoto', 'photo'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Pasfoto</label>
-                                                                <input type="file" {...register('photo')} accept="image/*" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-skck', 'skck'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload SKCK</label>
-                                                                <input type="file" {...register('skck')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-toefl', 'toefl'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload TOEFL</label>
-                                                                <input type="file" {...register('toefl')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-kk', 'kk'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload KK</label>
-                                                                <input type="file" {...register('kk')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-suratsehat', 'suratsehat'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Surat Sehat</label>
-                                                                <input type="file" {...register('suratsehat')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-cv', 'cv'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload CV</label>
-                                                                <input type="file" {...register('cv')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-suratlamaran', 'suratlamaran'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Surat Lamaran</label>
-                                                                <input type="file" {...register('suratlamaran')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-suratpernyataan', 'suratpernyataan'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Surat Pernyataan</label>
-                                                                <input type="file" {...register('suratpernyataan')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-ijazah', 'ijazah'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Ijazah</label>
-                                                                <input type="file" {...register('ijazah')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-transkrip', 'transkrip'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Transkrip</label>
-                                                                <input type="file" {...register('transkrip')} accept="application/pdf" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                        <form onSubmit={handleSubmit((data) => handleFileSubmit(data, 'http://localhost:8080/api/profile/45/submit-fotofullbadan', 'fotofullbadan'))} className="flex items-center">
-                                                            <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm">
-                                                                <label className="block text-sm font-medium text-gray-700">Upload Foto Full Badan</label>
-                                                                <input type="file" {...register('fotofullbadan')} accept="image/*" required className="mt-1 block w-full" />
-                                                            </div>
-                                                            <DialogFooter className="ml-4">
-                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg">Simpan</button>
-                                                            </DialogFooter>
-                                                        </form>
+                                                    <div className="flex flex-col gap-4 mt-4">
+                                                        {requiredDocuments.map((doc) => (
+                                                            <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-')))} className="flex flex-col md:flex-row items-center">
+                                                                <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm w-full">
+                                                                    <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
+                                                                    <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full" />
+                                                                    <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
+                                                                </div>
+                                                                <DialogFooter className="mt-4 md:mt-0 md:ml-4 w-full md:w-auto">
+                                                                    <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg w-full md:w-auto">Simpan</button>
+                                                                </DialogFooter>
+                                                            </form>
+                                                        ))}
                                                         <div className="flex justify-end mt-4">
-                                                            <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg">Apply Now</button>
+                                                            <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg w-full md:w-auto">Apply Now</button>
                                                         </div>
                                                     </div>
                                                 </DialogContent>
@@ -557,15 +510,24 @@ const DetailKarir = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
 
                             {/* Tahapan Seleksi Section */}
-                            <div className="w-11/12 lg:w-4/5 mt-6 mb-10">
+                            <motion.div 
+                                className="w-11/12 lg:w-4/5 mt-6 mb-10"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
                                 <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4">
                                     <h2 className="text-darkBlue font-bold text-xl mb-4">Tahapan Seleksi</h2>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                         {tahapan.map((step) => (
-                                            <div key={step.idTahapan} className="flex flex-col items-center bg-blue-100 p-4 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105">
+                                            <motion.div 
+                                                key={step.idTahapan} 
+                                                className="flex flex-col items-center bg-blue-100 p-4 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105"
+                                                whileHover={{ scale: 1.1 }}
+                                            >
                                                 <div className={`bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full mb-2 ${step.isActive ? 'animate-bounce' : ''}`}>
                                                     {tahapan.findIndex(t => t.idTahapan === step.idTahapan) + 1}
                                                 </div>
@@ -575,11 +537,11 @@ const DetailKarir = () => {
                                                 <p className="text-center text-xs text-gray-600 mt-2">
                                                     {step.deskripsi}
                                                 </p>
-                                            </div>
+                                            </motion.div>
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         </>
                     )}
                 </div>
