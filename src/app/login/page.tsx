@@ -237,11 +237,6 @@ const Login = () => {
       return;
     }
 
-    if (!forgotPasswordRecaptchaToken) {
-      toast.error("Please complete the reCAPTCHA.");
-      return;
-    }
-
     setForgotPasswordLoading(true);
 
     try {
@@ -251,7 +246,7 @@ const Login = () => {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ no_identitas: forgotPasswordIdentitas, email: forgotPasswordEmail, recaptchaToken: forgotPasswordRecaptchaToken }),
+        body: JSON.stringify({ no_identitas: forgotPasswordIdentitas, email: forgotPasswordEmail }),
       });
 
       if (!response.ok) {
