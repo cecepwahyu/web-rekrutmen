@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/input-otp";
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
-import Image from "next/image";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 
 // Define the form schema using zod
@@ -26,6 +26,7 @@ const Otp = () => {
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
+  const [error, setError] = useState<string | null>(null);
 
   // Hardcoded payload for now
   const payload = {
@@ -120,9 +121,10 @@ const Otp = () => {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify({ otp: data.otp }),
-        }
-      );
+          body: JSON.stringify({
+            otp: data.otp,
+          }),
+        });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -132,8 +134,6 @@ const Otp = () => {
       const result = await response.json();
 
       if (result.responseCode === "000") {
-        localStorage.setItem("token", result.data.token);
-
         toast.success("OTP successful! Redirecting...", {
           style: {
             backgroundColor: "white",
@@ -159,6 +159,16 @@ const Otp = () => {
     }
   };
 
+  const handleOtpClick = async () => {
+    const data = form.getValues();
+    if (!data.otp) {
+      setError("OTP code is required.");
+      return;
+    }
+    setError(null);
+    await handleOtp(data);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 font-sans relative">
       <MenuBar />
@@ -179,43 +189,40 @@ const Otp = () => {
         <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10">
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md border-t-8 border-darkBlue">
             <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">
-              OTP Verification
+              Verifikasi OTP
             </h2>
             <p className="text-center mb-4 text-gray-700">
-              One Time Password (OTP) has been sent to your email address:{" "}
-              <b>{payload.email}</b>
+              One Time Password (OTP) telah dikirimkan ke alamat email Anda
             </p>
 
-            <p className="text-center mb-4 text-gray-700">Enter the OTP to verify it.</p>
+            <p className="text-center mb-4 text-gray-700">Masukkan kode OTP untuk verifikasi.</p>
 
-            <form onSubmit={form.handleSubmit(handleOtp)} className="space-y-4">
+            <form className="space-y-4" onSubmit={form.handleSubmit(handleOtp)}>
               <div className="flex items-center justify-center">
-                <InputOTP maxLength={6}>
-                  <div className="flex space-x-2">
-                    <InputOTPGroup>
-                      {Array.from({ length: 6 }).map((_, index) => (
-                        <InputOTPSlot
-                          key={index}
-                          index={index}
-                          className="w-12 h-12 text-center text-darkBlue border border-gray-300 rounded-md focus:ring-2 focus:ring-darkBlue focus:border-darkBlue"
-                        />
-                      ))}
-                    </InputOTPGroup>
-                  </div>
-                </InputOTP>
+                <input
+                  type="text"
+                  maxLength={6}
+                  className="w-48 h-12 text-center text-darkBlue border border-gray-300 rounded-md focus:ring-2 focus:ring-darkBlue focus:border-darkBlue"
+                  {...form.register("otp")}
+                />
               </div>
-
+              {error && <p className="text-red-500 text-center">{error}</p>}
               <button
-                type="submit"
-                className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
-                disabled={loading}
+                type="button"
+                onClick={handleOtpClick}
+                className={`w-full py-3 mt-4 text-white font-bold rounded-md transition duration-300 ${
+                  isDisabled
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-darkBlue hover:bg-blue-700"
+                }`}
+                disabled={isDisabled}
               >
                 {loading ? "Verifying OTP..." : "Verify OTP"}
               </button>
             </form>
 
             <div className="text-center text-gray-700 mt-4">
-              Didn&apos;t receive OTP Code?{" "}
+              Belum menerima OTP?{" "}
               <button
                 onClick={handleResendClick}
                 className={`font-bold ${
@@ -225,7 +232,7 @@ const Otp = () => {
                 }`}
                 disabled={isDisabled}
               >
-                Resend OTP {isDisabled && `(${timer}s)`}
+                Kirim ulang {isDisabled && `(${timer}s)`}
               </button>
             </div>
           </div>
