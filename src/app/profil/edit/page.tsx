@@ -4,7 +4,7 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faTag, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../../components/FooterCopyright";
 import FooterSection from "../../../components/FooterSection";
@@ -110,6 +110,11 @@ const EditProfil = () => {
         emailKontak: "",
         alamatKontak: "",
     });
+
+    const [pendidikanList, setPendidikanList] = useState([pendidikanData]);
+    const [pengalamanList, setPengalamanList] = useState([pengalamanData]);
+    const [organisasiList, setOrganisasiList] = useState([organisasiData]);
+    const [kontakList, setKontakList] = useState([kontakData]);
 
     const router = useRouter();
 
@@ -408,33 +413,53 @@ const EditProfil = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleAddEntry = (type: string) => {
+        if (type === "pendidikan") {
+            setPendidikanList([...pendidikanList, pendidikanData]);
+        } else if (type === "pengalaman") {
+            setPengalamanList([...pengalamanList, pengalamanData]);
+        } else if (type === "organisasi") {
+            setOrganisasiList([...organisasiList, organisasiData]);
+        } else if (type === "kontak") {
+            setKontakList([...kontakList, kontakData]);
+        }
+    };
+
+    const handleRemoveEntry = (type: string, index: number) => {
+        if (type === "pendidikan") {
+            setPendidikanList(pendidikanList.filter((_, i) => i !== index));
+        } else if (type === "pengalaman") {
+            setPengalamanList(pengalamanList.filter((_, i) => i !== index));
+        } else if (type === "organisasi") {
+            setOrganisasiList(organisasiList.filter((_, i) => i !== index));
+        } else if (type === "kontak") {
+            setKontakList(kontakList.filter((_, i) => i !== index));
+        }
+    };
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number, type: string) => {
         const { name, value } = e.target;
-        if (name in profileData) {
+        if (type === "profile") {
             setProfileData((prevData) => ({
                 ...prevData,
                 [name]: value,
             }));
-        } else if (name in pendidikanData) {
-            setPendidikanData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        } else if (name in pengalamanData) {
-            setPengalamanData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        } else if (name in organisasiData) {
-            setOrganisasiData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        } else if (name in kontakData) {
-            setKontakData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
+        } else if (type === "pendidikan") {
+            const updatedList = [...pendidikanList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setPendidikanList(updatedList);
+        } else if (type === "pengalaman") {
+            const updatedList = [...pengalamanList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setPengalamanList(updatedList);
+        } else if (type === "organisasi") {
+            const updatedList = [...organisasiList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setOrganisasiList(updatedList);
+        } else if (type === "kontak") {
+            const updatedList = [...kontakList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setKontakList(updatedList);
         }
     };
 
@@ -474,43 +499,16 @@ const EditProfil = () => {
             status_kawin: profileData.statusKawin, // Directly use the selected value
             id_session: "29348293923", // Example session ID
             flg_status: "2", // Example flag status
-            kontak: [
-            {
-                nama_kontak: kontakData.namaKontak,
-                hub_kontak: kontakData.hubKontak,
-                telp_kontak: kontakData.telpKontak,
-                email_kontak: kontakData.emailKontak,
-                alamat_kontak: kontakData.alamatKontak,
-            },
-            ],
-            pesertaPendidikan: [
-            {
-                id_jenjang: pendidikanData.idJenjang,
-                nama_institusi: pendidikanData.namaInstitusi,
-                jurusan: pendidikanData.jurusan,
-                thn_masuk: pendidikanData.thnMasuk,
-                thn_lulus: pendidikanData.thnLulus,
-                nilai: pendidikanData.nilai,
-                gelar: pendidikanData.gelar,
-                achievements: pendidikanData.achievements,
-            },
-            ],
-            pesertaOrganisasi: [
-            {
-                nama_organisasi: organisasiData.namaOrganisasi,
-                posisi_organisasi: organisasiData.posisiOrganisasi,
-                periode: `${organisasiData.periodeStart} to ${organisasiData.periodeEnd}`,
-                deskripsi_kerja: organisasiData.deskripsiKerja,
-            },
-            ],
-            pesertaPengalaman: [
-            {
-                nama_instansi: pengalamanData.namaInstansi,
-                posisi_kerja: pengalamanData.posisiKerja,
-                periode_kerja: `${pengalamanData.periodeKerjaStart} to ${pengalamanData.periodeKerjaEnd}`,
-                deskripsi_kerja: pengalamanData.deskripsiKerja,
-            },
-            ],
+            kontak: kontakList,
+            pesertaPendidikan: pendidikanList,
+            pesertaOrganisasi: organisasiList.map(org => ({
+                ...org,
+                periode: `${org.periodeStart} to ${org.periodeEnd}`
+            })),
+            pesertaPengalaman: pengalamanList.map(exp => ({
+                ...exp,
+                periode_kerja: `${exp.periodeKerjaStart} to ${exp.periodeKerjaEnd}`
+            })),
         };
 
         try {
@@ -579,7 +577,7 @@ const EditProfil = () => {
                                         id="nama"
                                         name="nama"
                                         value={profileData.nama || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -593,7 +591,7 @@ const EditProfil = () => {
                                         id="tempatLahir"
                                         name="tempatLahir"
                                         value={profileData.tempatLahir || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -607,7 +605,7 @@ const EditProfil = () => {
                                         id="tglLahir"
                                         name="tglLahir"
                                         value={profileData.tglLahir || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -620,7 +618,7 @@ const EditProfil = () => {
                                         id="jnsKelamin"
                                         name="jnsKelamin"
                                         value={profileData.jnsKelamin || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     >
                                         <option value="">Pilih Jenis Kelamin</option>
@@ -637,7 +635,7 @@ const EditProfil = () => {
                                         id="agama"
                                         name="agama"
                                         value={profileData.agama || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     >
                                         <option value="">Pilih Agama</option>
@@ -659,7 +657,7 @@ const EditProfil = () => {
                                         id="telp"
                                         name="telp"
                                         value={profileData.telp || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -672,7 +670,7 @@ const EditProfil = () => {
                                         id="pendidikanTerakhir"
                                         name="pendidikanTerakhir"
                                         value={profileData.pendidikanTerakhir || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     >
                                         <option value="">Pilih Pendidikan Terakhir</option>
@@ -690,7 +688,7 @@ const EditProfil = () => {
                                         id="statusKawin"
                                         name="statusKawin"
                                         value={profileData.statusKawin || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     >
                                         <option value="">Pilih Status Kawin</option>
@@ -709,7 +707,7 @@ const EditProfil = () => {
                                         id="alamatIdentitas"
                                         name="alamatIdentitas"
                                         value={profileData.alamatIdentitas || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -723,7 +721,7 @@ const EditProfil = () => {
                                         id="provinsiIdentitas"
                                         name="provinsiIdentitas"
                                         value={profileData.provinsiIdentitas || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -737,7 +735,7 @@ const EditProfil = () => {
                                         id="kotaIdentitas"
                                         name="kotaIdentitas"
                                         value={profileData.kotaIdentitas || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -751,7 +749,7 @@ const EditProfil = () => {
                                         id="kecamatanIdentitas"
                                         name="kecamatanIdentitas"
                                         value={profileData.kecamatanIdentitas || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -765,7 +763,7 @@ const EditProfil = () => {
                                         id="desaIdentitas"
                                         name="desaIdentitas"
                                         value={profileData.desaIdentitas || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -779,7 +777,7 @@ const EditProfil = () => {
                                         id="alamatDomisili"
                                         name="alamatDomisili"
                                         value={profileData.alamatDomisili || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -793,7 +791,7 @@ const EditProfil = () => {
                                         id="provinsiDomisili"
                                         name="provinsiDomisili"
                                         value={profileData.provinsiDomisili || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -807,7 +805,7 @@ const EditProfil = () => {
                                         id="kotaDomisili"
                                         name="kotaDomisili"
                                         value={profileData.kotaDomisili || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -821,7 +819,7 @@ const EditProfil = () => {
                                         id="kecamatanDomisili"
                                         name="kecamatanDomisili"
                                         value={profileData.kecamatanDomisili || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -835,7 +833,7 @@ const EditProfil = () => {
                                         id="desaDomisili"
                                         name="desaDomisili"
                                         value={profileData.desaDomisili || ""}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, 0, "profile")}
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                     />
                                 </div>
@@ -844,150 +842,168 @@ const EditProfil = () => {
                             <div className="flex flex-wrap mt-10 w-full">
                                 <div className="w-full md:w-1/2 px-4">
                                     <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4">
+                                        <div className="mb-4 flex justify-between items-center">
                                             <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanKerja">
                                                 PENGALAMAN KERJA
                                             </label>
+                                            <button onClick={() => handleAddEntry("pengalaman")} className="text-blue-500">
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
                                         </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstansi">
-                                                Nama Perusahaan / Instansi
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="namaInstansi"
-                                                name="namaInstansi"
-                                                value={pengalamanData.namaInstansi || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                        {pengalamanList.map((pengalaman, index) => (
+                                            <div key={index} className="mb-4 border-b pb-4">
+                                                <div className="flex justify-between items-center">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstansi">
+                                                        Nama Perusahaan / Instansi
+                                                    </label>
+                                                    <button onClick={() => handleRemoveEntry("pengalaman", index)} className="text-red-500">
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    id="namaInstansi"
+                                                    name="namaInstansi"
+                                                    value={pengalaman.namaInstansi || ""}
+                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
+                                                        Posisi / Jabatan
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="posisiKerja"
+                                                        name="posisiKerja"
+                                                        value={pengalaman.posisiKerja || ""}
+                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
-                                                Posisi / Jabatan
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="posisiKerja"
-                                                name="posisiKerja"
-                                                value={pengalamanData.posisiKerja || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
+                                                        Tanggal Mulai Bekerja
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id="periodeKerjaStart"
+                                                        name="periodeKerjaStart"
+                                                        value={pengalaman.periodeKerjaStart || ""}
+                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                        className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
+                                                        Tanggal Akhir Bekerja
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id="periodeKerjaEnd"
+                                                        name="periodeKerjaEnd"
+                                                        value={pengalaman.periodeKerjaEnd || ""}
+                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
-                                                Tanggal Mulai Bekerja
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="periodeKerjaStart"
-                                                name="periodeKerjaStart"
-                                                value={pengalamanData.periodeKerjaStart || ""}
-                                                onChange={handleChange}
-                                                className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
-                                                Tanggal Akhir Bekerja
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="periodeKerjaEnd"
-                                                name="periodeKerjaEnd"
-                                                value={pengalamanData.periodeKerjaEnd || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
-                                            />
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                Deskripsi Pekerjaan
-                                            </label>
-                                            <textarea
-                                                id="deskripsiKerja"
-                                                name="deskripsiKerja"
-                                                value={pengalamanData.deskripsiKerja || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
+                                                        Deskripsi Pekerjaan
+                                                    </label>
+                                                    <textarea
+                                                        id="deskripsiKerja"
+                                                        name="deskripsiKerja"
+                                                        value={pengalaman.deskripsiKerja || ""}
+                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
                                     <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4">
+                                        <div className="mb-4 flex justify-between items-center">
                                             <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanOrganisasi">
                                                 PENGALAMAN ORGANISASI
                                             </label>
+                                            <button onClick={() => handleAddEntry("organisasi")} className="text-blue-500">
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
                                         </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="namaOrganisasi">
-                                                Nama Organisasi
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="namaOrganisasi"
-                                                name="namaOrganisasi"
-                                                value={organisasiData.namaOrganisasi || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                        {organisasiList.map((organisasi, index) => (
+                                            <div key={index} className="mb-4 border-b pb-4">
+                                                <div className="flex justify-between items-center">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaOrganisasi">
+                                                        Nama Organisasi
+                                                    </label>
+                                                    <button onClick={() => handleRemoveEntry("organisasi", index)} className="text-red-500">
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    id="namaOrganisasi"
+                                                    name="namaOrganisasi"
+                                                    value={organisasi.namaOrganisasi || ""}
+                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
+                                                        Posisi / Jabatan
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="posisiOrganisasi"
+                                                        name="posisiOrganisasi"
+                                                        value={organisasi.posisiOrganisasi || ""}
+                                                        onChange={(e) => handleChange(e, index, "organisasi")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
-                                                Posisi / Jabatan
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="posisiOrganisasi"
-                                                name="posisiOrganisasi"
-                                                value={organisasiData.posisiOrganisasi || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periode">
+                                                        Tanggal Awal Menjabat
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id="periodeStart"
+                                                        name="periodeStart"
+                                                        value={organisasi.periodeStart || ""}
+                                                        onChange={(e) => handleChange(e, index, "organisasi")}
+                                                        className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periode">
+                                                        Tanggal Akhir Menjabat
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id="periodeEnd"
+                                                        name="periodeEnd"
+                                                        value={organisasi.periodeEnd || ""}
+                                                        onChange={(e) => handleChange(e, index, "organisasi")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="periode">
-                                                Tanggal Awal Menjabat
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="periodeStart"
-                                                name="periodeStart"
-                                                value={organisasiData.periodeStart || ""}
-                                                onChange={handleChange}
-                                                className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="periode">
-                                                Tanggal Akhir Menjabat
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="periodeEnd"
-                                                name="periodeEnd"
-                                                value={organisasiData.periodeEnd || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
-                                            />
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                Deskripsi Kegiatan
-                                            </label>
-                                            <textarea
-                                                id="deskripsiKerja"
-                                                name="deskripsiKerja"
-                                                value={organisasiData.deskripsiKerja || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
+                                                        Deskripsi Kegiatan
+                                                    </label>
+                                                    <textarea
+                                                        id="deskripsiKerja"
+                                                        name="deskripsiKerja"
+                                                        value={organisasi.deskripsiKerja || ""}
+                                                        onChange={(e) => handleChange(e, index, "organisasi")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -995,187 +1011,204 @@ const EditProfil = () => {
                             <div className="flex flex-wrap -mx-4 mt-10 w-full">
                                 <div className="w-full md:w-1/2 px-4">
                                     <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4">
+                                        <div className="mb-4 flex justify-between items-center">
                                             <label className="block text-darkBlue font-bold mb-2" htmlFor="pendidikan">
                                                 PENDIDIKAN
                                             </label>
+                                            <button onClick={() => handleAddEntry("pendidikan")} className="text-blue-500">
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
                                         </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
-                                                Universitas
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="namaInstitusi"
-                                                name="namaInstitusi"
-                                                value={pendidikanData.namaInstitusi || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                        {pendidikanList.map((pendidikan, index) => (
+                                            <div key={index} className="mb-4 border-b pb-4">
+                                                <div className="flex justify-between items-center">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
+                                                        Universitas
+                                                    </label>
+                                                    <button onClick={() => handleRemoveEntry("pendidikan", index)} className="text-red-500">
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    id="namaInstitusi"
+                                                    name="namaInstitusi"
+                                                    value={pendidikan.namaInstitusi || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="jurusan">
+                                                        Jurusan
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="jurusan"
+                                                        name="jurusan"
+                                                        value={pendidikan.jurusan || ""}
+                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="jurusan">
-                                                Jurusan
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="jurusan"
-                                                name="jurusan"
-                                                value={pendidikanData.jurusan || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="thnMasuk">
+                                                        Tahun Masuk
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="thnMasuk"
+                                                        name="thnMasuk"
+                                                        value={pendidikan.thnMasuk || ""}
+                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                        pattern="\d{4}"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="thnMasuk">
-                                                Tahun Masuk
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="thnMasuk"
-                                                name="thnMasuk"
-                                                value={pendidikanData.thnMasuk || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                pattern="\d{4}"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="thnLulus">
+                                                        Tahun Lulus
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="thnLulus"
+                                                        name="thnLulus"
+                                                        value={pendidikan.thnLulus || ""}
+                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="thnLulus">
-                                                Tahun Lulus
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="thnLulus"
-                                                name="thnLulus"
-                                                value={pendidikanData.thnLulus || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="nilai">
+                                                        Nilai
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="nilai"
+                                                        name="nilai"
+                                                        value={pendidikan.nilai || ""}
+                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="nilai">
-                                                Nilai
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="nilai"
-                                                name="nilai"
-                                                value={pendidikanData.nilai || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="gelar">
+                                                        Gelar
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="gelar"
+                                                        name="gelar"
+                                                        value={pendidikan.gelar || ""}
+                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="gelar">
-                                                Gelar
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="gelar"
-                                                name="gelar"
-                                                value={pendidikanData.gelar || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
-
-                                        <div className="mb-8">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="achievements">
-                                                Penghargaan
-                                            </label>
-                                            <textarea
-                                                id="achievements"
-                                                name="achievements"
-                                                value={pendidikanData.achievements || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-8">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="achievements">
+                                                        Penghargaan
+                                                    </label>
+                                                    <textarea
+                                                        id="achievements"
+                                                        name="achievements"
+                                                        value={pendidikan.achievements || ""}
+                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
                                     <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4">
+                                        <div className="mb-4 flex justify-between items-center">
                                             <label className="block text-darkBlue font-bold mb-2" htmlFor="kontakKerabat">
                                                 KONTAK KERABAT
                                             </label>
+                                            <button onClick={() => handleAddEntry("kontak")} className="text-blue-500">
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
                                         </div>
+                                        {kontakList.map((kontak, index) => (
+                                            <div key={index} className="mb-4 border-b pb-4">
+                                                <div className="flex justify-between items-center">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaKontak">
+                                                        Nama Kontak
+                                                    </label>
+                                                    <button onClick={() => handleRemoveEntry("kontak", index)} className="text-red-500">
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    id="namaKontak"
+                                                    name="namaKontak"
+                                                    value={kontak.namaKontak || ""}
+                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
+                                                        Hubungan Kerabat
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="hubKontak"
+                                                        name="hubKontak"
+                                                        value={kontak.hubKontak || ""}
+                                                        onChange={(e) => handleChange(e, index, "kontak")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="namaKontak">
-                                                Nama Kontak
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="namaKontak"
-                                                name="namaKontak"
-                                                value={kontakData.namaKontak || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
+                                                        No Telepon
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="telpKontak"
+                                                        name="telpKontak"
+                                                        value={kontak.telpKontak || ""}
+                                                        onChange={(e) => handleChange(e, index, "kontak")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                        pattern="\d{4}"
+                                                    />
+                                                </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="emailKontak">
+                                                        Email
+                                                    </label>
+                                                    <input
+                                                        type="email"
+                                                        id="emailKontak"
+                                                        name="emailKontak"
+                                                        value={kontak.emailKontak || ""}
+                                                        onChange={(e) => handleChange(e, index, "kontak")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                        pattern="\d{4}"
+                                                    />
+                                                </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
-                                                Hubungan Kerabat
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="hubKontak"
-                                                name="hubKontak"
-                                                value={kontakData.hubKontak || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
-                                                No Telepon
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="telpKontak"
-                                                name="telpKontak"
-                                                value={kontakData.telpKontak || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                pattern="\d{4}"
-                                            />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="emailKontak">
-                                                Email
-                                            </label>
-                                            <input
-                                                type="email"
-                                                id="emailKontak"
-                                                name="emailKontak"
-                                                value={kontakData.emailKontak || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                pattern="\d{4}"
-                                            />
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatKontak">
-                                                Alamat
-                                            </label>
-                                            <textarea
-                                                id="alamatKontak"
-                                                name="alamatKontak"
-                                                value={kontakData.alamatKontak || ""}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
-                                        </div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatKontak">
+                                                        Alamat
+                                                    </label>
+                                                    <textarea
+                                                        id="alamatKontak"
+                                                        name="alamatKontak"
+                                                        value={kontak.alamatKontak || ""}
+                                                        onChange={(e) => handleChange(e, index, "kontak")}
+                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
