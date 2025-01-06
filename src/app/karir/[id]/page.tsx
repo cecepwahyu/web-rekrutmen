@@ -309,6 +309,10 @@ const DetailKarir = () => {
                 inputField.classList.add('border-red-500');
                 if (errorMessage) {
                     errorMessage.textContent = 'Please upload this document.';
+                    setTimeout(() => {
+                        errorMessage.textContent = '';
+                        inputField.classList.remove('border-red-500');
+                    }, 3000);
                 }
             } else {
                 if (errorMessage) {
