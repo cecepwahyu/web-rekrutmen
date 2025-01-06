@@ -229,11 +229,27 @@ const DetailKarir = () => {
         fetchRequiredDocuments();
     }, [slug]);
 
-    const handleApply = () => {
+    const handleApply = async () => {
         setIsDialogOpen(true);
+        const token = localStorage.getItem('token');
+        if (!token) return;
+    
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/dokumen/slug/${slug}`, {
+                method: 'GET',
+                headers: getHeaders(token),
+            });
+    
+            const data = await response.json();
+            if (data.responseCode === '000') {
+                setRequiredDocuments(data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching required documents:', error);
+        }
     };
 
-    const handleFileSubmit = async (data: any, endpoint: string, fieldName: string) => {
+    const handleFileSubmit = async (data: any, endpoint: string, fieldName: string, maxSizeMB: number) => {
         const token = localStorage.getItem('token');
         if (!token) return;
     
@@ -243,6 +259,14 @@ const DetailKarir = () => {
         const file = data[fieldName][0];
         if (!(file instanceof File)) {
             console.error('File is not of type File');
+            return;
+        }
+    
+        if (file.size > maxSizeMB * 1024 * 1024) {
+            const errorMessage = document.querySelector(`#error-${fieldName}`);
+            if (errorMessage) {
+                errorMessage.textContent = `Maximum size file is ${maxSizeMB} MB`;
+            }
             return;
         }
     
@@ -475,7 +499,7 @@ const DetailKarir = () => {
                                                     </DialogDescription>
                                                     <div className="flex flex-col gap-4 mt-4">
                                                         {requiredDocuments.map((doc) => (
-                                                            <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-')))} className="flex flex-col md:flex-row items-center">
+                                                            <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center">
                                                                 <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm w-full">
                                                                     <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
                                                                     <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full" />
