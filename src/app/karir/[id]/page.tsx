@@ -26,6 +26,9 @@ import {
   } from "@/components/ui/dialog"
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 
 interface Article {
     judulLowongan: string;
@@ -88,6 +91,13 @@ const DetailKarir = () => {
     const [idPeserta, setIdPeserta] = useState<string | null>(null);
     const [idUserDocuments, setIdUserDocuments] = useState<number[]>([]);
     const [requiredDocuments, setRequiredDocuments] = useState<any[]>([]);
+    const [isAgreementDialogOpen, setIsAgreementDialogOpen] = useState(false);
+    const [agreements, setAgreements] = useState({
+        recruitment: false,
+        dataUsage: false,
+        holdDiploma: false,
+    });
+    const [agreementError, setAgreementError] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -349,13 +359,25 @@ const DetailKarir = () => {
             return;
         }
 
+        setIsAgreementDialogOpen(true);
+    };
+
+    const handleAgreementSubmit = async () => {
+        if (!agreements.recruitment || !agreements.dataUsage || !agreements.holdDiploma) {
+            setAgreementError('Please check all the boxes to proceed.');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token || !idPeserta) return;
+
         const payload = {
             id_peserta: idPeserta,
             id_user_documents: idUserDocuments
         };
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/programmer-senior/apply`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/${slug}/apply`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -580,6 +602,32 @@ const DetailKarir = () => {
 
             <ScrollToTopButton />
             <CariKarirButton />
+            <Dialog open={isAgreementDialogOpen} onOpenChange={setIsAgreementDialogOpen}>
+                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6">
+                    <DialogTitle className="text-lg md:text-xl font-semibold">Agreement</DialogTitle>
+                    <DialogDescription className="text-sm md:text-base mt-2">
+                        Please agree to the following terms to proceed with your application.
+                    </DialogDescription>
+                    <FormGroup>
+                        <FormControlLabel
+                            control={<Checkbox checked={agreements.recruitment} onChange={(e) => setAgreements({ ...agreements, recruitment: e.target.checked })} />}
+                            label="Setuju untuk memberikan data untuk keperluan rekrutmen"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={agreements.dataUsage} onChange={(e) => setAgreements({ ...agreements, dataUsage: e.target.checked })} />}
+                            label="Setuju untuk dapat digunakan untuk keperluan pendataan"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={agreements.holdDiploma} onChange={(e) => setAgreements({ ...agreements, holdDiploma: e.target.checked })} />}
+                            label="Setuju untuk menahan ijazah"
+                        />
+                    </FormGroup>
+                    {agreementError && <p className="text-red-500 text-sm mt-1">{agreementError}</p>}
+                    <DialogFooter className="mt-4">
+                        <button onClick={handleAgreementSubmit} className="bg-darkBlue text-white py-2 px-4 rounded-lg w-full md:w-auto">Apply</button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
