@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import Swal from 'sweetalert2';
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -116,44 +117,49 @@ const AccountVerification = () => {
     setLoading(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/account-verification`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            otp: data.otp,
-          }),
-        });
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        },
+        body: JSON.stringify({
+        otp: data.otp,
+        }),
+      });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
+      const errorText = await response.text();
+      throw new Error(`API error: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
 
       if (result.responseCode === "000") {
-        toast.success("OTP successful! Redirecting...", {
-          style: {
-            backgroundColor: "white",
-            color: "#4CAF50",
-            borderRadius: "8px",
-            padding: "10px 20px",
-          },
-        });
+      toast.success("OTP successful! Redirecting...", {
+        style: {
+        backgroundColor: "white",
+        color: "#4CAF50",
+        borderRadius: "8px",
+        padding: "10px 20px",
+        },
+      });
 
-        setTimeout(() => {
-          window.location.href = "/karir";
-        }, 2000);
+      setTimeout(() => {
+        window.location.href = "/karir";
+      }, 2000);
       } else {
-        toast.error(
-          result.responseMessage || "OTP Verification failed. Please try again."
-        );
+      toast.error(
+        result.responseMessage || "OTP Verification failed. Please try again."
+      );
       }
     } catch (error) {
-      console.error("Error during OTP Verification:", error);
-      toast.error("An error occurred. Please try again later.");
+      Swal.fire({
+        title: "Error",
+        text: "Kode OTP invalid.",
+        icon: "error",
+        timer: 3000,
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }
