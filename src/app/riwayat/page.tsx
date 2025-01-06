@@ -6,6 +6,8 @@ import Image from "next/image";
 import FooterCopyright from "../../components/FooterCopyright";
 import MenuBar from "../../../components/MenuBar";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
+import { Skeleton } from "@/components/ui/skeleton"
+import { jsPDF } from "jspdf";
 
 interface Tahapan {
     idTahapan: number;
@@ -29,6 +31,7 @@ const Riwayat = () => {
   });
   const [announcementContent, setAnnouncementContent] = useState("Pesan tidak ditemukan");
   const [currentSortOrder, setCurrentSortOrder] = useState(0);
+  const [showRegistrationCard, setShowRegistrationCard] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -53,8 +56,8 @@ const Riwayat = () => {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
-          method: 'POST',
+        const response = await fetch(`http://localhost:8080/api/profile/peserta-info/45`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -63,24 +66,12 @@ const Riwayat = () => {
         });
         const result = await response.json();
         if (result.responseCode === '000') {
-          const idPeserta = result.data.idPeserta;
-          const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/peserta-info/${idPeserta}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'Authorization': `Bearer ${token}`
-            }
+          setApplicantData({
+            nama: result.data.nama || "Tidak ada lamaran",
+            nomorPeserta: result.data.kodeLowongan || "Tidak ada lamaran",
+            posisi: result.data.judulLowongan || "Tidak ada lamaran",
+            idLowongan: result.data.idLowongan || null,
           });
-          const profileData = await profileResponse.json();
-          if (profileData.responseCode === '000') {
-            setApplicantData({
-              nama: profileData.data.nama || "Tidak ada lamaran",
-              nomorPeserta: profileData.data.kodeLowongan || "Tidak ada lamaran",
-              posisi: profileData.data.judulLowongan || "Tidak ada lamaran",
-              idLowongan: profileData.data.idLowongan || null,
-            });
-          }
         }
       } catch (error) {
         console.error("Error fetching applicant data:", error);
@@ -200,6 +191,82 @@ const Riwayat = () => {
     }
   }, [applicantData.idLowongan]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleShowRegistrationCard = () => {
+    setShowRegistrationCard(true);
+  };
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF("portrait", "mm", "a4");
+  
+    // Load and add the logo image
+    const logoPath = "/images/Logo_Color.png"; // Path to your logo
+    const logoWidth = 60; // Adjust logo width
+    const logoHeight = 20; // Adjust logo height
+  
+    doc.addImage(logoPath, "PNG", 140, 10, logoWidth, logoHeight); // Position the logo at the top-right corner
+  
+    // Add the title and subtitle (aligned left)
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Kartu Peserta Tes", 20, 20); // Title aligned left
+    doc.setFontSize(14);
+    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", 20, 30); // Subtitle aligned left
+  
+    // Draw a horizontal line
+    doc.setLineWidth(0.5);
+    doc.line(10, 40, 200, 40);
+  
+    // Add the applicant's information with consistent spacing
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    const textX = 20;
+    const textYStart = 60;
+    const textYIncrement = 10;
+    doc.text(`Nama       : ${applicantData.nama || "....................."}`, textX, textYStart);
+    doc.text(`Posisi     : ${applicantData.posisi || "....................."}`, textX, textYStart + textYIncrement);
+    doc.text(`Nomer Test : ${applicantData.nomorPeserta || "....................."}`, textX, textYStart + 2 * textYIncrement);
+  
+    // Add a rectangle for the picture with size 4x6 and text "4 x 6" in the middle
+    const rectX = 140;
+    const rectY = textYStart;
+    const rectWidth = 40; // 4 cm
+    const rectHeight = 60; // 6 cm
+    doc.rect(rectX, rectY, rectWidth, rectHeight);
+    doc.setFontSize(10);
+    doc.text("4 x 6", rectX + rectWidth / 2, rectY + rectHeight / 2, { align: "center" });
+  
+    // Add the signature section
+    const signatureYStart = 140; // Adjusted position to avoid conflict with the profile 4x6
+    doc.setFont("helvetica", "bold");
+    doc.text("Tanda Tangan Peserta", 40, signatureYStart);
+    doc.text("Panitia", 140, signatureYStart);
+  
+    // Draw signature boxes
+    doc.setLineWidth(0.3);
+    doc.rect(30, signatureYStart + 5, 60, 30); // Box for participant signature
+    doc.rect(120, signatureYStart + 5, 60, 30); // Box for committee signature
+  
+    // Add a table with 6 columns labeled I, II, III, IV, V, VI
+    const tableStartY = 190;
+    const columnWidth = 25;
+    const tableWidth = columnWidth * 6;
+    const tableStartX = (doc.internal.pageSize.getWidth() - tableWidth) / 2; // Center the table
+    const columns = ["I", "II", "III", "IV", "V", "VI"];
+    columns.forEach((col, index) => {
+      const x = tableStartX + index * columnWidth;
+      doc.text(col, x + columnWidth / 2, tableStartY, { align: "center" });
+      doc.rect(x, tableStartY + 5, columnWidth, 20); // Draw the cell
+    });
+  
+    // Save the PDF
+    doc.save("Kartu_Peserta_Tes.pdf");
+  };
+    
+
   const passedSteps = Array.from({ length: currentSortOrder }, (_, i) => i + 1);
 
   if (!isAuthenticated) {
@@ -237,9 +304,9 @@ const Riwayat = () => {
               {/* Rectangle Container */}
               <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mb-10">
                 <div className="flex flex-col sm:flex-row sm:justify-between text-sm sm:text-base">
-                  <p><span className="font-semibold">Nama:</span> {applicantData.nama}</p>
-                  <p><span className="font-semibold">Nomor Peserta:</span> {applicantData.nomorPeserta}</p>
-                  <p><span className="font-semibold">Posisi Dilamar:</span> {applicantData.posisi}</p>
+                  <div><span className="font-semibold">Nama:</span> {isLoading ? <Skeleton className="w-24 h-4" /> : applicantData.nama}</div>
+                  <div><span className="font-semibold">Nomor Peserta:</span> {isLoading ? <Skeleton className="w-24 h-4" /> : applicantData.nomorPeserta}</div>
+                  <div><span className="font-semibold">Posisi Dilamar:</span> {isLoading ? <Skeleton className="w-24 h-4" /> : applicantData.posisi}</div>
                 </div>
               </div>
 
@@ -271,8 +338,19 @@ const Riwayat = () => {
                   <p className="font-semibold text-darkBlue text-lg mb-4">Informasi Test</p>
 
                   {/* Details */}
-                  <div dangerouslySetInnerHTML={{ __html: announcementContent }} />
+                  <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent }} />
                 </div>
+              </div>
+              
+
+              {/* Download PDF Section */}
+              <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mb-10 flex flex-col items-center">
+                <button
+                  onClick={handleDownloadPDF}
+                  className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 mt-4"
+                >
+                  Download Kartu Peserta
+                </button>
               </div>
             </>
           )}
