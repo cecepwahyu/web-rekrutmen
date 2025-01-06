@@ -43,6 +43,8 @@ const generateMathCaptcha = () => {
 };
 
 const createMathCaptchaImage = (question: string) => {
+  if (typeof window === 'undefined') return null; // Ensure this runs only in the browser
+
   const canvas = document.createElement("canvas");
   canvas.width = 200;
   canvas.height = 70;
@@ -272,6 +274,9 @@ const Login = () => {
       showDialog("Password reset link sent! Please check your email.");
       setIsForgotPasswordOpen(false);
 
+      // Store email in localStorage
+      localStorage.setItem("forgotPasswordEmail", forgotPasswordEmail);
+
       // Redirect to OTP page
       setTimeout(() => {
         router.push("/otp");
@@ -369,7 +374,7 @@ const Login = () => {
                     Regenerate CAPTCHA
                   </button>
                   <Input
-                    placeholder="Masukkan hasil captcha"
+                    placeholder="Captcha (Jawab soal di atas)"
                     value={captchaInput}
                     onChange={(e) => setCaptchaInput(e.target.value)}
                     className="transition-transform duration-300 focus:scale-105"
@@ -391,7 +396,7 @@ const Login = () => {
             </Form>
 
             <div className="text-center text-gray-700 mt-4">
-              Do not have an account?{" "}
+              Anda belum memiliki akun?{" "}
               <a href="/register" className="text-blue-500 hover:underline">
                 Register
               </a>
