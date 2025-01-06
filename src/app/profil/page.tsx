@@ -14,6 +14,7 @@ import { FaUser, FaEnvelope, FaIdCard, FaIdBadge, FaRegCheckSquare, FaMedal, FaC
 import Image from 'next/image';
 import type { StaticImageData } from 'next/image';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 const dummyProfilePic: StaticImageData = require('../../../public/images/dummyProfilePic.jpg');
 
@@ -39,6 +40,8 @@ interface ProfileData {
     pendidikanTerakhir: string;
     statusKawin: string;
     profilePicture?: string; // Add profilePicture field
+    is_final?: boolean; // Add is_final field
+    isFinal?: boolean; // Add isFinal field
 }
 
 interface PengalamanData {
@@ -146,6 +149,8 @@ const Profile = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog
     const [newProfilePicture, setNewProfilePicture] = useState<string | null>(null); // State for new profile picture
+    const [isFinal, setIsFinal] = useState(false); // State for is_final
+    const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // State for AlertDialog
     const router = useRouter(); // Initialize useRouter
 
     const handleChangeProfilePicture = () => {
@@ -205,6 +210,47 @@ const Profile = () => {
         }
     };
 
+    const handleFinalisasiDataClick = async () => {
+        setIsAlertDialogOpen(true); // Open AlertDialog
+    };
+
+    const handleConfirmFinalisasi = async () => {
+        const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found in localStorage");
+                return;
+            }
+
+            const id = await getIdFromToken(token);
+            if (!id) {
+                console.error("Invalid token");
+                return;
+            }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/profile/${id}/set-is-final`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                setIsFinal(true);
+                alert("Data berhasil difinalisasi");
+            } else {
+                console.error("Error finalizing data:", data.responseMessage);
+            }
+        } catch (error) {
+            console.error("Error finalizing data:", error);
+        } finally {
+            setIsAlertDialogOpen(false); // Close AlertDialog
+        }
+    };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const token = localStorage.getItem("token");
@@ -248,6 +294,7 @@ const Profile = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     setProfileData(data.data);
+                    setIsFinal(data.data.isFinal); // Set isFinal state
                     if (data.data.profilePicture) {
                         setProfilePicture(data.data.profilePicture);
                     }
@@ -501,6 +548,27 @@ const Profile = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+                <AlertDialogTrigger asChild>
+                    <button style={{ display: 'none' }}></button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Finalisasi Data</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah Anda yakin ingin memfinalisasi data? Tindakan ini tidak dapat dibatalkan.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>
+                            Batal
+                        </AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmFinalisasi}>
+                            Ya, Finalisasi
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
             <MenuBar />
             <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
                 <div className="bg-white relative z-10">
@@ -745,8 +813,10 @@ const Profile = () => {
                             </div>
 
                             <button 
-                                onClick={handleUpdateDataClick} // Update onClick handler
-                                className="mt-4 bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400">
+                                onClick={handleUpdateDataClick} 
+                                className={`mt-4 py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${isFinal ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-400'}`}
+                                disabled={isFinal}
+                            >
                                 Update Data
                             </button>
                         </div>
