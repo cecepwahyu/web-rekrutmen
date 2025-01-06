@@ -14,6 +14,8 @@ import {
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -27,12 +29,34 @@ const Otp = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState<string | null>(null);
+  const [noIdentitas, setNoIdentitas] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Hardcoded payload for now
-  const payload = {
-    no_identitas: "4303110709990015",
-    email: "cefadic468@owube.com",
-  };
+  // Extract query parameters from URL after component mounts
+  useEffect(() => {
+    if (searchParams) {
+      const no_identitas = searchParams.get("no_identitas");
+      const email = searchParams.get("email");
+      setNoIdentitas(no_identitas);
+      setEmail(email);
+    }
+  }, [searchParams]);
+
+  // Extract email from localStorage or sessionStorage
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("forgotPasswordEmail");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      toast.error("Email not found. Please go back to the login/forgot password page.");
+      router.push("/login"); // Redirect to login page if email is not found
+    }
+  }, [router]);
 
   // Initialize the form with react-hook-form and zod resolver
   const form = useForm<OtpFormValues>({
@@ -79,7 +103,7 @@ const Otp = () => {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ no_identitas: noIdentitas, email }),
         }
       );
 
@@ -112,19 +136,30 @@ const Otp = () => {
     }
   };
 
-  const handleOtp = async (data: OtpFormValues) => {
-    setLoading(true);
+  const handlePasswordChange = async () => {
+    if (!email) {
+      toast.error("Email cannot be blank.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/otp-verification`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            otp: data.otp,
-          }),
-        });
+      const response = await fetch("http://localhost:8080/api/auth/update-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          new_password: newPassword,
+          confirm_password: confirmPassword,
+        }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -134,7 +169,7 @@ const Otp = () => {
       const result = await response.json();
 
       if (result.responseCode === "000") {
-        toast.success("OTP successful! Redirecting...", {
+        toast.success("Password updated successfully!", {
           style: {
             backgroundColor: "white",
             color: "#4CAF50",
@@ -146,6 +181,54 @@ const Otp = () => {
         setTimeout(() => {
           window.location.href = "/karir";
         }, 2000);
+      } else {
+        toast.error(result.responseMessage || "Failed to update password. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during password update:", error);
+      toast.error("An error occurred. Please try again later.");
+    }
+  };
+
+  const handleOtp = async (data: OtpFormValues) => {
+    if (!email) {
+      toast.error("Email cannot be blank.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/otp-verification`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            otp: data.otp,
+            no_identitas: noIdentitas,
+            email,
+          }),
+        });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API error: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+
+      if (result.responseCode === "000") {
+        toast.success("OTP successful! Please change your password.", {
+          style: {
+            backgroundColor: "white",
+            color: "#4CAF50",
+            borderRadius: "8px",
+            padding: "10px 20px",
+          },
+        });
+
+        setOpenDialog(true);
       } else {
         toast.error(
           result.responseMessage || "OTP Verification failed. Please try again."
@@ -237,6 +320,31 @@ const Otp = () => {
             </div>
           </div>
         </div>
+
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Change Password</DialogTitle>
+          <DialogContent>
+            <input
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md mt-4"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handlePasswordChange} className="bg-darkBlue text-white">
+              Update Password
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <FooterCopyright />
         <ScrollToTopButton />
