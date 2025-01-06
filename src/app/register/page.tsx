@@ -19,11 +19,13 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 // Define the form schema using zod
 const formSchema = z.object({
   nama: z.string().min(1, "Nama is required."),
-  username: z.string().min(3, "Username must be at least 6 characters."),
+  //username: z.string().min(3, "Username must be at least 6 characters."),
   no_identitas: z.string().min(16, "NIK must be at least 16 characters."),
   email: z.string().email("Please enter a valid email."),
   password: z.string()
@@ -37,6 +39,7 @@ type RegisterFormValues = z.infer<typeof formSchema>;
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Add state for showing password
 
   // Add a state to manage the scroll state
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,7 +65,7 @@ const Register = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       nama: "",
-      username: "",
+      //username: "",
       no_identitas: "",
       email: "",
       password: "",
@@ -102,9 +105,10 @@ const Register = () => {
         try {
           const errorJson = JSON.parse(errorText);
           if (errorJson.responseMessage.includes("already exist")) {
-            if (errorJson.data.includes("Username")) {
-              toast.error("Username already registered. Please choose another one.");
-            } else if (errorJson.data.includes("Email")) {
+            // if (errorJson.data.includes("Username")) {
+            //   toast.error("Username already registered. Please choose another one.");
+            // } else 
+            if (errorJson.data.includes("Email")) {
               toast.error("Email already registered. Please use another email.");
             } else {
               toast.error("Register failed. Please try again.");
@@ -183,7 +187,7 @@ const Register = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Nama <span className="text-red-500">*</span>
+                        Nama Lengkap (Sesuai KTP) <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -199,7 +203,7 @@ const Register = () => {
                 />
 
                 {/* Username Field */}
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="username"
                   render={({ field }) => (
@@ -218,7 +222,7 @@ const Register = () => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 {/* No Identitas Field */}
                 <FormField
@@ -275,12 +279,21 @@ const Register = () => {
                         Password <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your password"
-                          type="password"
-                          {...field}
-                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Enter your password"
+                            type={showPassword ? "text" : "password"} // Toggle input type
+                            {...field}
+                            className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                          >
+                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                          </button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
