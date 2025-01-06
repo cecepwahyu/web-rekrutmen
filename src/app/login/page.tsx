@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import Image from 'next/image';
+import Swal from 'sweetalert2';
+import { toast, Toaster } from 'sonner';
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -88,6 +89,27 @@ const handleKeyDown = (e: React.KeyboardEvent, nextFieldId: string) => {
   }
 };
 
+const showDialog = (message: string, isError: boolean = false) => {
+  if (isError) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: message,
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  } else {
+    toast.success(message, {
+      position: "bottom-right",
+      style: {
+        background: "white",
+        color: "green",
+      },
+      duration: 3000,
+    });
+  }
+};
+
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -103,6 +125,8 @@ const Login = () => {
   const [forgotPasswordCaptcha, setForgotPasswordCaptcha] = useState(generateMathCaptcha());
   const [forgotPasswordCaptchaImage, setForgotPasswordCaptchaImage] = useState<string | null>(null);
   const [forgotPasswordCaptchaInput, setForgotPasswordCaptchaInput] = useState("");
+  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -164,7 +188,7 @@ const Login = () => {
 
   const handleLogin = async (data: LoginFormValues) => {
     if (captchaInput !== captcha.answer) {
-      toast.error("Invalid CAPTCHA. Please try again.");
+      showDialog("Invalid CAPTCHA. Please try again.", true);
       return;
     }
 
@@ -181,21 +205,19 @@ const Login = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.responseCode === "401") {
+          throw new Error("Email or password is incorrect");
+        } else {
+          throw new Error("Email or password is incorrect");
+        }
       }
 
       const result = await response.json();
 
       if (result.responseCode === "000") {
         if (!result.data.isActive) {
-          toast.error("Account is inactive! Please verify your account.", {
-            style: {
-              backgroundColor: "white",
-              color: "red",
-              borderRadius: "8px",
-              padding: "10px 20px",
-            },
-          });
+          showDialog("Account is inactive! Please verify your account.", true);
           setLoading(false);
           return;
         }
@@ -203,24 +225,17 @@ const Login = () => {
         const token = result.data.token;
         localStorage.setItem("token", token);
 
-        toast.success("Login successful! Redirecting...", {
-          style: {
-            backgroundColor: "white",
-            color: "#4CAF50",
-            borderRadius: "8px",
-            padding: "10px 20px",
-          },
-        });
+        showDialog("Login successful! Redirecting...");
 
         setTimeout(() => {
           window.location.href = "/karir";
         }, 2000);
       } else {
-        toast.error(result.responseMessage || "Login failed. Please try again.");
+        showDialog(result.responseMessage || "Login failed. Please try again.", true);
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      toast.error("An error occurred. Please try again later.");
+      //console.error("Error during login:", error);
+      showDialog((error as Error).message || "An error occurred. Please try again later.", true);
     } finally {
       setLoading(false);
     }
@@ -228,12 +243,12 @@ const Login = () => {
 
   const handleForgotPassword = async () => {
     if (forgotPasswordCaptchaInput !== forgotPasswordCaptcha.answer) {
-      toast.error("Invalid CAPTCHA. Please try again.");
+      showDialog("Invalid CAPTCHA. Please try again.", true);
       return;
     }
 
     if (!forgotPasswordEmail || !forgotPasswordIdentitas) {
-      toast.error("Please enter your email and identification number.");
+      showDialog("Please enter your email and identification number.", true);
       return;
     }
 
@@ -254,11 +269,16 @@ const Login = () => {
         throw new Error(`API error: ${response.status} - ${errorText}`);
       }
 
-      toast.success("Password reset link sent! Please check your email.");
+      showDialog("Password reset link sent! Please check your email.");
       setIsForgotPasswordOpen(false);
+
+      // Redirect to OTP page
+      setTimeout(() => {
+        router.push("/otp");
+      }, 2000);
     } catch (error) {
       console.error("Error during password reset:", error);
-      toast.error("An error occurred. Please try again later.");
+      showDialog("An error occurred. Please try again later.", true);
     } finally {
       setForgotPasswordLoading(false);
     }
@@ -266,6 +286,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans relative">
+      <Toaster />
       <MenuBar />
       <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 flex flex-col min-h-screen">
         <div className="bg-white flex-grow relative z-10">
@@ -348,7 +369,7 @@ const Login = () => {
                     Regenerate CAPTCHA
                   </button>
                   <Input
-                    placeholder="Enter CAPTCHA"
+                    placeholder="Masukkan hasil captcha"
                     value={captchaInput}
                     onChange={(e) => setCaptchaInput(e.target.value)}
                     className="transition-transform duration-300 focus:scale-105"
@@ -425,6 +446,18 @@ const Login = () => {
               {forgotPasswordLoading ? "Sending..." : "Send Reset Link"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="font-normal">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Notification</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 flex items-center">
+            {dialogMessage && (
+              <span>{dialogMessage}</span>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
