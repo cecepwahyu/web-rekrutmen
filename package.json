@@ -52,6 +52,7 @@
     "react-lottie": "^1.2.10",
     "react-share": "^5.1.1",
     "react-slick": "^0.30.2",
+    "react-tabs": "^6.1.0",
     "react-tooltip": "^5.28.0",
     "slick-carousel": "^1.8.1",
     "sonner": "^1.7.1",
