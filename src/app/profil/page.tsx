@@ -20,7 +20,6 @@ const dummyProfilePic: StaticImageData = require('../../../public/images/dummyPr
 
 interface ProfileData {
     nama: string;
-    username: string;
     email: string;
     noIdentitas: string;
     tempatLahir: string;
@@ -634,10 +633,6 @@ const Profile = () => {
                                         <p><strong>Nama:</strong> {profileData.nama || '-'}</p>
                                     </div>
                                     <div className="flex items-center mb-2">
-                                        <FaUser className="mr-2 text-darkBlue" />
-                                        <p><strong>Username:</strong> {profileData.username || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
                                         <FaEnvelope className="mr-2 text-darkBlue" />
                                         <p><strong>Email:</strong> {profileData.email || '-'}</p>
                                     </div>
@@ -686,7 +681,7 @@ const Profile = () => {
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Pengalaman Kerja</h2>
                                     {pengalamanData.length > 0 ? (
                                         pengalamanData.map((pengalaman, index) => (
-                                            <div key={index}>
+                                            <div key={index} className="mb-4 border-b border-gray-300 pb-4">
                                                 <div className="flex items-center mb-2">
                                                     <FaBuilding className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Instansi:</strong> {pengalaman.namaInstansi || '-'}</p>
@@ -717,7 +712,7 @@ const Profile = () => {
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Pengalaman Organisasi</h2>
                                     {organisasiData.length > 0 ? (
                                         organisasiData.map((organisasi, index) => (
-                                            <div key={index}>
+                                            <div key={index} className="mb-4 border-b border-gray-300 pb-4">
                                                 <div className="flex items-center mb-2">
                                                     <FaUsers className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Organisasi:</strong> {organisasi.namaOrganisasi || '-'}</p>
@@ -750,7 +745,7 @@ const Profile = () => {
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Riwayat Pendidikan</h2>
                                     {pendidikanData.length > 0 ? (
                                         pendidikanData.map((pendidikan, index) => (
-                                            <div key={index}>
+                                            <div key={index} className="mb-4 border-b border-gray-300 pb-4">
                                                 <div className="flex items-center mb-2">
                                                     <FaBook className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Instansi:</strong> {pendidikan.namaInstitusi || '-'}</p>
@@ -789,7 +784,7 @@ const Profile = () => {
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Kontak Kerabat</h2>
                                     {kontakData.length > 0 ? (
                                         kontakData.map((kontak, index) => (
-                                            <div key={index}>
+                                            <div key={index} className="mb-4 border-b border-gray-300 pb-4">
                                                 <div className="flex items-center mb-2">
                                                     <FaAddressBook className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Kontak:</strong> {kontak.namaKontak}</p>
