@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -40,6 +41,7 @@ type RegisterFormValues = z.infer<typeof formSchema>;
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // Add state for showing password
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({}); // Add state for field errors
 
   // Add a state to manage the scroll state
   const [isScrolled, setIsScrolled] = useState(false);
@@ -84,12 +86,16 @@ const Register = () => {
     // Check if any field is empty
     const emptyFields = Object.entries(data).filter(([key, value]) => !value);
     if (emptyFields.length > 0) {
-      const fieldNames = emptyFields.map(([key]) => key).join(", ");
-      alert(`Please fill in the following fields: ${fieldNames}`);
+      const errors: { [key: string]: string } = {};
+      emptyFields.forEach(([key]) => {
+        errors[key] = "This field is required.";
+      });
+      setFieldErrors(errors);
       return;
     }
 
     setLoading(true);
+    setFieldErrors({}); // Clear previous errors
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`, {
         method: "POST",
@@ -104,18 +110,27 @@ const Register = () => {
         const errorText = await response.text();
         try {
           const errorJson = JSON.parse(errorText);
+          const errors: { [key: string]: string } = {};
           if (errorJson.responseMessage.includes("already exist")) {
-            // if (errorJson.data.includes("Username")) {
-            //   toast.error("Username already registered. Please choose another one.");
-            // } else 
             if (errorJson.data.includes("Email")) {
-              toast.error("Email already registered. Please use another email.");
+              Swal.fire({
+                icon: 'error',
+                title: 'Duplicate Email',
+                text: 'Email already registered. Please use another email.',
+              });
+            } else if (errorJson.data.includes("NIK")) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Duplicate NIK',
+                text: 'NIK already registered. Please use another NIK.',
+              });
             } else {
-              toast.error("Register failed. Please try again.");
+              errors.general = "Register failed. Please try again.";
             }
           } else {
-            toast.error(errorJson.responseMessage || "Register failed. Please try again.");
+            errors.general = errorJson.data || "Register failed. Please try again.";
           }
+          setFieldErrors(errors);
         } catch (e) {
           throw new Error(`API error: ${response.status} - ${errorText}`);
         }
@@ -146,11 +161,11 @@ const Register = () => {
         }, 2000);
       } else {
         // Show error toast for server validation error
-        toast.error(result.responseMessage || "Register failed. Please try again.");
+        setFieldErrors({ general: result.responseMessage || "Register failed. Please try again." });
       }
     } catch (error) {
       console.error("Error during register:", error);
-      toast.error("An error occurred. Please try again later.");
+      setFieldErrors({ general: "An error occurred. Please try again later." });
     } finally {
       setLoading(false);
     }
@@ -198,31 +213,10 @@ const Register = () => {
                         />
                       </FormControl>
                       <FormMessage />
+                      {fieldErrors.nama && <p className="text-red-500">{fieldErrors.nama}</p>}
                     </FormItem>
                   )}
                 />
-
-                {/* Username Field */}
-                {/* <FormField
-                  control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Username <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your username"
-                          type="username"
-                          {...field}
-                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
 
                 {/* No Identitas Field */}
                 <FormField
@@ -243,6 +237,7 @@ const Register = () => {
                         />
                       </FormControl>
                       <FormMessage />
+                      {fieldErrors.no_identitas && <p className="text-red-500">{fieldErrors.no_identitas}</p>}
                     </FormItem>
                   )}
                 />
@@ -265,6 +260,7 @@ const Register = () => {
                         />
                       </FormControl>
                       <FormMessage />
+                      {fieldErrors.email && <p className="text-red-500">{fieldErrors.email}</p>}
                     </FormItem>
                   )}
                 />
@@ -296,6 +292,7 @@ const Register = () => {
                         </div>
                       </FormControl>
                       <FormMessage />
+                      {fieldErrors.password && <p className="text-red-500">{fieldErrors.password}</p>}
                     </FormItem>
                   )}
                 />
@@ -308,6 +305,7 @@ const Register = () => {
                 >
                   {loading ? "Register in progress..." : "Register"}
                 </Button>
+                {fieldErrors.general && <p className="text-red-500 text-center mt-4">{fieldErrors.general}</p>}
               </form>
             </Form>
 
