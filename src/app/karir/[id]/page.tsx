@@ -274,11 +274,7 @@ const DetailKarir = () => {
         const idPeserta = await getIdFromToken(token);
         if (!idPeserta) return;
     
-        console.log('Form data:', data);
-        console.log('Field name:', fieldName);
-        console.log('File data:', data[fieldName]);
-    
-        const file = data[fieldName][0];
+        const file = data[fieldName]?.[0];
         if (!file) {
             console.error('No file selected');
             return;
@@ -564,12 +560,12 @@ const DetailKarir = () => {
                                                         {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
                                                     </button>
                                                 </DialogTrigger>
-                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
                                                     <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">Submit Berkas Lamaran</DialogTitle>
                                                     <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
                                                         Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.
                                                     </DialogDescription>
-                                                    <div className="flex flex-col gap-4 mt-4">
+                                                    <div className="flex flex-col gap-6 mt-4">
                                                         {requiredDocuments.map((doc) => (
                                                             <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                                                 <div className="flex-1 mb-4 md:mb-0 md:mr-4">
@@ -587,15 +583,33 @@ const DetailKarir = () => {
                                                                 <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                                                     <div className="flex-1 mb-4 md:mb-0 md:mr-4">
                                                                         <label className="block text-sm font-medium text-gray-700">Tinggi Badan (cm)</label>
-                                                                        <input type="number" value={tinggiBadan || ''} onChange={(e) => setTinggiBadan(parseInt(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                                                        {tinggiBadanError && <p className="text-red-500 text-sm mt-1">{tinggiBadanError}</p>}
+                                                                        <div className="relative mt-1">
+                                                                            <input
+                                                                                type="number"
+                                                                                value={tinggiBadan || ''}
+                                                                                onChange={(e) => setTinggiBadan(parseInt(e.target.value))}
+                                                                                className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                            />
+                                                                            {tinggiBadanError && (
+                                                                                <p className="absolute text-red-500 text-sm mt-1">{tinggiBadanError}</p>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                                                     <div className="flex-1 mb-4 md:mb-0 md:mr-4">
                                                                         <label className="block text-sm font-medium text-gray-700">Berat Badan (kg)</label>
-                                                                        <input type="number" value={beratBadan || ''} onChange={(e) => setBeratBadan(parseInt(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                                                        {beratBadanError && <p className="text-red-500 text-sm mt-1">{beratBadanError}</p>}
+                                                                        <div className="relative mt-1">
+                                                                            <input
+                                                                                type="number"
+                                                                                value={beratBadan || ''}
+                                                                                onChange={(e) => setBeratBadan(parseInt(e.target.value))}
+                                                                                className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                            />
+                                                                            {beratBadanError && (
+                                                                                <p className="absolute text-red-500 text-sm mt-1">{beratBadanError}</p>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </>
