@@ -104,6 +104,7 @@ const DetailKarir = () => {
     const [beratBadan, setBeratBadan] = useState<number | null>(null);
     const [tinggiBadanError, setTinggiBadanError] = useState<string>('');
     const [beratBadanError, setBeratBadanError] = useState<string>('');
+    const [status, setStatus] = useState<string | null>(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -137,6 +138,7 @@ const DetailKarir = () => {
                     setArticle(data.data);
                     setMinHeight(data.data.minHeight);
                     setIsHeightMandatory(data.data.isHeightMandatory);
+                    setStatus(data.data.status); // Set status
                 }
             } catch (error) {
                 console.error(error);
@@ -550,76 +552,78 @@ const DetailKarir = () => {
                                             </a>
                                         </div>
                                         <div className="flex justify-center mt-8">
-                                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                                                <DialogTrigger asChild>
-                                                    <button
-                                                        className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${isLocked ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-700 hover:scale-105'}`}
-                                                        onClick={isLocked ? undefined : handleApply}
-                                                        disabled={isLocked}
-                                                    >
-                                                        {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
-                                                    </button>
-                                                </DialogTrigger>
-                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
-                                                    <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">Submit Berkas Lamaran</DialogTitle>
-                                                    <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
-                                                        Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.
-                                                    </DialogDescription>
-                                                    <div className="flex flex-col gap-6 mt-4">
-                                                        {requiredDocuments.map((doc) => (
-                                                            <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
-                                                                <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-                                                                    <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
-                                                                    <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                                                    <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
-                                                                </div>
-                                                                <DialogFooter className="w-full md:w-auto">
-                                                                    <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Simpan</button>
-                                                                </DialogFooter>
-                                                            </form>
-                                                        ))}
-                                                        {isHeightMandatory && (
-                                                            <>
-                                                                <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
+                                            {status === '1' && (
+                                                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                                    <DialogTrigger asChild>
+                                                        <button
+                                                            className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${isLocked ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-700 hover:scale-105'}`}
+                                                            onClick={isLocked ? undefined : handleApply}
+                                                            disabled={isLocked}
+                                                        >
+                                                            {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
+                                                        </button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
+                                                        <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">Submit Berkas Lamaran</DialogTitle>
+                                                        <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
+                                                            Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.
+                                                        </DialogDescription>
+                                                        <div className="flex flex-col gap-6 mt-4">
+                                                            {requiredDocuments.map((doc) => (
+                                                                <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                                                     <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-                                                                        <label className="block text-sm font-medium text-gray-700">Tinggi Badan (cm)</label>
-                                                                        <div className="relative mt-1">
-                                                                            <input
-                                                                                type="number"
-                                                                                value={tinggiBadan || ''}
-                                                                                onChange={(e) => setTinggiBadan(parseInt(e.target.value))}
-                                                                                className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                                            />
-                                                                            {tinggiBadanError && (
-                                                                                <p className="absolute text-red-500 text-sm mt-1">{tinggiBadanError}</p>
-                                                                            )}
+                                                                        <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
+                                                                        <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                                        <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
+                                                                    </div>
+                                                                    <DialogFooter className="w-full md:w-auto">
+                                                                        <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Simpan</button>
+                                                                    </DialogFooter>
+                                                                </form>
+                                                            ))}
+                                                            {isHeightMandatory && (
+                                                                <>
+                                                                    <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
+                                                                        <div className="flex-1 mb-4 md:mb-0 md:mr-4">
+                                                                            <label className="block text-sm font-medium text-gray-700">Tinggi Badan (cm)</label>
+                                                                            <div className="relative mt-1">
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={tinggiBadan || ''}
+                                                                                    onChange={(e) => setTinggiBadan(parseInt(e.target.value))}
+                                                                                    className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                                />
+                                                                                {tinggiBadanError && (
+                                                                                    <p className="absolute text-red-500 text-sm mt-1">{tinggiBadanError}</p>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
-                                                                    <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-                                                                        <label className="block text-sm font-medium text-gray-700">Berat Badan (kg)</label>
-                                                                        <div className="relative mt-1">
-                                                                            <input
-                                                                                type="number"
-                                                                                value={beratBadan || ''}
-                                                                                onChange={(e) => setBeratBadan(parseInt(e.target.value))}
-                                                                                className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                                            />
-                                                                            {beratBadanError && (
-                                                                                <p className="absolute text-red-500 text-sm mt-1">{beratBadanError}</p>
-                                                                            )}
+                                                                    <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
+                                                                        <div className="flex-1 mb-4 md:mb-0 md:mr-4">
+                                                                            <label className="block text-sm font-medium text-gray-700">Berat Badan (kg)</label>
+                                                                            <div className="relative mt-1">
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={beratBadan || ''}
+                                                                                    onChange={(e) => setBeratBadan(parseInt(e.target.value))}
+                                                                                    className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                                />
+                                                                                {beratBadanError && (
+                                                                                    <p className="absolute text-red-500 text-sm mt-1">{beratBadanError}</p>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </>
-                                                        )}
-                                                        <div className="flex justify-end mt-4">
-                                                            <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
+                                                                </>
+                                                            )}
+                                                            <div className="flex justify-end mt-4">
+                                                                <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            )}
                                         </div>
                                         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div className="col-span-2">
