@@ -139,10 +139,10 @@ const Profile = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
     const [profileData, setProfileData] = useState<ProfileData | null>(null);
-    const [pengalamanData, setPengalamanData] = useState<PengalamanData | null>(null);
-    const [pendidikanData, setPendidikanData] = useState<PendidikanData | null>(null);
-    const [organisasiData, setOrganisasiData] = useState<OrganisasiData | null>(null);
-    const [kontakData, setKontakData] = useState<KontakData | null>(null);
+    const [pengalamanData, setPengalamanData] = useState<PengalamanData[]>([]);
+    const [pendidikanData, setPendidikanData] = useState<PendidikanData[]>([]);
+    const [organisasiData, setOrganisasiData] = useState<OrganisasiData[]>([]);
+    const [kontakData, setKontakData] = useState<KontakData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -345,14 +345,14 @@ const Profile = () => {
                     setPengalamanData(data.data);
                 } else if (data.responseCode === "404") {
                     console.log("Data not found");
-                    setPengalamanData(null); // Set pengalaman data to null if not found
+                    setPengalamanData([]); // Set pengalaman data to null if not found
                 } else {
                     //console.error("Error fetching data:", data.responseMessage);
-                    setPengalamanData(null); // Set pengalaman data to null if not found
+                    setPengalamanData([]); // Set pengalaman data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching pengalaman data:", error);
-                setPengalamanData(null); // Set pengalaman data to null if error occurs
+                setPengalamanData([]); // Set pengalaman data to null if error occurs
             }
         };
 
@@ -391,11 +391,11 @@ const Profile = () => {
                     setPendidikanData(data.data);
                 } else {
                     //console.error("Error fetching data:", data.responseMessage);
-                    setPendidikanData(null); // Set pendidikan data to null if not found
+                    setPendidikanData([]); // Set pendidikan data to null if not found
                 }
             } catch (error) {
                 //console.error("Error fetching pendidikan data:", error);
-                setPendidikanData(null); // Set pendidikan data to null if error occurs
+                setPendidikanData([]); // Set pendidikan data to null if error occurs
             }
         };
 
@@ -434,11 +434,11 @@ const Profile = () => {
                     setOrganisasiData(data.data);
                 } else {
                     //console.error("Error fetching data:", data.responseMessage);
-                    setOrganisasiData(null); // Set organisasi data to null if not found
+                    setOrganisasiData([]); // Set organisasi data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching organisasi data:", error);
-                setOrganisasiData(null); // Set organisasi data to null if error occurs
+                setOrganisasiData([]); // Set organisasi data to null if error occurs
             }
         };
 
@@ -477,11 +477,11 @@ const Profile = () => {
                     setKontakData(kontakDataResponse.data);
                 } else {
                     //console.error("Error fetching data:", kontakDataResponse.responseMessage);
-                    setKontakData(null); // Set kontak data to null if not found
+                    setKontakData([]); // Set kontak data to null if not found
                 }
             } catch (error) {
                 console.error("Error fetching kontak data:", error);
-                setKontakData(null); // Set kontak data to null if error occurs
+                setKontakData([]); // Set kontak data to null if error occurs
             }
         };
 
@@ -684,25 +684,27 @@ const Profile = () => {
                                 {/* Section Pengalaman Kerja */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Pengalaman Kerja</h2>
-                                    {pengalamanData ? (
-                                        <div>
-                                            <div className="flex items-center mb-2">
-                                                <FaBuilding className="mr-2 text-darkBlue" />
-                                                <p><strong>Nama Instansi:</strong> {pengalamanData.namaInstansi || '-'}</p>
+                                    {pengalamanData.length > 0 ? (
+                                        pengalamanData.map((pengalaman, index) => (
+                                            <div key={index}>
+                                                <div className="flex items-center mb-2">
+                                                    <FaBuilding className="mr-2 text-darkBlue" />
+                                                    <p><strong>Nama Instansi:</strong> {pengalaman.namaInstansi || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaBriefcase className="mr-2 text-darkBlue" />
+                                                    <p><strong>Posisi Kerja:</strong> {pengalaman.posisiKerja || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaCalendar className="mr-2 text-darkBlue" />
+                                                    <p><strong>Periode Kerja:</strong> {pengalaman.periodeKerja ? `${new Date(pengalaman.periodeKerja.split(' to ')[0]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} s/d ${new Date(pengalaman.periodeKerja.split(' to ')[1]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}` : '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaPen className="mr-2 text-darkBlue" />
+                                                    <p><strong>Deskripsi Kerja:</strong> {pengalaman.deskripsiKerja || '-'}</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaBriefcase className="mr-2 text-darkBlue" />
-                                                <p><strong>Posisi Kerja:</strong> {pengalamanData.posisiKerja || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaCalendar className="mr-2 text-darkBlue" />
-                                                <p><strong>Periode Kerja:</strong> {pengalamanData.periodeKerja ? `${new Date(pengalamanData.periodeKerja.split(' to ')[0]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} s/d ${new Date(pengalamanData.periodeKerja.split(' to ')[1]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}` : '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaPen className="mr-2 text-darkBlue" />
-                                                <p><strong>Deskripsi Kerja:</strong> {pengalamanData.deskripsiKerja || '-'}</p>
-                                            </div>
-                                        </div>
+                                        ))
                                     ) : (
                                         <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
                                             Data pengalaman kerja tidak ditemukan
@@ -713,25 +715,27 @@ const Profile = () => {
                                 {/* Section Pengalaman Organisasi */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Pengalaman Organisasi</h2>
-                                    {organisasiData ? (
-                                        <div>
-                                            <div className="flex items-center mb-2">
-                                                <FaUsers className="mr-2 text-darkBlue" />
-                                                <p><strong>Nama Organisasi:</strong> {organisasiData.namaOrganisasi || '-'}</p>
+                                    {organisasiData.length > 0 ? (
+                                        organisasiData.map((organisasi, index) => (
+                                            <div key={index}>
+                                                <div className="flex items-center mb-2">
+                                                    <FaUsers className="mr-2 text-darkBlue" />
+                                                    <p><strong>Nama Organisasi:</strong> {organisasi.namaOrganisasi || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaIdBadge className="mr-2 text-darkBlue" />
+                                                    <p><strong>Posisi:</strong> {organisasi.posisiOrganisasi || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaCalendar className="mr-2 text-darkBlue" />
+                                                    <p><strong>Periode:</strong> {organisasi.periode ? `${new Date(organisasi.periode.split(' to ')[0]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} s/d ${new Date(organisasi.periode.split(' to ')[1]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}` : '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaPen className="mr-2 text-darkBlue" />
+                                                    <p><strong>Deskripsi Kerja:</strong> {organisasi.deskripsiKerja || '-'}</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaIdBadge className="mr-2 text-darkBlue" />
-                                                <p><strong>Posisi:</strong> {organisasiData.posisiOrganisasi || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaCalendar className="mr-2 text-darkBlue" />
-                                                <p><strong>Periode:</strong> {organisasiData.periode ? `${new Date(organisasiData.periode.split(' to ')[0]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} s/d ${new Date(organisasiData.periode.split(' to ')[1]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}` : '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaPen className="mr-2 text-darkBlue" />
-                                                <p><strong>Deskripsi Kerja:</strong> {organisasiData.deskripsiKerja || '-'}</p>
-                                            </div>
-                                        </div>
+                                        ))
                                     ) : (
                                         <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
                                             Data riwayat organisasi tidak ditemukan
@@ -744,33 +748,35 @@ const Profile = () => {
                                 {/* Section Riwayat Pendidikan */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Riwayat Pendidikan</h2>
-                                    {pendidikanData ? (
-                                        <div>
-                                            <div className="flex items-center mb-2">
-                                                <FaBook className="mr-2 text-darkBlue" />
-                                                <p><strong>Nama Instansi:</strong> {pendidikanData.namaInstitusi || '-'}</p>
+                                    {pendidikanData.length > 0 ? (
+                                        pendidikanData.map((pendidikan, index) => (
+                                            <div key={index}>
+                                                <div className="flex items-center mb-2">
+                                                    <FaBook className="mr-2 text-darkBlue" />
+                                                    <p><strong>Nama Instansi:</strong> {pendidikan.namaInstitusi || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaUser className="mr-2 text-darkBlue" />
+                                                    <p><strong>Jurusan:</strong> {pendidikan.jurusan || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaCalendar className="mr-2 text-darkBlue" />
+                                                    <p><strong>Periode Pendidikan:</strong> {pendidikan.thnMasuk || '-'} s/d {pendidikan.thnLulus || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaRegCheckSquare className="mr-2 text-darkBlue" />
+                                                    <p><strong>Nilai:</strong> {pendidikan.nilai || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaGraduationCap className="mr-2 text-darkBlue" />
+                                                    <p><strong>Gelar:</strong> {pendidikan.gelar || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaMedal className="mr-2 text-darkBlue" />
+                                                    <p><strong>Penghargaan:</strong> {pendidikan.achievements || '-'}</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaUser className="mr-2 text-darkBlue" />
-                                                <p><strong>Jurusan:</strong> {pendidikanData.jurusan || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaCalendar className="mr-2 text-darkBlue" />
-                                                <p><strong>Periode Pendidikan:</strong> {pendidikanData.thnMasuk || '-'} s/d {pendidikanData.thnLulus || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaRegCheckSquare className="mr-2 text-darkBlue" />
-                                                <p><strong>Nilai:</strong> {pendidikanData.nilai || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaGraduationCap className="mr-2 text-darkBlue" />
-                                                <p><strong>Gelar:</strong> {pendidikanData.gelar || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaMedal className="mr-2 text-darkBlue" />
-                                                <p><strong>Penghargaan:</strong> {pendidikanData.achievements || '-'}</p>
-                                            </div>
-                                        </div>
+                                        ))
                                     ) : (
                                         <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
                                             Data riwayat pendidikan tidak ditemukan
@@ -781,29 +787,31 @@ const Profile = () => {
                                 {/* Section Kontak Kerabat */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Kontak Kerabat</h2>
-                                    {kontakData ? (
-                                        <div>
-                                            <div className="flex items-center mb-2">
-                                                <FaAddressBook className="mr-2 text-darkBlue" />
-                                                <p><strong>Nama Kontak:</strong> {kontakData.namaKontak}</p>
+                                    {kontakData.length > 0 ? (
+                                        kontakData.map((kontak, index) => (
+                                            <div key={index}>
+                                                <div className="flex items-center mb-2">
+                                                    <FaAddressBook className="mr-2 text-darkBlue" />
+                                                    <p><strong>Nama Kontak:</strong> {kontak.namaKontak}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaUser className="mr-2 text-darkBlue" />
+                                                    <p><strong>Hubungan Kerabat:</strong> {kontak.hubKontak || '-'}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaPhone className="mr-2 text-darkBlue" />
+                                                    <p><strong>No Telepon:</strong> {kontak.telpKontak}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaEnvelope className="mr-2 text-darkBlue" />
+                                                    <p><strong>Email:</strong> {kontak.emailKontak}</p>
+                                                </div>
+                                                <div className="flex items-center mb-2">
+                                                    <FaMapMarkerAlt className="mr-2 text-darkBlue" />
+                                                    <p><strong>Alamat:</strong> {kontak.alamatKontak}</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaUser className="mr-2 text-darkBlue" />
-                                                <p><strong>Hubungan Kerabat:</strong> {kontakData.hubKontak || '-'}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaPhone className="mr-2 text-darkBlue" />
-                                                <p><strong>No Telepon:</strong> {kontakData.telpKontak}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaEnvelope className="mr-2 text-darkBlue" />
-                                                <p><strong>Email:</strong> {kontakData.emailKontak}</p>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <FaMapMarkerAlt className="mr-2 text-darkBlue" />
-                                                <p><strong>Alamat:</strong> {kontakData.alamatKontak}</p>
-                                            </div>
-                                        </div>
+                                        ))
                                     ) : (
                                         <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
                                             Data kontak tidak ditemukan
