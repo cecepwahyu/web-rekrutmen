@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faUsers, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -37,6 +37,30 @@ interface History {
     status: string;
 }
 
+const getIdFromToken = async (token: string): Promise<string | null> => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/get-id-peserta`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+
+        const data = await response.json();
+        if (data.responseCode === "000") {
+            return data.data.idPeserta || null;
+        } else {
+            console.error("Error fetching ID:", data.responseMessage);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching ID:", error);
+        return null;
+    }
+};
+
 const Riwayat = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -50,7 +74,9 @@ const Riwayat = () => {
     const [isLoading, setIsLoading] = useState(true); // State for loading animation
     const [isAuthenticated, setIsAuthenticated] = useState(false); // State for authentication check
     const [searchTerm, setSearchTerm] = useState(""); // State for search term
+    const [idPeserta, setIdPeserta] = useState<string | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     // Check if user is authenticated when the page loads
     useEffect(() => {
@@ -61,6 +87,12 @@ const Riwayat = () => {
                 router.push("/login");
             } else {
                 setIsAuthenticated(true);
+                // Fetch idPeserta
+                const fetchIdPeserta = async () => {
+                    const id = await getIdFromToken(token);
+                    setIdPeserta(id);
+                };
+                fetchIdPeserta();
             }
         }
     }, [router]);
@@ -78,7 +110,7 @@ const Riwayat = () => {
                 }
 
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/peserta/id/78`, {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/peserta/id/${idPeserta}`, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -102,10 +134,10 @@ const Riwayat = () => {
             }
         };
 
-        if (isAuthenticated) {
+        if (isAuthenticated && idPeserta) {
             fetchHistories();
         }
-    }, [isAuthenticated]); // Re-fetch histories when isAuthenticated changes
+    }, [isAuthenticated, idPeserta]); // Re-fetch histories when isAuthenticated or idPeserta changes
 
     useEffect(() => {
         const handleScroll = () => {
