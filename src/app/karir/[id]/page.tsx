@@ -266,9 +266,18 @@ const DetailKarir = () => {
         const idPeserta = await getIdFromToken(token);
         if (!idPeserta) return;
     
+        console.log('Form data:', data);
+        console.log('Field name:', fieldName);
+        console.log('File data:', data[fieldName]);
+    
         const file = data[fieldName][0];
+        if (!file) {
+            console.error('No file selected');
+            return;
+        }
+    
         if (!(file instanceof File)) {
-            console.error('File is not of type File');
+            console.error('File is not of type File', file);
             return;
         }
     
@@ -316,6 +325,27 @@ const DetailKarir = () => {
                         previewButton.className = 'bg-blue-500 text-white py-2 px-4 rounded-lg';
                         previewButton.onclick = () => window.open(URL.createObjectURL(file), '_blank');
                         inputField.replaceWith(previewButton);
+
+                        // Add change/update button
+                        const updateButton = document.createElement('button');
+                        updateButton.textContent = 'Change/Update Berkas';
+                        updateButton.className = 'bg-yellow-500 text-white py-2 px-4 rounded-lg ml-2';
+                        updateButton.onclick = () => {
+                            const newInputField = document.createElement('input');
+                            newInputField.type = 'file';
+                            newInputField.name = fieldName;
+                            newInputField.accept = 'application/pdf';
+                            newInputField.className = 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500';
+                            newInputField.onchange = () => {
+                                const form = newInputField.closest('form');
+                                if (form) {
+                                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                                }
+                            };
+                            previewButton.replaceWith(newInputField);
+                            updateButton.remove(); // Remove the update button
+                        };
+                        previewButton.after(updateButton);
                     }
                 } else {
                     toast.error("Failed to submit document: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
@@ -514,26 +544,26 @@ const DetailKarir = () => {
                                                         {isLocked ? 'Anda telah mendaftar' : 'Daftar'}
                                                     </button>
                                                 </DialogTrigger>
-                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6">
-                                                    <DialogTitle className="text-lg md:text-xl font-semibold">Submit Berkas Lamaran</DialogTitle>
-                                                    <DialogDescription className="text-sm md:text-base mt-2">
+                                                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+                                                    <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">Submit Berkas Lamaran</DialogTitle>
+                                                    <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
                                                         Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.
                                                     </DialogDescription>
                                                     <div className="flex flex-col gap-4 mt-4">
                                                         {requiredDocuments.map((doc) => (
-                                                            <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center">
-                                                                <div className="flex-1 mb-4 p-4 border rounded-lg shadow-sm w-full">
+                                                            <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
+                                                                <div className="flex-1 mb-4 md:mb-0 md:mr-4">
                                                                     <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
-                                                                    <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full" />
+                                                                    <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                                                                     <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
                                                                 </div>
-                                                                <DialogFooter className="mt-4 md:mt-0 md:ml-4 w-full md:w-auto">
-                                                                    <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg w-full md:w-auto">Simpan</button>
+                                                                <DialogFooter className="w-full md:w-auto">
+                                                                    <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Simpan</button>
                                                                 </DialogFooter>
                                                             </form>
                                                         ))}
                                                         <div className="flex justify-end mt-4">
-                                                            <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg w-full md:w-auto">Apply Now</button>
+                                                            <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
                                                         </div>
                                                     </div>
                                                 </DialogContent>
@@ -603,28 +633,33 @@ const DetailKarir = () => {
             <ScrollToTopButton />
             <CariKarirButton />
             <Dialog open={isAgreementDialogOpen} onOpenChange={setIsAgreementDialogOpen}>
-                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6">
-                    <DialogTitle className="text-lg md:text-xl font-semibold">Agreement</DialogTitle>
-                    <DialogDescription className="text-sm md:text-base mt-2">
-                        Please agree to the following terms to proceed with your application.
+                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+                    <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">Persetujuan</DialogTitle>
+                    <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
+                        Silakan menyetujui syarat dan ketentuan berikut untuk melanjutkan aplikasi Anda.
                     </DialogDescription>
-                    <FormGroup>
+                    <FormGroup className="mt-4 space-y-4">
                         <FormControlLabel
                             control={<Checkbox checked={agreements.recruitment} onChange={(e) => setAgreements({ ...agreements, recruitment: e.target.checked })} />}
-                            label="Setuju untuk memberikan data untuk keperluan rekrutmen"
+                            label="Saya bersedia memberikan/menyerahkan/mengisi data pribadi saya kepada PT Bank BPD DIY untuk memproses dan/atau menggunakan dan/atau memanfaatkan data pribadi tersebut sebatas keperluan rekrutmen Bank."
+                            className="text-gray-700"
                         />
                         <FormControlLabel
                             control={<Checkbox checked={agreements.dataUsage} onChange={(e) => setAgreements({ ...agreements, dataUsage: e.target.checked })} />}
-                            label="Setuju untuk dapat digunakan untuk keperluan pendataan"
+                            label="Data dan dokumen yang saya input melalui web rekrutmen Bank BPD DIY adalah benar dan sesuai dengan data diri saya."
+                            className="text-gray-700"
                         />
                         <FormControlLabel
                             control={<Checkbox checked={agreements.holdDiploma} onChange={(e) => setAgreements({ ...agreements, holdDiploma: e.target.checked })} />}
-                            label="Setuju untuk menahan ijazah"
+                            label="Apabila terdapat ketidakbenaran atas data dan dokumen tersebut, saya bertanggung jawab penuh atas segala akibatnya."
+                            className="text-gray-700"
                         />
                     </FormGroup>
-                    {agreementError && <p className="text-red-500 text-sm mt-1">{agreementError}</p>}
-                    <DialogFooter className="mt-4">
-                        <button onClick={handleAgreementSubmit} className="bg-darkBlue text-white py-2 px-4 rounded-lg w-full md:w-auto">Apply</button>
+                    {agreementError && <p className="text-red-500 text-sm mt-2">{agreementError}</p>}
+                    <DialogFooter className="mt-6 flex justify-end">
+                        <button onClick={handleAgreementSubmit} className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                            Apply
+                        </button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
