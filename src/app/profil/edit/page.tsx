@@ -188,6 +188,10 @@ const EditProfil = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     setProfileData(data.data); // Set profile data
+                    setPendidikanList(data.data.pesertaPendidikan || []);
+                    setPengalamanList(data.data.pesertaPengalaman || []);
+                    setOrganisasiList(data.data.pesertaOrganisasi || []);
+                    setKontakList(data.data.kontak || []);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -540,262 +544,6 @@ const EditProfil = () => {
         }
     };
 
-    const handleSavePersonalInfo = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found in localStorage");
-            return;
-        }
-        setIsLoading(true);
-
-        const id = await getIdFromToken(token);
-        if (!id) {
-            console.error("Invalid token");
-            setIsLoading(false);
-            return;
-        }
-
-        const payload = {
-            nama: profileData.nama,
-            tempat_lahir: profileData.tempatLahir,
-            tgl_lahir: profileData.tglLahir,
-            jns_kelamin: profileData.jnsKelamin,
-            agama: profileData.agama,
-            alamat_identitas: profileData.alamatIdentitas,
-            provinsi_identitas: profileData.provinsiIdentitas,
-            kota_identitas: profileData.kotaIdentitas,
-            kecamatan_identitas: profileData.kecamatanIdentitas,
-            desa_identitas: profileData.desaIdentitas,
-            alamat_domisili: profileData.alamatDomisili,
-            provinsi_domisili: profileData.provinsiDomisili,
-            kota_domisili: profileData.kotaDomisili,
-            kecamatan_domisili: profileData.kecamatanDomisili,
-            desa_domisili: profileData.desaDomisili,
-            telp: profileData.telp,
-            pendidikan_terakhir: profileData.pendidikanTerakhir,
-            status_kawin: profileData.statusKawin,
-            id_session: "29348293923",
-            flg_status: "2"
-        };
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/edit`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await response.json();
-            if (data.responseCode === "000") {
-                toast.success("Informasi personal berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
-            } else {
-                toast.error("Gagal menyimpan informasi personal: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
-            }
-        } catch (error) {
-            console.error("Error updating personal info:", error);
-            toast.error("Terjadi kesalahan saat menyimpan informasi personal.", { style: { backgroundColor: 'white', color: 'red' } });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSavePendidikan = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found in localStorage");
-            return;
-        }
-        setIsLoading(true);
-
-        const id = await getIdFromToken(token);
-        if (!id) {
-            console.error("Invalid token");
-            setIsLoading(false);
-            return;
-        }
-
-        const formattedPendidikanList = pendidikanList.map(pendidikan => ({
-            id_jenjang: pendidikan.idJenjang,
-            nama_institusi: pendidikan.namaInstitusi,
-            jurusan: pendidikan.jurusan,
-            thn_masuk: pendidikan.thnMasuk,
-            thn_lulus: pendidikan.thnLulus,
-            nilai: pendidikan.nilai,
-            gelar: pendidikan.gelar,
-            achievements: pendidikan.achievements,
-        }));
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pendidikan/${id}/insert`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(formattedPendidikanList),
-            });
-
-            const data = await response.json();
-            if (data.responseCode === "000") {
-                toast.success("Pendidikan berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
-            } else {
-                toast.error("Gagal menyimpan pendidikan: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
-            }
-        } catch (error) {
-            console.error("Error updating pendidikan:", error);
-            toast.error("Terjadi kesalahan saat menyimpan pendidikan.", { style: { backgroundColor: 'white', color: 'red' } });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSavePengalaman = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found in localStorage");
-            return;
-        }
-        setIsLoading(true);
-
-        const id = await getIdFromToken(token);
-        if (!id) {
-            console.error("Invalid token");
-            setIsLoading(false);
-            return;
-        }
-
-        const formattedPengalamanList = pengalamanList.map(pengalaman => ({
-            nama_instansi: pengalaman.namaInstansi,
-            posisi_kerja: pengalaman.posisiKerja,
-            periode_kerja: `${pengalaman.periodeKerjaStart}-${pengalaman.periodeKerjaEnd}`,
-            deskripsi_kerja: pengalaman.deskripsiKerja,
-        }));
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pengalaman/${id}/insert`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(formattedPengalamanList),
-            });
-
-            const data = await response.json();
-            if (data.responseCode === "000") {
-                toast.success("Pengalaman berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
-            } else {
-                toast.error("Gagal menyimpan pengalaman: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
-            }
-        } catch (error) {
-            console.error("Error updating pengalaman:", error);
-            toast.error("Terjadi kesalahan saat menyimpan pengalaman.", { style: { backgroundColor: 'white', color: 'red' } });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSaveOrganisasi = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found in localStorage");
-            return;
-        }
-        setIsLoading(true);
-
-        const id = await getIdFromToken(token);
-        if (!id) {
-            console.error("Invalid token");
-            setIsLoading(false);
-            return;
-        }
-
-        const formattedOrganisasiList = organisasiList.map(organisasi => ({
-            nama_organisasi: organisasi.namaOrganisasi,
-            posisi_organisasi: organisasi.posisiOrganisasi,
-            periode: `${organisasi.periodeStart}-${organisasi.periodeEnd}`,
-            deskripsi_kerja: organisasi.deskripsiKerja,
-        }));
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/organisasi/${id}/insert`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(formattedOrganisasiList),
-            });
-
-            const data = await response.json();
-            if (data.responseCode === "000") {
-                toast.success("Organisasi berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
-            } else {
-                toast.error("Gagal menyimpan organisasi: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
-            }
-        } catch (error) {
-            console.error("Error updating organisasi:", error);
-            toast.error("Terjadi kesalahan saat menyimpan organisasi.", { style: { backgroundColor: 'white', color: 'red' } });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSaveKontak = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found in localStorage");
-            return;
-        }
-        setIsLoading(true);
-
-        const id = await getIdFromToken(token);
-        if (!id) {
-            console.error("Invalid token");
-            setIsLoading(false);
-            return;
-        }
-
-        const formattedKontakList = kontakList.map(kontak => ({
-            nama_kontak: kontak.namaKontak,
-            hub_kontak: kontak.hubKontak,
-            telp_kontak: kontak.telpKontak,
-            email_kontak: kontak.emailKontak,
-            alamat_kontak: kontak.alamatKontak,
-        }));
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}/insert`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(formattedKontakList),
-            });
-
-            const data = await response.json();
-            if (data.responseCode === "000") {
-                toast.success("Kontak berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
-            } else {
-                toast.error("Gagal menyimpan kontak: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
-            }
-        } catch (error) {
-            console.error("Error updating kontak:", error);
-            toast.error("Terjadi kesalahan saat menyimpan kontak.", { style: { backgroundColor: 'white', color: 'red' } });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
@@ -1096,9 +844,6 @@ const EditProfil = () => {
                                             />
                                         </div>
                                     </div>
-                                    <button onClick={handleSavePersonalInfo} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
-                                        Simpan Informasi Personal
-                                    </button>
                                 </div>
                             </TabPanel>
 
@@ -1215,9 +960,6 @@ const EditProfil = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button onClick={handleSavePendidikan} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
-                                        Simpan Pendidikan
-                                    </button>
                                 </div>
                             </TabPanel>
 
@@ -1302,9 +1044,6 @@ const EditProfil = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button onClick={handleSavePengalaman} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
-                                        Simpan Pengalaman
-                                    </button>
                                 </div>
                             </TabPanel>
 
@@ -1389,9 +1128,6 @@ const EditProfil = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button onClick={handleSaveOrganisasi} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
-                                        Simpan Organisasi
-                                    </button>
                                 </div>
                             </TabPanel>
 
@@ -1480,13 +1216,13 @@ const EditProfil = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button onClick={handleSaveKontak} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
-                                        Simpan Kontak
-                                    </button>
                                 </div>
                             </TabPanel>
                         </Tabs>
                     )}
+                    <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                        Simpan Semua Data
+                    </button>
                     <br />
                 </div>
 
