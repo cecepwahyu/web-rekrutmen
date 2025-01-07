@@ -98,6 +98,12 @@ const DetailKarir = () => {
         holdDiploma: false,
     });
     const [agreementError, setAgreementError] = useState('');
+    const [minHeight, setMinHeight] = useState<number | null>(null);
+    const [isHeightMandatory, setIsHeightMandatory] = useState<boolean>(false);
+    const [tinggiBadan, setTinggiBadan] = useState<number | null>(null);
+    const [beratBadan, setBeratBadan] = useState<number | null>(null);
+    const [tinggiBadanError, setTinggiBadanError] = useState<string>('');
+    const [beratBadanError, setBeratBadanError] = useState<string>('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -129,6 +135,8 @@ const DetailKarir = () => {
                 const data = await response.json();
                 if (data.responseCode === '000') {
                     setArticle(data.data);
+                    setMinHeight(data.data.minHeight);
+                    setIsHeightMandatory(data.data.isHeightMandatory);
                 }
             } catch (error) {
                 console.error(error);
@@ -389,6 +397,16 @@ const DetailKarir = () => {
             return;
         }
 
+        if (isHeightMandatory && (tinggiBadan === null)) {
+            setTinggiBadanError('Anda harus mengisikan field ini');
+            return;
+        }
+
+        if (isHeightMandatory && (beratBadan === null)) {
+            setBeratBadanError('Anda harus mengisikan field ini');
+            return;
+        }
+
         setIsAgreementDialogOpen(true);
     };
 
@@ -403,7 +421,9 @@ const DetailKarir = () => {
 
         const payload = {
             id_peserta: idPeserta,
-            id_user_documents: idUserDocuments
+            id_user_documents: idUserDocuments,
+            tinggi_badan: tinggiBadan,
+            berat_badan: beratBadan,
         };
 
         try {
@@ -562,6 +582,24 @@ const DetailKarir = () => {
                                                                 </DialogFooter>
                                                             </form>
                                                         ))}
+                                                        {isHeightMandatory && (
+                                                            <>
+                                                                <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
+                                                                    <div className="flex-1 mb-4 md:mb-0 md:mr-4">
+                                                                        <label className="block text-sm font-medium text-gray-700">Tinggi Badan (cm)</label>
+                                                                        <input type="number" value={tinggiBadan || ''} onChange={(e) => setTinggiBadan(parseInt(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                                        {tinggiBadanError && <p className="text-red-500 text-sm mt-1">{tinggiBadanError}</p>}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
+                                                                    <div className="flex-1 mb-4 md:mb-0 md:mr-4">
+                                                                        <label className="block text-sm font-medium text-gray-700">Berat Badan (kg)</label>
+                                                                        <input type="number" value={beratBadan || ''} onChange={(e) => setBeratBadan(parseInt(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                                        {beratBadanError && <p className="text-red-500 text-sm mt-1">{beratBadanError}</p>}
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        )}
                                                         <div className="flex justify-end mt-4">
                                                             <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
                                                         </div>
