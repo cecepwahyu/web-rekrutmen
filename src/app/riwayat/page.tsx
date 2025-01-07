@@ -1,366 +1,327 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import FooterCopyright from "../../components/FooterCopyright";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar, faUsers, faSearch } from "@fortawesome/free-solid-svg-icons";
 import MenuBar from "../../../components/MenuBar";
+import FooterCopyright from "../../components/FooterCopyright";
+import FooterSection from "../../components/FooterSection";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
-import { Skeleton } from "@/components/ui/skeleton"
-import { jsPDF } from "jspdf";
+import CariKarirButton from "../../components/CariKarirButton";
+import LottieAnimation from "../../components/Animations";
+import animation404 from "../../../public/animations/404.json";
+import loadingAnimation from "../../../public/animations/loading.json";
+import htmlReactParser from 'html-react-parser';
+import Head from "next/head";
 
-interface Tahapan {
-    idTahapan: number;
-    namaTahapan: string;
-    deskripsi: string;
-    isActive: boolean;
+const ITEMS_PER_PAGE = 6; // Items per page
+
+interface History {
+    idAplikasi: string;
+    idPeserta: number;
+    namaPeserta: string;
+    emailPeserta: string;
+    noIdentitasPeserta: string;
+    idLowongan: number;
+    judulLowongan: string;
+    posisiLowongan: string;
+    lowonganPeriodeAwal: string;
+    lowonganPeriodeAkhir: string;
+    tanggalAplikasi: string;
+    statusAplikasi: string;
+    lastStatusUpdate: string;
+    tahunAplikasi: number;
+    slug: string;
+    status: string;
 }
 
 const Riwayat = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [steps, setSteps] = useState<Tahapan[]>([]);
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(2); // Current step: "Tes Psikologi dan TPA"
-  const [applicantData, setApplicantData] = useState({
-    nama: "",
-    nomorPeserta: "",
-    posisi: "",
-    idLowongan: null,
-  });
-  const [announcementContent, setAnnouncementContent] = useState("Pesan tidak ditemukan");
-  const [currentSortOrder, setCurrentSortOrder] = useState(0);
-  const [showRegistrationCard, setShowRegistrationCard] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [showScrollToTop, setShowScrollToTop] = useState(false);
+    const [histories, setHistories] = useState<History[]>([]); // State for fetched histories
+    const [filteredHistories, setFilteredHistories] = useState<History[]>([]); // State for filtered histories
+    const [rekrutmenJobs, setRekrutmenJobs] = useState<History[]>([]); // State for Rekrutmen jobs
+    const [jobDescJobs, setJobDescJobs] = useState<History[]>([]); // State for Job Desc jobs
+    const [currentPage, setCurrentPage] = useState(0); // Current page starts at 0
+    const [totalPages, setTotalPages] = useState(0); // Total pages
+    const [activeTab, setActiveTab] = useState("Rekrutmen"); // Set default tab to "Rekrutmen"
+    const [isLoading, setIsLoading] = useState(true); // State for loading animation
+    const [isAuthenticated, setIsAuthenticated] = useState(false); // State for authentication check
+    const [searchTerm, setSearchTerm] = useState(""); // State for search term
+    const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+    // Check if user is authenticated when the page loads
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
 
-    if (!token) {
-      router.push('/login');
-    } else {
-      setIsAuthenticated(true);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    const fetchApplicantData = async () => {
-      setIsLoading(true);
-
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        console.error("No token found in localStorage");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`http://localhost:8080/api/profile/peserta-info/45`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-        if (result.responseCode === '000') {
-          setApplicantData({
-            nama: result.data.nama || "Tidak ada lamaran",
-            nomorPeserta: result.data.kodeLowongan || "Tidak ada lamaran",
-            posisi: result.data.judulLowongan || "Tidak ada lamaran",
-            idLowongan: result.data.idLowongan || null,
-          });
+            if (!token) {
+                router.push("/login");
+            } else {
+                setIsAuthenticated(true);
+            }
         }
-      } catch (error) {
-        console.error("Error fetching applicant data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    }, [router]);
 
-    if (isAuthenticated) {
-      fetchApplicantData();
-    }
-  }, [currentPage, isAuthenticated]);
+    // Fetch history data from API
+    useEffect(() => {
+        const fetchHistories = async () => {
+            setIsLoading(true); // Show loading animation
+            if (typeof window !== "undefined") {
+                const token = localStorage.getItem("token"); // Get token from localStorage
 
-  useEffect(() => {
-    const fetchSteps = async () => {
-      const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error("No token found in localStorage");
+                    return; // Exit if no token is found
+                }
 
-      if (!token) {
-        console.error("No token found in localStorage");
-        return;
-      }
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/peserta/id/78`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    });
+                    const data = await response.json();
+                    if (data.responseCode === "000") {
+                        const allHistories: History[] = [data.data]; // Wrap the single object in an array
+                        setHistories(allHistories); // Update histories with fetched data
+                        setFilteredHistories(allHistories); // Update filtered histories with fetched data
+                        setRekrutmenJobs(allHistories.filter(history => history.status === "1")); // Filter for "Aktif" tab
+                        setJobDescJobs(allHistories.filter(history => history.status !== "1")); // Filter for "Tidak Aktif" tab
+                    }
+                } catch (error) {
+                    console.error("Error fetching history data:", error);
+                } finally {
+                    setIsLoading(false); // Hide loading animation
+                }
+            }
+        };
 
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/id/${applicantData.idLowongan}/tahapan`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (data.responseCode === '000') {
-          const stepsData = data.data.map((step: any) => ({
-            idTahapan: step[2],
-            namaTahapan: step[4],
-            deskripsi: step[5],
-            isActive: false // You can set this based on your logic
-          }));
-          setSteps(stepsData);
+        if (isAuthenticated) {
+            fetchHistories();
         }
-      } catch (error) {
-        console.error('Error fetching steps:', error);
-      }
-    };
+    }, [isAuthenticated]); // Re-fetch histories when isAuthenticated changes
 
-    if (applicantData.idLowongan) {
-      fetchSteps();
-    }
-  }, [applicantData.idLowongan]);
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+            setShowScrollToTop(window.scrollY > 200);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
 
-  useEffect(() => {
-    const fetchAnnouncementContent = async () => {
-      setIsLoading(true);
-      const token = localStorage.getItem('token');
+    useEffect(() => {
+        const filtered = Array.isArray(histories) ? histories.filter(history =>
+            history.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase())
+        ) : [];
 
-      if (!token) {
-        console.error("No token found in localStorage");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/announcements/content`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ id_lowongan: applicantData.idLowongan }) // Use dynamic idLowongan
-        });
-        const data = await response.text();
-        setAnnouncementContent(data || "Pesan tidak ditemukan");
-      } catch (error) {
-        console.error('Error fetching announcement content:', error);
-        setAnnouncementContent("Pesan tidak ditemukan");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (applicantData.idLowongan) {
-      fetchAnnouncementContent();
-    }
-  }, [applicantData.idLowongan]);
-
-  useEffect(() => {
-    const fetchCurrentSortOrder = async () => {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        console.error("No token found in localStorage");
-        return;
-      }
-
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/progress/tahapan/${applicantData.idLowongan}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (data.responseCode === '000') {
-          setCurrentSortOrder(data.data.currentSortOrder);
+        if (activeTab === "Rekrutmen") {
+            setFilteredHistories(filtered.filter(history => history.status === "1"));
+        } else if (activeTab === "Job Desc") {
+            setFilteredHistories(filtered.filter(history => history.status !== "1"));
         }
-      } catch (error) {
-        console.error('Error fetching current sort order:', error);
-      }
+    }, [searchTerm, histories, activeTab]);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    if (applicantData.idLowongan) {
-      fetchCurrentSortOrder();
+    const goToNextPage = () => {
+        if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 0) setCurrentPage(currentPage - 1);
+    };
+
+    const handleJobClick = (idAplikasi: string) => {
+        router.push(`/riwayat/${idAplikasi}`);
+    };
+
+    if (!isAuthenticated) {
+        return null; // Render nothing until authentication check is complete
     }
-  }, [applicantData.idLowongan]);
 
-  const handlePrint = () => {
-    window.print();
-  };
+    return (
+        <div className="min-h-screen bg-gray-100 font-sans relative">
+            <Head>
+                <title>Karir | Rekrutmen BPD DIY</title>
+            </Head>
+            <MenuBar />
 
-  const handleShowRegistrationCard = () => {
-    setShowRegistrationCard(true);
-  };
+            <main className="pt-32 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 h-80">
+                
+                {/* Adjusted height for blue and white areas */}
+                <div className="bg-white relative z-10 h-32"></div>
 
-  const handleDownloadPDF = () => {
-    const doc = new jsPDF("portrait", "mm", "a4");
-  
-    // Load and add the logo image
-    const logoPath = "/images/Logo_Color.png"; // Path to your logo
-    const logoWidth = 60; // Adjust logo width
-    const logoHeight = 20; // Adjust logo height
-  
-    doc.addImage(logoPath, "PNG", 140, 10, logoWidth, logoHeight); // Position the logo at the top-right corner
-  
-    // Add the title and subtitle (aligned left)
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Kartu Peserta Tes", 20, 20); // Title aligned left
-    doc.setFontSize(14);
-    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", 20, 30); // Subtitle aligned left
-  
-    // Draw a horizontal line
-    doc.setLineWidth(0.5);
-    doc.line(10, 40, 200, 40);
-  
-    // Add the applicant's information with consistent spacing
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    const textX = 20;
-    const textYStart = 60;
-    const textYIncrement = 10;
-    doc.text(`Nama       : ${applicantData.nama || "....................."}`, textX, textYStart);
-    doc.text(`Posisi     : ${applicantData.posisi || "....................."}`, textX, textYStart + textYIncrement);
-    doc.text(`Nomer Test : ${applicantData.nomorPeserta || "....................."}`, textX, textYStart + 2 * textYIncrement);
-  
-    // Add a rectangle for the picture with size 4x6 and text "4 x 6" in the middle
-    const rectX = 140;
-    const rectY = textYStart;
-    const rectWidth = 40; // 4 cm
-    const rectHeight = 60; // 6 cm
-    doc.rect(rectX, rectY, rectWidth, rectHeight);
-    doc.setFontSize(10);
-    doc.text("4 x 6", rectX + rectWidth / 2, rectY + rectHeight / 2, { align: "center" });
-  
-    // Add the signature section
-    const signatureYStart = 140; // Adjusted position to avoid conflict with the profile 4x6
-    doc.setFont("helvetica", "bold");
-    doc.text("Tanda Tangan Peserta", 40, signatureYStart);
-    doc.text("Panitia", 140, signatureYStart);
-  
-    // Draw signature boxes
-    doc.setLineWidth(0.3);
-    doc.rect(30, signatureYStart + 5, 60, 30); // Box for participant signature
-    doc.rect(120, signatureYStart + 5, 60, 30); // Box for committee signature
-  
-    // Add a table with 6 columns labeled I, II, III, IV, V, VI
-    const tableStartY = 190;
-    const columnWidth = 25;
-    const tableWidth = columnWidth * 6;
-    const tableStartX = (doc.internal.pageSize.getWidth() - tableWidth) / 2; // Center the table
-    const columns = ["I", "II", "III", "IV", "V", "VI"];
-    columns.forEach((col, index) => {
-      const x = tableStartX + index * columnWidth;
-      doc.text(col, x + columnWidth / 2, tableStartY, { align: "center" });
-      doc.rect(x, tableStartY + 5, columnWidth, 20); // Draw the cell
-    });
-  
-    // Save the PDF
-    doc.save("Kartu_Peserta_Tes.pdf");
-  };
-    
+                {/* Section List Pekerjaan */}
+                <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32 pt-20">
+                    <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Riwayat Lamaran Anda</h1>
+                    <p className="text-center text-gray-700 mt-4 px-6">
+                        Berikut adalah daftar lamaran yang pernah Anda ajukan. Silakan klik untuk melihat detail lamaran.:
+                    </p>
 
-  const passedSteps = Array.from({ length: currentSortOrder }, (_, i) => i + 1);
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100 font-sans relative">
-      <MenuBar />
-      <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
-        <div className="bg-white relative z-10">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <defs>
-              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%">
-                <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
-              </linearGradient>
-            </defs>
-            <path fill="url(#grad1)"
-              d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
-          </svg>
-        </div>
-
-        <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 pb-10">
-          <h2 className="text-3xl font-bold text-darkBlue mb-6 text-center pt-6 sm:pt-0">
-            Tahapan Rekrutmen
-          </h2>
-
-          {applicantData.nama === "Tidak ada lamaran" ? (
-            <h2 className="text-3xl font-bold text-darkBlue mb-6 text-center pt-6 sm:pt-0">
-              Anda belum melamar pekerjaan
-            </h2>
-          ) : (
-            <>
-              {/* Rectangle Container */}
-              <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mb-10">
-                <div className="flex flex-col sm:flex-row sm:justify-between text-sm sm:text-base">
-                  <div><span className="font-semibold">Nama:</span> {isLoading ? <Skeleton className="w-24 h-4" /> : applicantData.nama}</div>
-                  <div><span className="font-semibold">Nomor Peserta:</span> {isLoading ? <Skeleton className="w-24 h-4" /> : applicantData.nomorPeserta}</div>
-                  <div><span className="font-semibold">Posisi Dilamar:</span> {isLoading ? <Skeleton className="w-24 h-4" /> : applicantData.posisi}</div>
-                </div>
-              </div>
-
-              {/* Progress Bar Container */}
-              <div className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl px-4">
-                <ol className="border-s border-neutral-300 dark:border-neutral-500 md:flex md:gap-6 md:border-s-0 md:border-t-2">
-                  {steps.map((step, index) => (
-                    <li key={step.idTahapan} className="flex-1">
-                      <div className="flex-start flex items-center pt-2 md:block md:pt-0">
-                        <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${passedSteps.includes(index + 1) ? 'bg-green-600 border-green-500' : 'bg-gray-300 border-gray-100'} md:-mt-[22px] md:me-0 md:ms-0`}>
-                          <span className="text-white">{index + 1}</span>
+                    {/* Search Bar */}
+                    <div className="flex justify-center mb-4 mt-6 w-full px-4">
+                        <div className="relative w-full max-w-md">
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Cari Posisi..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-3 text-gray-400" />
                         </div>
-                        <div>
-                          <h4 className={`md:mt-2 mb-1.5 ${passedSteps.includes(index + 1) ? 'text-green-600' : 'text-gray-700'} font-medium`}>{step.namaTahapan}</h4>
-                          {passedSteps.includes(index + 1) && (
-                            <span className="py-1 px-2 inline-block bg-green-100 text-green-600 font-semibold text-xs rounded-lg">Lolos</span>
-                          )}
+                    </div>
+
+                    {/* Tab Buttons */}
+                    <div className="flex justify-center mb-4 mt-6">
+                        <button
+                            className={`px-4 py-2 mx-2 transition-all duration-300 rounded-lg ${activeTab === "Rekrutmen" ? "bg-darkBlue text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                            onClick={() => setActiveTab("Rekrutmen")}
+                        >
+                            Aktif
+                        </button>
+                        <button
+                            className={`px-4 py-2 mx-2 transition-all duration-300 rounded-lg ${activeTab === "Job Desc" ? "bg-darkBlue text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                            onClick={() => setActiveTab("Job Desc")}
+                        >
+                            Tidak Aktif
+                        </button>
+                    </div>
+
+                    {isLoading ? (
+                        <div className="flex justify-center items-center mt-10">
+                            <LottieAnimation animationData={loadingAnimation} />
                         </div>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+                    ) : activeTab === "Rekrutmen" ? (
+                        Array.isArray(filteredHistories) && filteredHistories.length === 0 ? (
+                            <div className="flex flex-col items-center mt-10">
+                                <div className="w-3/4 sm:w-3/4 lg:w-1/4">
+                                    <LottieAnimation animationData={animation404} />
+                                </div>
+                                <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
+                                    Tidak ada lamaran
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 gap-8 mt-6 w-11/12 lg:w-3/5 pb-10">
+                                    {Array.isArray(filteredHistories) && filteredHistories.map((history: History) => (
+                                        <button
+                                            key={history.idAplikasi}
+                                            className="bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
+                                            onClick={() => handleJobClick(history.idAplikasi)}
+                                        >
+                                            <div className="w-full text-left">
+                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">
+                                                    {history.judulLowongan}
+                                                </h2>
+                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                        <span className="font-semibold">ID Aplikasi:</span>
+                                                        <span className="ml-1">{history.idAplikasi}</span>
+                                                    </div>
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                        <span className="font-semibold">Tanggal Aplikasi:</span>
+                                                        <span className="ml-1">
+                                                            {new Date(history.tanggalAplikasi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                        <span className="font-semibold">Update Terakhir:</span>
+                                                        <span className="ml-1">
+                                                            {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
 
-              {/* Rectangle Container */}
-              <div className="bg-blue-50 rounded-lg p-6 w-full max-w-4xl mt-28 border-2 border-darkBlue border-dashed mb-10">
-                <div className="text-sm sm:text-base">
-                  {/* Heading */}
-                  <p className="font-semibold text-darkBlue text-lg mb-4">Informasi Test</p>
-
-                  {/* Details */}
-                  <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent }} />
+                                {/* Pagination Buttons */}
+                                <div className="flex justify-center mt-6 space-x-2 mb-8">
+                                    {Array.from({ length: totalPages }).map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setCurrentPage(index)}
+                                            className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                                                index === currentPage
+                                                    ? "bg-darkBlue text-white"
+                                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                            }`}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )
+                    ) : (
+                        <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 pb-10">
+                            {Array.isArray(filteredHistories) && filteredHistories.length === 0 ? (
+                                <div className="flex flex-col items-center mt-10">
+                                    <div className="w-3/4 sm:w-3/4 lg:w-1/4">
+                                        <LottieAnimation animationData={animation404} />
+                                    </div>
+                                    <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
+                                        Tidak ada lamaran
+                                    </p>
+                                </div>
+                            ) : (
+                                Array.isArray(filteredHistories) && filteredHistories.map((history: History) => (
+                                    <div key={history.idAplikasi} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
+                                        <button
+                                            className="w-full bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
+                                            onClick={() => handleJobClick(history.idAplikasi)}
+                                        >
+                                            <div className="w-full text-left">
+                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">{history.judulLowongan}</h2>
+                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                        <span className="font-semibold">ID Aplikasi:</span>
+                                                        <span className="ml-1">{history.idAplikasi}</span>
+                                                    </div>
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                        <span className="font-semibold">Update Terakhir:</span>
+                                                        <span className="ml-1">
+                                                            {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
                 </div>
-              </div>
-              
 
-              {/* Download PDF Section */}
-              <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mb-10 flex flex-col items-center">
-                <button
-                  onClick={handleDownloadPDF}
-                  className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 mt-4"
-                >
-                  Download Kartu Peserta
-                </button>
-              </div>
-            </>
-          )}
+                {/* Section Footer */}
+                <FooterSection />
+
+                {/* Footer Copyright */}
+                <FooterCopyright />
+            </main>
+
+            {/* Scroll to Top Button */}
+            <ScrollToTopButton />
+
+            {/* Search Button */}
+            <CariKarirButton />
         </div>
-
-        <FooterCopyright />
-        <ScrollToTopButton />
-      </main>
-    </div>
-  );
+    );
 };
 
 export default Riwayat;
