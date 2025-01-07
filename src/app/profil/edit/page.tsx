@@ -14,6 +14,8 @@ import animation404 from '../../../../public/animations/404.json';
 import loadingAnimation from '../../../../public/animations/loading.json';
 import LottieAnimation from "../../../components/Animations";
 import { toast } from 'sonner'; // Updated import
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
     try {
@@ -99,6 +101,7 @@ const EditProfil = () => {
         periodeStart: "",
         periodeEnd: "",
         deskripsiKerja: "",
+        sertifikat: "",
     });
 
     const [kontakData, setKontakData] = useState({
@@ -227,7 +230,7 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setPendidikanData(data.data); // Set profile data
+                    setPendidikanList([data.data]); // Set the fetched data to the state as an array
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -270,17 +273,7 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    const pengalaman = data.data;
-                    if (pengalaman.periodeKerja && pengalaman.periodeKerja.includes(" to ")) {
-                        const [periodeKerjaStart, periodeKerjaEnd] = pengalaman.periodeKerja.split(" to ");
-                        setPengalamanData({
-                            ...pengalaman,
-                            periodeKerjaStart,
-                            periodeKerjaEnd,
-                        });
-                    } else {
-                        setPengalamanData(pengalaman);
-                    }
+                    setPengalamanList([data.data]); // Ensure data is an array
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -323,17 +316,7 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    const organisasi = data.data;
-                    if (organisasi.periode && organisasi.periode.includes(" to ")) {
-                        const [periodeStart, periodeEnd] = organisasi.periode.split(" to ");
-                        setOrganisasiData({
-                            ...organisasi,
-                            periodeStart,
-                            periodeEnd,
-                        });
-                    } else {
-                        setOrganisasiData(organisasi);
-                    }
+                    setOrganisasiList([data.data]); // Ensure data is an array
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -376,7 +359,7 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setKontakData(data.data);
+                    setKontakList([data.data]);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -496,18 +479,38 @@ const EditProfil = () => {
             desa_domisili: profileData.desaDomisili,
             telp: profileData.telp,
             pendidikan_terakhir: profileData.pendidikanTerakhir,
-            status_kawin: profileData.statusKawin, // Directly use the selected value
-            id_session: "29348293923", // Example session ID
-            flg_status: "2", // Example flag status
-            kontak: kontakList,
-            pesertaPendidikan: pendidikanList,
+            status_kawin: profileData.statusKawin,
+            id_session: "29348293923",
+            flg_status: "2",
+            kontak: kontakList.map(kontak => ({
+                nama_kontak: kontak.namaKontak,
+                hub_kontak: kontak.hubKontak,
+                telp_kontak: kontak.telpKontak,
+                email_kontak: kontak.emailKontak,
+                alamat_kontak: kontak.alamatKontak,
+            })),
+            pesertaPendidikan: pendidikanList.map(pendidikan => ({
+                id_jenjang: pendidikan.idJenjang,
+                nama_institusi: pendidikan.namaInstitusi,
+                jurusan: pendidikan.jurusan,
+                thn_masuk: pendidikan.thnMasuk,
+                thn_lulus: pendidikan.thnLulus,
+                nilai: pendidikan.nilai,
+                gelar: pendidikan.gelar,
+                achievements: pendidikan.achievements,
+            })),
             pesertaOrganisasi: organisasiList.map(org => ({
-                ...org,
-                periode: `${org.periodeStart} to ${org.periodeEnd}`
+                nama_organisasi: org.namaOrganisasi,
+                posisi_organisasi: org.posisiOrganisasi,
+                periode: `${org.periodeStart}-${org.periodeEnd}`,
+                deskripsi_kerja: org.deskripsiKerja,
+                sertifikat: org.sertifikat,
             })),
             pesertaPengalaman: pengalamanList.map(exp => ({
-                ...exp,
-                periode_kerja: `${exp.periodeKerjaStart} to ${exp.periodeKerjaEnd}`
+                nama_instansi: exp.namaInstansi,
+                posisi_kerja: exp.posisiKerja,
+                periode_kerja: `${exp.periodeKerjaStart}-${exp.periodeKerjaEnd}`,
+                deskripsi_kerja: exp.deskripsiKerja,
             })),
         };
 
@@ -537,6 +540,262 @@ const EditProfil = () => {
         }
     };
 
+    const handleSavePersonalInfo = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found in localStorage");
+            return;
+        }
+        setIsLoading(true);
+
+        const id = await getIdFromToken(token);
+        if (!id) {
+            console.error("Invalid token");
+            setIsLoading(false);
+            return;
+        }
+
+        const payload = {
+            nama: profileData.nama,
+            tempat_lahir: profileData.tempatLahir,
+            tgl_lahir: profileData.tglLahir,
+            jns_kelamin: profileData.jnsKelamin,
+            agama: profileData.agama,
+            alamat_identitas: profileData.alamatIdentitas,
+            provinsi_identitas: profileData.provinsiIdentitas,
+            kota_identitas: profileData.kotaIdentitas,
+            kecamatan_identitas: profileData.kecamatanIdentitas,
+            desa_identitas: profileData.desaIdentitas,
+            alamat_domisili: profileData.alamatDomisili,
+            provinsi_domisili: profileData.provinsiDomisili,
+            kota_domisili: profileData.kotaDomisili,
+            kecamatan_domisili: profileData.kecamatanDomisili,
+            desa_domisili: profileData.desaDomisili,
+            telp: profileData.telp,
+            pendidikan_terakhir: profileData.pendidikanTerakhir,
+            status_kawin: profileData.statusKawin,
+            id_session: "29348293923",
+            flg_status: "2"
+        };
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/edit`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                toast.success("Informasi personal berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
+            } else {
+                toast.error("Gagal menyimpan informasi personal: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+            }
+        } catch (error) {
+            console.error("Error updating personal info:", error);
+            toast.error("Terjadi kesalahan saat menyimpan informasi personal.", { style: { backgroundColor: 'white', color: 'red' } });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSavePendidikan = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found in localStorage");
+            return;
+        }
+        setIsLoading(true);
+
+        const id = await getIdFromToken(token);
+        if (!id) {
+            console.error("Invalid token");
+            setIsLoading(false);
+            return;
+        }
+
+        const formattedPendidikanList = pendidikanList.map(pendidikan => ({
+            id_jenjang: pendidikan.idJenjang,
+            nama_institusi: pendidikan.namaInstitusi,
+            jurusan: pendidikan.jurusan,
+            thn_masuk: pendidikan.thnMasuk,
+            thn_lulus: pendidikan.thnLulus,
+            nilai: pendidikan.nilai,
+            gelar: pendidikan.gelar,
+            achievements: pendidikan.achievements,
+        }));
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pendidikan/${id}/insert`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formattedPendidikanList),
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                toast.success("Pendidikan berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
+            } else {
+                toast.error("Gagal menyimpan pendidikan: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+            }
+        } catch (error) {
+            console.error("Error updating pendidikan:", error);
+            toast.error("Terjadi kesalahan saat menyimpan pendidikan.", { style: { backgroundColor: 'white', color: 'red' } });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSavePengalaman = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found in localStorage");
+            return;
+        }
+        setIsLoading(true);
+
+        const id = await getIdFromToken(token);
+        if (!id) {
+            console.error("Invalid token");
+            setIsLoading(false);
+            return;
+        }
+
+        const formattedPengalamanList = pengalamanList.map(pengalaman => ({
+            nama_instansi: pengalaman.namaInstansi,
+            posisi_kerja: pengalaman.posisiKerja,
+            periode_kerja: `${pengalaman.periodeKerjaStart}-${pengalaman.periodeKerjaEnd}`,
+            deskripsi_kerja: pengalaman.deskripsiKerja,
+        }));
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pengalaman/${id}/insert`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formattedPengalamanList),
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                toast.success("Pengalaman berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
+            } else {
+                toast.error("Gagal menyimpan pengalaman: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+            }
+        } catch (error) {
+            console.error("Error updating pengalaman:", error);
+            toast.error("Terjadi kesalahan saat menyimpan pengalaman.", { style: { backgroundColor: 'white', color: 'red' } });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSaveOrganisasi = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found in localStorage");
+            return;
+        }
+        setIsLoading(true);
+
+        const id = await getIdFromToken(token);
+        if (!id) {
+            console.error("Invalid token");
+            setIsLoading(false);
+            return;
+        }
+
+        const formattedOrganisasiList = organisasiList.map(organisasi => ({
+            nama_organisasi: organisasi.namaOrganisasi,
+            posisi_organisasi: organisasi.posisiOrganisasi,
+            periode: `${organisasi.periodeStart}-${organisasi.periodeEnd}`,
+            deskripsi_kerja: organisasi.deskripsiKerja,
+        }));
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/organisasi/${id}/insert`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formattedOrganisasiList),
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                toast.success("Organisasi berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
+            } else {
+                toast.error("Gagal menyimpan organisasi: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+            }
+        } catch (error) {
+            console.error("Error updating organisasi:", error);
+            toast.error("Terjadi kesalahan saat menyimpan organisasi.", { style: { backgroundColor: 'white', color: 'red' } });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSaveKontak = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found in localStorage");
+            return;
+        }
+        setIsLoading(true);
+
+        const id = await getIdFromToken(token);
+        if (!id) {
+            console.error("Invalid token");
+            setIsLoading(false);
+            return;
+        }
+
+        const formattedKontakList = kontakList.map(kontak => ({
+            nama_kontak: kontak.namaKontak,
+            hub_kontak: kontak.hubKontak,
+            telp_kontak: kontak.telpKontak,
+            email_kontak: kontak.emailKontak,
+            alamat_kontak: kontak.alamatKontak,
+        }));
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}/insert`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formattedKontakList),
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                toast.success("Kontak berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
+            } else {
+                toast.error("Gagal menyimpan kontak: " + data.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+            }
+        } catch (error) {
+            console.error("Error updating kontak:", error);
+            toast.error("Terjadi kesalahan saat menyimpan kontak.", { style: { backgroundColor: 'white', color: 'red' } });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
@@ -557,673 +816,677 @@ const EditProfil = () => {
                 <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 px-4 md:px-8 lg:px-16 xl:px-32">
                     <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Edit Profile</h1>
                     <br />
-                    {/* <p className="font-sans text-base font-normal leading-relaxed text-gray-800 text-center px-6 md:px-32 lg:px-56">
-                        Berikut adalah informasi dan artikel terbaru dari Bank BPD DIY:
-                    </p> */}
-
                     {isLoading ? (
                         <div className="flex justify-center items-center mt-10">
                             <LottieAnimation animationData={loadingAnimation} />
                         </div>
                     ) : (
-                        <>
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="nama">
-                                        Nama
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="nama"
-                                        name="nama"
-                                        value={profileData.nama || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
+                        <Tabs>
+                            <TabList className="flex justify-center mb-4">
+                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Informasi Personal</Tab>
+                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Pendidikan</Tab>
+                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Pengalaman</Tab>
+                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Organisasi</Tab>
+                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Kontak</Tab>
+                            </TabList>
 
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="tempatLahir">
-                                        Tempat Lahir
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="tempatLahir"
-                                        name="tempatLahir"
-                                        value={profileData.tempatLahir || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="tglLahir">
-                                        Tanggal Lahir
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="tglLahir"
-                                        name="tglLahir"
-                                        value={profileData.tglLahir || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="jnsKelamin">
-                                        Jenis Kelamin
-                                    </label>
-                                    <select
-                                        id="jnsKelamin"
-                                        name="jnsKelamin"
-                                        value={profileData.jnsKelamin || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    >
-                                        <option value="">Pilih Jenis Kelamin</option>
-                                        <option value="1">PRIA</option>
-                                        <option value="2">WANITA</option>
-                                    </select>
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="agama">
-                                        Agama
-                                    </label>
-                                    <select
-                                        id="agama"
-                                        name="agama"
-                                        value={profileData.agama || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    >
-                                        <option value="">Pilih Agama</option>
-                                        <option value="1">ISLAM</option>
-                                        <option value="2">KRISTEN</option>
-                                        <option value="3">KATOLIK</option>
-                                        <option value="4">HINDU</option>
-                                        <option value="5">BUDHA</option>
-                                        <option value="6">KONGHUCU</option>
-                                    </select>
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="telp">
-                                        No Telepon
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="telp"
-                                        name="telp"
-                                        value={profileData.telp || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="pendidikanTerakhir">
-                                        Pendidikan Terakhir
-                                    </label>
-                                    <select
-                                        id="pendidikanTerakhir"
-                                        name="pendidikanTerakhir"
-                                        value={profileData.pendidikanTerakhir || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    >
-                                        <option value="">Pilih Pendidikan Terakhir</option>
-                                        <option value="4">S1</option>
-                                        <option value="5">S2</option>
-                                        <option value="6">S3</option>
-                                    </select>
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="statusKawin">
-                                        Status Kawin
-                                    </label>
-                                    <select
-                                        id="statusKawin"
-                                        name="statusKawin"
-                                        value={profileData.statusKawin || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    >
-                                        <option value="">Pilih Status Kawin</option>
-                                        <option value="1">LAJANG</option>
-                                        <option value="2">MENIKAH</option>
-                                    </select>
-
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatIdentitas">
-                                        Alamat Identitas
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="alamatIdentitas"
-                                        name="alamatIdentitas"
-                                        value={profileData.alamatIdentitas || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiIdentitas">
-                                        Provinsi Identitas
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="provinsiIdentitas"
-                                        name="provinsiIdentitas"
-                                        value={profileData.provinsiIdentitas || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaIdentitas">
-                                        Kota Identitas
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="kotaIdentitas"
-                                        name="kotaIdentitas"
-                                        value={profileData.kotaIdentitas || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="kecamatanIdentitas">
-                                        Kecamatan Identitas
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="kecamatanIdentitas"
-                                        name="kecamatanIdentitas"
-                                        value={profileData.kecamatanIdentitas || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="desaIdentitas">
-                                        Desa Identitas
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="desaIdentitas"
-                                        name="desaIdentitas"
-                                        value={profileData.desaIdentitas || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatDomisili">
-                                        Alamat Domisili
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="alamatDomisili"
-                                        name="alamatDomisili"
-                                        value={profileData.alamatDomisili || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiDomisili">
-                                        Provinsi Domisili
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="provinsiDomisili"
-                                        name="provinsiDomisili"
-                                        value={profileData.provinsiDomisili || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaDomisili">
-                                        Kabupaten/Kota Domisili
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="kotaDomisili"
-                                        name="kotaDomisili"
-                                        value={profileData.kotaDomisili || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="kecamatanDomisili">
-                                        Kecamatan Domisili
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="kecamatanDomisili"
-                                        name="kecamatanDomisili"
-                                        value={profileData.kecamatanDomisili || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-
-                                <div className="mb-8">
-                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="desaDomisili">
-                                        Desa Domisili
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="desaDomisili"
-                                        name="desaDomisili"
-                                        value={profileData.desaDomisili || ""}
-                                        onChange={(e) => handleChange(e, 0, "profile")}
-                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap mt-10 w-full">
-                                <div className="w-full md:w-1/2 px-4">
-                                    <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4 flex justify-between items-center">
-                                            <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanKerja">
-                                                PENGALAMAN KERJA
+                            <TabPanel>
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="nama">
+                                                Nama
                                             </label>
-                                            <button onClick={() => handleAddEntry("pengalaman")} className="text-blue-500">
-                                                <FontAwesomeIcon icon={faPlus} />
-                                            </button>
+                                            <input
+                                                type="text"
+                                                id="nama"
+                                                name="nama"
+                                                value={profileData.nama || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
                                         </div>
-                                        {pengalamanList.map((pengalaman, index) => (
-                                            <div key={index} className="mb-4 border-b pb-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstansi">
-                                                        Nama Perusahaan / Instansi
-                                                    </label>
-                                                    <button onClick={() => handleRemoveEntry("pengalaman", index)} className="text-red-500">
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </button>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    id="namaInstansi"
-                                                    name="namaInstansi"
-                                                    value={pengalaman.namaInstansi || ""}
-                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
-                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                />
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
-                                                        Posisi / Jabatan
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="posisiKerja"
-                                                        name="posisiKerja"
-                                                        value={pengalaman.posisiKerja || ""}
-                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="tempatLahir">
+                                                Tempat Lahir
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="tempatLahir"
+                                                name="tempatLahir"
+                                                value={profileData.tempatLahir || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="tglLahir">
+                                                Tanggal Lahir
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="tglLahir"
+                                                name="tglLahir"
+                                                value={profileData.tglLahir || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="jnsKelamin">
+                                                Jenis Kelamin
+                                            </label>
+                                            <select
+                                                id="jnsKelamin"
+                                                name="jnsKelamin"
+                                                value={profileData.jnsKelamin || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            >
+                                                <option value="">Pilih Jenis Kelamin</option>
+                                                <option value="1">PRIA</option>
+                                                <option value="2">WANITA</option>
+                                            </select>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="agama">
+                                                Agama
+                                            </label>
+                                            <select
+                                                id="agama"
+                                                name="agama"
+                                                value={profileData.agama || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            >
+                                                <option value="">Pilih Agama</option>
+                                                <option value="1">ISLAM</option>
+                                                <option value="2">KRISTEN</option>
+                                                <option value="3">KATOLIK</option>
+                                                <option value="4">HINDU</option>
+                                                <option value="5">BUDHA</option>
+                                                <option value="6">KONGHUCU</option>
+                                            </select>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="telp">
+                                                No Telepon
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="telp"
+                                                name="telp"
+                                                value={profileData.telp || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="pendidikanTerakhir">
+                                                Pendidikan Terakhir
+                                            </label>
+                                            <select
+                                                id="pendidikanTerakhir"
+                                                name="pendidikanTerakhir"
+                                                value={profileData.pendidikanTerakhir || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            >
+                                                <option value="">Pilih Pendidikan Terakhir</option>
+                                                <option value="4">S1</option>
+                                                <option value="5">S2</option>
+                                                <option value="6">S3</option>
+                                            </select>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="statusKawin">
+                                                Status Kawin
+                                            </label>
+                                            <select
+                                                id="statusKawin"
+                                                name="statusKawin"
+                                                value={profileData.statusKawin || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            >
+                                                <option value="">Pilih Status Kawin</option>
+                                                <option value="1">LAJANG</option>
+                                                <option value="2">MENIKAH</option>
+                                            </select>
 
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
-                                                        Tanggal Mulai Bekerja
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        id="periodeKerjaStart"
-                                                        name="periodeKerjaStart"
-                                                        value={pengalaman.periodeKerjaStart || ""}
-                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
-                                                        className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
-                                                        Tanggal Akhir Bekerja
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        id="periodeKerjaEnd"
-                                                        name="periodeKerjaEnd"
-                                                        value={pengalaman.periodeKerjaEnd || ""}
-                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
-                                                    />
-                                                </div>
+                                        </div>
 
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                        Deskripsi Pekerjaan
-                                                    </label>
-                                                    <textarea
-                                                        id="deskripsiKerja"
-                                                        name="deskripsiKerja"
-                                                        value={pengalaman.deskripsiKerja || ""}
-                                                        onChange={(e) => handleChange(e, index, "pengalaman")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatIdentitas">
+                                                Alamat Identitas
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="alamatIdentitas"
+                                                name="alamatIdentitas"
+                                                value={profileData.alamatIdentitas || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiIdentitas">
+                                                Provinsi Identitas
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="provinsiIdentitas"
+                                                name="provinsiIdentitas"
+                                                value={profileData.provinsiIdentitas || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaIdentitas">
+                                                Kota Identitas
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="kotaIdentitas"
+                                                name="kotaIdentitas"
+                                                value={profileData.kotaIdentitas || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="kecamatanIdentitas">
+                                                Kecamatan Identitas
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="kecamatanIdentitas"
+                                                name="kecamatanIdentitas"
+                                                value={profileData.kecamatanIdentitas || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="desaIdentitas">
+                                                Desa Identitas
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="desaIdentitas"
+                                                name="desaIdentitas"
+                                                value={profileData.desaIdentitas || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatDomisili">
+                                                Alamat Domisili
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="alamatDomisili"
+                                                name="alamatDomisili"
+                                                value={profileData.alamatDomisili || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiDomisili">
+                                                Provinsi Domisili
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="provinsiDomisili"
+                                                name="provinsiDomisili"
+                                                value={profileData.provinsiDomisili || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaDomisili">
+                                                Kabupaten/Kota Domisili
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="kotaDomisili"
+                                                name="kotaDomisili"
+                                                value={profileData.kotaDomisili || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="kecamatanDomisili">
+                                                Kecamatan Domisili
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="kecamatanDomisili"
+                                                name="kecamatanDomisili"
+                                                value={profileData.kecamatanDomisili || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
+
+                                        <div className="mb-8">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="desaDomisili">
+                                                Desa Domisili
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="desaDomisili"
+                                                name="desaDomisili"
+                                                value={profileData.desaDomisili || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                        </div>
                                     </div>
+                                    <button onClick={handleSavePersonalInfo} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                                        Simpan Informasi Personal
+                                    </button>
                                 </div>
-                                <div className="w-full md:w-1/2 px-4">
-                                    <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4 flex justify-between items-center">
-                                            <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanOrganisasi">
-                                                PENGALAMAN ORGANISASI
-                                            </label>
-                                            <button onClick={() => handleAddEntry("organisasi")} className="text-blue-500">
-                                                <FontAwesomeIcon icon={faPlus} />
-                                            </button>
-                                        </div>
-                                        {organisasiList.map((organisasi, index) => (
-                                            <div key={index} className="mb-4 border-b pb-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaOrganisasi">
-                                                        Nama Organisasi
-                                                    </label>
-                                                    <button onClick={() => handleRemoveEntry("organisasi", index)} className="text-red-500">
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </button>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    id="namaOrganisasi"
-                                                    name="namaOrganisasi"
-                                                    value={organisasi.namaOrganisasi || ""}
-                                                    onChange={(e) => handleChange(e, index, "organisasi")}
-                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                />
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
-                                                        Posisi / Jabatan
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="posisiOrganisasi"
-                                                        name="posisiOrganisasi"
-                                                        value={organisasi.posisiOrganisasi || ""}
-                                                        onChange={(e) => handleChange(e, index, "organisasi")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
+                            </TabPanel>
 
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periode">
-                                                        Tanggal Awal Menjabat
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        id="periodeStart"
-                                                        name="periodeStart"
-                                                        value={organisasi.periodeStart || ""}
-                                                        onChange={(e) => handleChange(e, index, "organisasi")}
-                                                        className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="periode">
-                                                        Tanggal Akhir Menjabat
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        id="periodeEnd"
-                                                        name="periodeEnd"
-                                                        value={organisasi.periodeEnd || ""}
-                                                        onChange={(e) => handleChange(e, index, "organisasi")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                        Deskripsi Kegiatan
-                                                    </label>
-                                                    <textarea
-                                                        id="deskripsiKerja"
-                                                        name="deskripsiKerja"
-                                                        value={organisasi.deskripsiKerja || ""}
-                                                        onChange={(e) => handleChange(e, index, "organisasi")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
+                            <TabPanel>
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+                                    <div className="mb-4 flex justify-between items-center">
+                                        <label className="block text-darkBlue font-bold mb-2" htmlFor="pendidikan">
+                                            PENDIDIKAN
+                                        </label>
+                                        <button onClick={() => handleAddEntry("pendidikan")} className="text-blue-500">
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap -mx-4 mt-10 w-full">
-                                <div className="w-full md:w-1/2 px-4">
-                                    <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4 flex justify-between items-center">
-                                            <label className="block text-darkBlue font-bold mb-2" htmlFor="pendidikan">
-                                                PENDIDIKAN
-                                            </label>
-                                            <button onClick={() => handleAddEntry("pendidikan")} className="text-blue-500">
-                                                <FontAwesomeIcon icon={faPlus} />
-                                            </button>
-                                        </div>
-                                        {pendidikanList.map((pendidikan, index) => (
-                                            <div key={index} className="mb-4 border-b pb-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
-                                                        Universitas
-                                                    </label>
-                                                    <button onClick={() => handleRemoveEntry("pendidikan", index)} className="text-red-500">
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </button>
-                                                </div>
+                                    {pendidikanList.map((pendidikan, index) => (
+                                        <div key={index} className="mb-4 border-b pb-4">
+                                            <div className="flex justify-between items-center">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
+                                                    Universitas
+                                                </label>
+                                                <button onClick={() => handleRemoveEntry("pendidikan", index)} className="text-red-500">
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                id="namaInstitusi"
+                                                name="namaInstitusi"
+                                                value={pendidikan.namaInstitusi || ""}
+                                                onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="jurusan">
+                                                    Jurusan
+                                                </label>
                                                 <input
                                                     type="text"
-                                                    id="namaInstitusi"
-                                                    name="namaInstitusi"
-                                                    value={pendidikan.namaInstitusi || ""}
+                                                    id="jurusan"
+                                                    name="jurusan"
+                                                    value={pendidikan.jurusan || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="jurusan">
-                                                        Jurusan
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="jurusan"
-                                                        name="jurusan"
-                                                        value={pendidikan.jurusan || ""}
-                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="thnMasuk">
-                                                        Tahun Masuk
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="thnMasuk"
-                                                        name="thnMasuk"
-                                                        value={pendidikan.thnMasuk || ""}
-                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                        pattern="\d{4}"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="thnLulus">
-                                                        Tahun Lulus
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="thnLulus"
-                                                        name="thnLulus"
-                                                        value={pendidikan.thnLulus || ""}
-                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="nilai">
-                                                        Nilai
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="nilai"
-                                                        name="nilai"
-                                                        value={pendidikan.nilai || ""}
-                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="gelar">
-                                                        Gelar
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="gelar"
-                                                        name="gelar"
-                                                        value={pendidikan.gelar || ""}
-                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-8">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="achievements">
-                                                        Penghargaan
-                                                    </label>
-                                                    <textarea
-                                                        id="achievements"
-                                                        name="achievements"
-                                                        value={pendidikan.achievements || ""}
-                                                        onChange={(e) => handleChange(e, index, "pendidikan")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="w-full md:w-1/2 px-4">
-                                    <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-                                        <div className="mb-4 flex justify-between items-center">
-                                            <label className="block text-darkBlue font-bold mb-2" htmlFor="kontakKerabat">
-                                                KONTAK KERABAT
-                                            </label>
-                                            <button onClick={() => handleAddEntry("kontak")} className="text-blue-500">
-                                                <FontAwesomeIcon icon={faPlus} />
-                                            </button>
-                                        </div>
-                                        {kontakList.map((kontak, index) => (
-                                            <div key={index} className="mb-4 border-b pb-4">
-                                                <div className="flex justify-between items-center">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="namaKontak">
-                                                        Nama Kontak
-                                                    </label>
-                                                    <button onClick={() => handleRemoveEntry("kontak", index)} className="text-red-500">
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </button>
-                                                </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="thnMasuk">
+                                                    Tahun Masuk
+                                                </label>
                                                 <input
                                                     type="text"
-                                                    id="namaKontak"
-                                                    name="namaKontak"
-                                                    value={kontak.namaKontak || ""}
+                                                    id="thnMasuk"
+                                                    name="thnMasuk"
+                                                    value={pendidikan.thnMasuk || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    pattern="\d{4}"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="thnLulus">
+                                                    Tahun Lulus
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="thnLulus"
+                                                    name="thnLulus"
+                                                    value={pendidikan.thnLulus || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="nilai">
+                                                    Nilai
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="nilai"
+                                                    name="nilai"
+                                                    value={pendidikan.nilai || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="gelar">
+                                                    Gelar
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="gelar"
+                                                    name="gelar"
+                                                    value={pendidikan.gelar || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+
+                                            <div className="mb-8">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="achievements">
+                                                    Penghargaan
+                                                </label>
+                                                <textarea
+                                                    id="achievements"
+                                                    name="achievements"
+                                                    value={pendidikan.achievements || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button onClick={handleSavePendidikan} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                                        Simpan Pendidikan
+                                    </button>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel>
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+                                    <div className="mb-4 flex justify-between items-center">
+                                        <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanKerja">
+                                            PENGALAMAN KERJA
+                                        </label>
+                                        <button onClick={() => handleAddEntry("pengalaman")} className="text-blue-500">
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </button>
+                                    </div>
+                                    {pengalamanList.map((pengalaman, index) => (
+                                        <div key={index} className="mb-4 border-b pb-4">
+                                            <div className="flex justify-between items-center">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstansi">
+                                                    Nama Perusahaan / Instansi
+                                                </label>
+                                                <button onClick={() => handleRemoveEntry("pengalaman", index)} className="text-red-500">
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                id="namaInstansi"
+                                                name="namaInstansi"
+                                                value={pengalaman.namaInstansi || ""}
+                                                onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
+                                                    Posisi / Jabatan
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="posisiKerja"
+                                                    name="posisiKerja"
+                                                    value={pengalaman.posisiKerja || ""}
+                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
+                                                    Tanggal Mulai Bekerja
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="periodeKerjaStart"
+                                                    name="periodeKerjaStart"
+                                                    value={pengalaman.periodeKerjaStart || ""}
+                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
+                                                    Tanggal Akhir Bekerja
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="periodeKerjaEnd"
+                                                    name="periodeKerjaEnd"
+                                                    value={pengalaman.periodeKerjaEnd || ""}
+                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
+                                                    Deskripsi Pekerjaan
+                                                </label>
+                                                <textarea
+                                                    id="deskripsiKerja"
+                                                    name="deskripsiKerja"
+                                                    value={pengalaman.deskripsiKerja || ""}
+                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button onClick={handleSavePengalaman} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                                        Simpan Pengalaman
+                                    </button>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel>
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+                                    <div className="mb-4 flex justify-between items-center">
+                                        <label className="block text-darkBlue font-bold mb-2" htmlFor="organisasi">
+                                            ORGANISASI
+                                        </label>
+                                        <button onClick={() => handleAddEntry("organisasi")} className="text-blue-500">
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </button>
+                                    </div>
+                                    {organisasiList.map((organisasi, index) => (
+                                        <div key={index} className="mb-4 border-b pb-4">
+                                            <div className="flex justify-between items-center">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="namaOrganisasi">
+                                                    Nama Organisasi
+                                                </label>
+                                                <button onClick={() => handleRemoveEntry("organisasi", index)} className="text-red-500">
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                id="namaOrganisasi"
+                                                name="namaOrganisasi"
+                                                value={organisasi.namaOrganisasi || ""}
+                                                onChange={(e) => handleChange(e, index, "organisasi")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
+                                                    Posisi
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="posisiOrganisasi"
+                                                    name="posisiOrganisasi"
+                                                    value={organisasi.posisiOrganisasi || ""}
+                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeStart">
+                                                    Tanggal Mulai
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="periodeStart"
+                                                    name="periodeStart"
+                                                    value={organisasi.periodeStart || ""}
+                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeEnd">
+                                                    Tanggal Akhir
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="periodeEnd"
+                                                    name="periodeEnd"
+                                                    value={organisasi.periodeEnd || ""}
+                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
+                                                    Deskripsi
+                                                </label>
+                                                <textarea
+                                                    id="deskripsiKerja"
+                                                    name="deskripsiKerja"
+                                                    value={organisasi.deskripsiKerja || ""}
+                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button onClick={handleSaveOrganisasi} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                                        Simpan Organisasi
+                                    </button>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel>
+                                <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+                                    <div className="mb-4 flex justify-between items-center">
+                                        <label className="block text-darkBlue font-bold mb-2" htmlFor="kontakKerabat">
+                                            KONTAK KERABAT
+                                        </label>
+                                        <button onClick={() => handleAddEntry("kontak")} className="text-blue-500">
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </button>
+                                    </div>
+                                    {kontakList.map((kontak, index) => (
+                                        <div key={index} className="mb-4 border-b pb-4">
+                                            <div className="flex justify-between items-center">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="namaKontak">
+                                                    Nama Kontak
+                                                </label>
+                                                <button onClick={() => handleRemoveEntry("kontak", index)} className="text-red-500">
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                id="namaKontak"
+                                                name="namaKontak"
+                                                value={kontak.namaKontak || ""}
+                                                onChange={(e) => handleChange(e, index, "kontak")}
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                            />
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
+                                                    Hubungan Kerabat
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="hubKontak"
+                                                    name="hubKontak"
+                                                    value={kontak.hubKontak || ""}
                                                     onChange={(e) => handleChange(e, index, "kontak")}
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
-                                                        Hubungan Kerabat
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="hubKontak"
-                                                        name="hubKontak"
-                                                        value={kontak.hubKontak || ""}
-                                                        onChange={(e) => handleChange(e, index, "kontak")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
-                                                        No Telepon
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="telpKontak"
-                                                        name="telpKontak"
-                                                        value={kontak.telpKontak || ""}
-                                                        onChange={(e) => handleChange(e, index, "kontak")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                        pattern="\d{4}"
-                                                    />
-                                                </div>
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="emailKontak">
-                                                        Email
-                                                    </label>
-                                                    <input
-                                                        type="email"
-                                                        id="emailKontak"
-                                                        name="emailKontak"
-                                                        value={kontak.emailKontak || ""}
-                                                        onChange={(e) => handleChange(e, index, "kontak")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                        pattern="\d{4}"
-                                                    />
-                                                </div>
-
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatKontak">
-                                                        Alamat
-                                                    </label>
-                                                    <textarea
-                                                        id="alamatKontak"
-                                                        name="alamatKontak"
-                                                        value={kontak.alamatKontak || ""}
-                                                        onChange={(e) => handleChange(e, index, "kontak")}
-                                                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    />
-                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div className="flex justify-end mt-8">
-                                <button
-                                    onClick={handleSave}
-                                    className="bg-darkBlue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                                >
-                                    Simpan
-                                </button>
-                            </div>
-                        </>
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
+                                                    No Telepon
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="telpKontak"
+                                                    name="telpKontak"
+                                                    value={kontak.telpKontak || ""}
+                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    pattern="\d{4}"
+                                                />
+                                            </div>
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="emailKontak">
+                                                    Email
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    id="emailKontak"
+                                                    name="emailKontak"
+                                                    value={kontak.emailKontak || ""}
+                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    pattern="\d{4}"
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatKontak">
+                                                    Alamat
+                                                </label>
+                                                <textarea
+                                                    id="alamatKontak"
+                                                    name="alamatKontak"
+                                                    value={kontak.alamatKontak || ""}
+                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button onClick={handleSaveKontak} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                                        Simpan Kontak
+                                    </button>
+                                </div>
+                            </TabPanel>
+                        </Tabs>
                     )}
-                    
                     <br />
                 </div>
 
