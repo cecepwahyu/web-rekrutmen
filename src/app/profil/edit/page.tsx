@@ -89,7 +89,7 @@ const EditProfil = () => {
         posisiKerja: "",
         periodeKerjaStart: "",
         periodeKerjaEnd: "",
-        deskripsiKerja: "",
+        deskripsi_kerja: "",
     });
 
     const [organisasiData, setOrganisasiData] = useState({
@@ -187,10 +187,10 @@ const EditProfil = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     setProfileData(data.data); // Set profile data
-                    setPendidikanList(data.data.pesertaPendidikan || []);
-                    setPengalamanList(data.data.pesertaPengalaman || []);
-                    setOrganisasiList(data.data.pesertaOrganisasi || []);
-                    setKontakList(data.data.kontak || []);
+                    //setPendidikanList(data.data.pesertaPendidikan || []);
+                    //setPengalamanList(data.data.pesertaPengalaman || []);
+                    //setOrganisasiList(data.data.pesertaOrganisasi || []);
+                    //setKontakList(data.data.kontak || []);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -233,7 +233,8 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setPendidikanList([data.data]); // Set the fetched data to the state as an array
+                    const pendidikan = Array.isArray(data.data) ? data.data : [data.data];
+                    setPendidikanList(pendidikan);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -276,7 +277,8 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setPengalamanList([data.data]); // Ensure data is an array
+                    const pengalaman = Array.isArray(data.data) ? data.data : [data.data];
+                    setPengalamanList(pengalaman);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -289,6 +291,15 @@ const EditProfil = () => {
 
         fetchPengalamanData();
     }, []);
+    
+    // useEffect(() => {
+    //     console.log("Updated pengalamanList:", pengalamanList);
+    // }, [pengalamanList]);
+
+    // useEffect(() => {
+    //     console.log("Updated organisasiList:", organisasiList);
+    // }, [organisasiList]);
+    
 
     useEffect(() => {
         const fetchOrganisasiData = async () => {
@@ -319,7 +330,8 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setOrganisasiList([data.data]); // Ensure data is an array
+                    const organisasi = Array.isArray(data.data) ? data.data : [data.data];
+                    setOrganisasiList(organisasi);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -362,7 +374,8 @@ const EditProfil = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setKontakList([data.data]);
+                    const kontak = Array.isArray(data.data) ? data.data : [data.data];
+                    setKontakList(kontak);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -513,7 +526,7 @@ const EditProfil = () => {
                 nama_instansi: exp.namaInstansi,
                 posisi_kerja: exp.posisiKerja,
                 periode_kerja: `${exp.periodeKerjaStart}-${exp.periodeKerjaEnd}`,
-                deskripsi_kerja: exp.deskripsiKerja,
+                deskripsi_kerja: exp.deskripsi_kerja,
             })),
         };
 
@@ -1036,7 +1049,7 @@ const EditProfil = () => {
                                                 <textarea
                                                     id="deskripsiKerja"
                                                     name="deskripsiKerja"
-                                                    value={pengalaman.deskripsiKerja || ""}
+                                                    value={pengalaman.deskripsi_kerja || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
