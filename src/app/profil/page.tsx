@@ -150,6 +150,10 @@ const Profile = () => {
     const [newProfilePicture, setNewProfilePicture] = useState<string | null>(null); // State for new profile picture
     const [isFinal, setIsFinal] = useState(false); // State for is_final
     const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // State for AlertDialog
+    const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] = useState(false); // State for Change Password Dialog
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const router = useRouter(); // Initialize useRouter
 
     const handleChangeProfilePicture = () => {
@@ -247,6 +251,51 @@ const Profile = () => {
             console.error("Error finalizing data:", error);
         } finally {
             setIsAlertDialogOpen(false); // Close AlertDialog
+        }
+    };
+
+    const handleChangePassword = () => {
+        setIsChangePasswordDialogOpen(true); // Open Change Password Dialog
+    };
+
+    const handleSaveNewPassword = async () => {
+        if (newPassword !== confirmNewPassword) {
+            alert("New password and confirm password do not match");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found in localStorage");
+            return;
+        }
+
+        const id = await getIdFromToken(token);
+        if (!id) {
+            console.error("Invalid token");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/change-password`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({ currentPassword, newPassword }),
+            });
+
+            const data = await response.json();
+            if (data.responseCode === "000") {
+                console.log("Password changed successfully");
+                setIsChangePasswordDialogOpen(false); // Close dialog after saving
+            } else {
+                console.error("Error changing password:", data.responseMessage);
+            }
+        } catch (error) {
+            console.error("Error changing password:", error);
         }
     };
 
@@ -568,6 +617,55 @@ const Profile = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+            {/* Dialog for changing password */}
+            <Dialog open={isChangePasswordDialogOpen} onOpenChange={setIsChangePasswordDialogOpen}>
+                <DialogTrigger asChild>
+                    <button style={{ display: 'none' }}></button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-darkBlue">Change Password</DialogTitle>
+                        <DialogDescription className="text-gray-600">Enter your current password and new password to change your password.</DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 space-y-4">
+                        <input 
+                            type="password" 
+                            placeholder="Current Password" 
+                            value={currentPassword} 
+                            onChange={(e) => setCurrentPassword(e.target.value)} 
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                        <input 
+                            type="password" 
+                            placeholder="New Password" 
+                            value={newPassword} 
+                            onChange={(e) => setNewPassword(e.target.value)} 
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                        <input 
+                            type="password" 
+                            placeholder="Confirm New Password" 
+                            value={confirmNewPassword} 
+                            onChange={(e) => setConfirmNewPassword(e.target.value)} 
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                    </div>
+                    <DialogFooter className="mt-6 flex justify-end space-x-4">
+                        <button
+                            onClick={() => setIsChangePasswordDialogOpen(false)}
+                            className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:bg-gray-300"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSaveNewPassword} // Save new password
+                            className="bg-darkBlue text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
+                        >
+                            Save
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <MenuBar />
             <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
                 <div className="bg-white relative z-10">
@@ -821,6 +919,12 @@ const Profile = () => {
                                 disabled={isFinal}
                             >
                                 Update Data
+                            </button>
+                            <button 
+                                onClick={handleChangePassword} 
+                                className="mt-4 bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400"
+                            >
+                                Change Password
                             </button>
                         </div>
                     ) : (
