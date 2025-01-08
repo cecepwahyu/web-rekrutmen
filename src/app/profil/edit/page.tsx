@@ -10,7 +10,6 @@ import FooterCopyright from "../../../components/FooterCopyright";
 import FooterSection from "../../../components/FooterSection";
 import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
 import CariKarirButton from "../../../components/CariKarirButton";
-import animation404 from '../../../../public/animations/404.json';
 import loadingAnimation from '../../../../public/animations/loading.json';
 import LottieAnimation from "../../../components/Animations";
 import { toast } from 'sonner'; // Updated import
@@ -547,8 +546,8 @@ const EditProfil = () => {
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
-            <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
-                <div className="bg-white relative z-10">
+            <main className="pt-64 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
+                {/* <div className="bg-white relative z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
                         <defs>
                             <linearGradient id="grad1" x1="0%" y1="0%" x2="100%">
@@ -559,9 +558,9 @@ const EditProfil = () => {
                         <path fill="url(#grad1)"
                             d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
                     </svg>
-                </div>
+                </div> */}
 
-                <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 px-4 md:px-8 lg:px-16 xl:px-32">
+                <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 px-4 pt-16 md:px-8 lg:px-16 xl:px-32">
                     <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Edit Profile</h1>
                     <br />
                     {isLoading ? (
