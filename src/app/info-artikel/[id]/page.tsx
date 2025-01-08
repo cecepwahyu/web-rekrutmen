@@ -152,12 +152,12 @@ const DetailArtikel = () => {
                                     <h1 className="text-darkBlue font-semibold text-3xl mt-8 mb-4 md:mt-6 md:mb-6 text-center">
                                         {article.judul}
                                     </h1>
-                                    <div className="flex justify-center space-x-4 mt-4 text-gray-500">
+                                    {/* <div className="flex justify-center space-x-4 mt-4 text-gray-500">
                                         <div className="flex items-center text-sm md:text-base">
                                             <FontAwesomeIcon icon={faTag} className="mr-2" />
                                             <span>Keuangan</span>
                                         </div>
-                                    </div>
+                                    </div> */}
                                     <div className="flex justify-center mt-4 space-x-2">
                                         <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="text-blue-500" title="Share on Facebook">
                                             <FontAwesomeIcon icon={faFacebookF} />
