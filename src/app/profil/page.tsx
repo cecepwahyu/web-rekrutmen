@@ -15,6 +15,8 @@ import Image from 'next/image';
 import type { StaticImageData } from 'next/image';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon } from '@fortawesome/free-solid-svg-icons';
 
 const dummyProfilePic: StaticImageData = require('../../../public/images/dummyProfilePic.jpg');
 
@@ -158,6 +160,14 @@ const Profile = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        specialChar: false,
+    });
     const router = useRouter(); // Initialize useRouter
 
     const handleChangeProfilePicture = () => {
@@ -260,6 +270,16 @@ const Profile = () => {
 
     const handleChangePassword = () => {
         setIsChangePasswordDialogOpen(true); // Open Change Password Dialog
+    };
+
+    const checkPasswordStrength = (password: string) => {
+        setPasswordStrength({
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+        });
     };
 
     const handleSaveNewPassword = async () => {
@@ -639,13 +659,67 @@ const Profile = () => {
                             onChange={(e) => setCurrentPassword(e.target.value)} 
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
-                        <input 
-                            type="password" 
-                            placeholder="New Password" 
-                            value={newPassword} 
-                            onChange={(e) => setNewPassword(e.target.value)} 
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
+                        <div className="relative">
+                            <input 
+                                type={showPassword ? "text" : "password"} 
+                                placeholder="New Password" 
+                                value={newPassword} 
+                                onChange={(e) => {
+                                    setNewPassword(e.target.value);
+                                    checkPasswordStrength(e.target.value);
+                                }} 
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                            </button>
+                        </div>
+                        <div className="mt-2 space-y-2 rounded-md bg-blue-50/50 p-3 text-sm">
+                            <div className="flex items-center gap-2">
+                                {passwordStrength.length ? (
+                                    <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                                )}
+                                <p>Minimal 8 karakter</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {passwordStrength.uppercase ? (
+                                    <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                                )}
+                                <p>Minimal 1 huruf kapital</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {passwordStrength.lowercase ? (
+                                    <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                                )}
+                                <p>Minimal 1 huruf kecil</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {passwordStrength.number ? (
+                                    <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                                )}
+                                <p>Minimal 1 angka</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {passwordStrength.specialChar ? (
+                                    <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                                )}
+                                <p>Minimal 1 karakter khusus</p>
+                            </div>
+                        </div>
                         <input 
                             type="password" 
                             placeholder="Confirm New Password" 
