@@ -15,6 +15,7 @@ import LottieAnimation from "../../../components/Animations";
 import { toast } from 'sonner'; // Updated import
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import './custom-tabs.css'; // Import custom CSS for tabs
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
     try {
@@ -119,6 +120,7 @@ const EditProfil = () => {
     const [kontakList, setKontakList] = useState([kontakData]);
 
     const router = useRouter();
+    const [activeTab, setActiveTab] = useState(0); // State to track active tab
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -292,13 +294,13 @@ const EditProfil = () => {
         fetchPengalamanData();
     }, []);
     
-    // useEffect(() => {
-    //     console.log("Updated pengalamanList:", pengalamanList);
-    // }, [pengalamanList]);
+    useEffect(() => {
+        console.log("Updated pengalamanList:", pengalamanList);
+    }, [pengalamanList]);
 
-    // useEffect(() => {
-    //     console.log("Updated organisasiList:", organisasiList);
-    // }, [organisasiList]);
+    useEffect(() => {
+        console.log("Updated organisasiList:", organisasiList);
+    }, [organisasiList]);
     
 
     useEffect(() => {
@@ -477,6 +479,8 @@ const EditProfil = () => {
             return;
         }
 
+        const formatDateRange = (start: string, end: string) => `${start} to ${end}`;
+
         const payload = {
             nama: profileData.nama,
             tempat_lahir: profileData.tempatLahir,
@@ -518,14 +522,14 @@ const EditProfil = () => {
             pesertaOrganisasi: organisasiList.map(org => ({
                 nama_organisasi: org.namaOrganisasi,
                 posisi_organisasi: org.posisiOrganisasi,
-                periode: `${org.periodeStart}-${org.periodeEnd}`,
+                periode: formatDateRange(org.periodeStart, org.periodeEnd),
                 deskripsi_kerja: org.deskripsiKerja,
                 sertifikat: org.sertifikat,
             })),
             pesertaPengalaman: pengalamanList.map(exp => ({
                 nama_instansi: exp.namaInstansi,
                 posisi_kerja: exp.posisiKerja,
-                periode_kerja: `${exp.periodeKerjaStart}-${exp.periodeKerjaEnd}`,
+                periode_kerja: formatDateRange(exp.periodeKerjaStart, exp.periodeKerjaEnd),
                 deskripsi_kerja: exp.deskripsi_kerja,
             })),
         };
@@ -581,13 +585,13 @@ const EditProfil = () => {
                             <LottieAnimation animationData={loadingAnimation} />
                         </div>
                     ) : (
-                        <Tabs>
-                            <TabList className="flex justify-center mb-4">
-                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Informasi Personal</Tab>
-                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Pendidikan</Tab>
-                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Pengalaman</Tab>
-                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Organisasi</Tab>
-                                <Tab className="px-4 py-2 mx-2 bg-darkBlue text-white rounded-lg cursor-pointer">Kontak</Tab>
+                        <Tabs selectedIndex={activeTab} onSelect={(index) => setActiveTab(index)}>
+                            <TabList className="flex justify-center mb-4 custom-tab-list">
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 0 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Informasi Personal</Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 1 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Pendidikan</Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 2 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Pengalaman</Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 3 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Organisasi</Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 4 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Kontak</Tab>
                             </TabList>
 
                             <TabPanel>
