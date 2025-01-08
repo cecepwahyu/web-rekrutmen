@@ -117,7 +117,7 @@ const Home = () => {
                                         <svg className="h-auto w-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img1" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="https://images.pexels.com/photos/927022/pexels-photo-927022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" />
+                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="/images/photo-slider.webp" />
                                                 </pattern>
                                             </defs>
                                             <path fill="url(#img1)" d="M40,-62.6C52.2,-54.5,62.5,-43.9,66.9,-31.4C71.3,-18.9,69.6,-4.6,65.9,8.3C62.2,21.1,56.4,32.5,49.2,45.2C42.1,57.9,33.7,72.1,22.2,75.3C10.7,78.5,-3.9,70.7,-14.8,62.1C-25.7,53.5,-32.8,44.1,-44.9,35.8C-57,27.5,-74,20.3,-82.1,7.7C-90.3,-4.8,-89.5,-22.7,-80.8,-34.8C-72,-46.9,-55.2,-53.3,-40.4,-60.2C-25.6,-67,-12.8,-74.3,0.6,-75.2C13.9,-76.1,27.9,-70.6,40,-62.6Z" transform="translate(100 100)" />
@@ -146,7 +146,7 @@ const Home = () => {
                                         <svg className="h-auto w-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img2" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="https://images.pexels.com/photos/927022/pexels-photo-927022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" />
+                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="/images/photo-slider.webp" />
                                                 </pattern>
                                             </defs>
                                             <path fill="url(#img2)" d="M30,-50C40,-40,50,-30,60,-20C70,-10,80,0,70,10C60,20,50,30,40,40C30,50,20,60,10,70C0,80,-10,70,-20,60C-30,50,-40,40,-50,30C-60,20,-70,10,-80,0C-70,-10,-60,-20,-50,-30C-40,-40,-30,-50,-20,-60C-10,-70,0,-80,10,-70C20,-60,30,-50,30,-50Z" transform="translate(100 100)" />
@@ -175,7 +175,7 @@ const Home = () => {
                                         <svg className="h-auto w-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img3" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="https://images.pexels.com/photos/927022/pexels-photo-927022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" />
+                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="/images/photo-slider.webp" />
                                                 </pattern>
                                             </defs>
                                             <path fill="url(#img3)" d="M20,-30C30,-20,40,-10,50,0C60,10,70,20,60,30C50,40,40,50,30,60C20,70,10,80,0,70C-10,60,-20,50,-30,40C-40,30,-50,20,-60,10C-70,0,-80,-10,-70,-20C-60,-30,-50,-40,-40,-50C-30,-60,-20,-70,-10,-60C0,-50,10,-40,20,-30Z" transform="translate(100 100)" />
