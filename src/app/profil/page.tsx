@@ -776,7 +776,7 @@ const Profile = () => {
                                     {profileData.jnsKelamin !== undefined && (
                                         <div className="flex items-center mb-2">
                                             <FaUser className="mr-2 text-darkBlue" />
-                                            <p><strong>Jenis Kelamin:</strong> {profileData.jnsKelamin === 1 ? 'Laki-laki' : 'Perempuan'}</p>
+                                            <p><strong>Jenis Kelamin:</strong> {profileData.jnsKelamin === 1 ? 'Laki-laki' : profileData.jnsKelamin === 2 ? 'Perempuan' : 'Tidak Diketahui'}</p>
                                         </div>
                                     )}
                                     {profileData.alamatIdentitas && (
@@ -800,7 +800,7 @@ const Profile = () => {
                                     {profileData.pendidikanTerakhir && (
                                         <div className="flex items-center mb-2">
                                             <FaGraduationCap className="mr-2 text-darkBlue" />
-                                            <p><strong>Pendidikan Terakhir:</strong> {profileData.pendidikanTerakhir}</p>
+                                            <p><strong>Pendidikan Terakhir:</strong> {Number(profileData.pendidikanTerakhir) === 4 ? 'S1' : Number(profileData.pendidikanTerakhir) === 5 ? 'S2' : Number(profileData.pendidikanTerakhir) === 6 ? 'S3' : profileData.pendidikanTerakhir}</p>
                                         </div>
                                     )}
                                     {profileData.statusKawin && (
