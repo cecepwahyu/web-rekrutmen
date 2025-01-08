@@ -22,6 +22,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import Image from 'next/image';
 import Swal from 'sweetalert2';
 import { toast, Toaster } from 'sonner';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -129,6 +131,7 @@ const Login = () => {
   const [forgotPasswordCaptchaInput, setForgotPasswordCaptchaInput] = useState("");
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -219,7 +222,7 @@ const Login = () => {
 
       if (result.responseCode === "000") {
         if (!result.data.isActive) {
-          showDialog("Account is inactive! Please verify your account.", true);
+          showDialog("Akun anda belum aktif! Anda bisa melakukan verifikasi dahulu.", true);
           setLoading(false);
           return;
         }
@@ -245,7 +248,7 @@ const Login = () => {
 
   const handleForgotPassword = async () => {
     if (forgotPasswordCaptchaInput !== forgotPasswordCaptcha.answer) {
-      showDialog("Invalid CAPTCHA. Please try again.", true);
+      showDialog("CAPTCHA Tidak Valid. Anda bisa mencoba ulang.", true);
       return;
     }
 
@@ -323,7 +326,7 @@ const Login = () => {
                       <FormLabel className="font-bold">Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter your email"
+                          placeholder="Masukkan email"
                           type="email"
                           {...field}
                           className="transition-transform duration-300 focus:scale-105"
@@ -341,16 +344,25 @@ const Login = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold">Password</FormLabel>
+                      <FormLabel className="font-bold">Kata Sandi</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your password"
-                          type="password"
-                          {...field}
-                          className="transition-transform duration-300 focus:scale-105"
-                          id="password"
-                          onKeyDown={(e) => handleKeyDown(e, "captchaInput")}
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Masukkan kata sandi"
+                            type={showPassword ? "text" : "password"}
+                            {...field}
+                            className="transition-transform duration-300 focus:scale-105"
+                            id="password"
+                            onKeyDown={(e) => handleKeyDown(e, "captchaInput")}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                          >
+                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                          </button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -371,7 +383,7 @@ const Login = () => {
                     <Image src={captchaImage} alt="CAPTCHA" width={200} height={70} className="border p-2 rounded-md shadow-md" />
                   )}
                   <button type="button" onClick={regenerateCaptcha} className="text-xs text-blue-500 hover:underline">
-                    Regenerate CAPTCHA
+                    Generate ulang CAPTCHA
                   </button>
                   <Input
                     placeholder="Captcha (Jawab soal di atas)"
@@ -398,7 +410,7 @@ const Login = () => {
             <div className="text-center text-gray-700 mt-4">
               Anda belum memiliki akun?{" "}
               <a href="/register" className="text-blue-500 hover:underline">
-                Register
+                Daftar
               </a>
             </div>
           </div>
@@ -432,7 +444,7 @@ const Login = () => {
                 <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={200} height={70} className="border p-2 rounded-md shadow-md" />
               )}
               <button type="button" onClick={regenerateForgotPasswordCaptcha} className="text-xs text-blue-500 hover:underline">
-                Regenerate CAPTCHA
+                Generate ulang CAPTCHA
               </button>
               <Input
                 placeholder="Enter CAPTCHA"
