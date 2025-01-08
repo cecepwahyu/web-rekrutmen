@@ -11,6 +11,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icons
 import Swal from "sweetalert2";
 
 // Define the form schema using zod
@@ -29,7 +30,8 @@ const formSchema = z.object({
   //username: z.string().min(3, "Username must be at least 6 characters."),
   no_identitas: z.string().min(16, "NIK must be at least 16 characters."),
   email: z.string().email("Please enter a valid email."),
-  password: z.string()
+  password: z
+    .string()
     .min(8, "Password must be at least 8 characters.")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
     .regex(/[0-9]/, "Password must contain at least one number.")
@@ -42,6 +44,13 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // Add state for showing password
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({}); // Add state for field errors
+  const [passwordStrength, setPasswordStrength] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialChar: false,
+  });
 
   // Add a state to manage the scroll state
   const [isScrolled, setIsScrolled] = useState(false);
@@ -81,6 +90,17 @@ const Register = () => {
     }
   };
 
+  // Function to check password strength
+  const checkPasswordStrength = (password: string) => {
+    setPasswordStrength({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      specialChar: /[^a-zA-Z0-9]/.test(password),
+    });
+  };
+
   // Handle form submission
   const handleRegister = async (data: RegisterFormValues) => {
     // Check if any field is empty
@@ -114,15 +134,15 @@ const Register = () => {
           if (errorJson.responseMessage.includes("already exist")) {
             if (errorJson.data.includes("Email")) {
               Swal.fire({
-                icon: 'error',
-                title: 'Duplicate Email',
-                text: 'Email already registered. Please use another email.',
+                icon: "error",
+                title: "Duplicate Email",
+                text: "Email already registered. Please use another email.",
               });
             } else if (errorJson.data.includes("NIK")) {
               Swal.fire({
-                icon: 'error',
-                title: 'Duplicate NIK',
-                text: 'NIK already registered. Please use another NIK.',
+                icon: "error",
+                title: "Duplicate NIK",
+                text: "NIK already registered. Please use another NIK.",
               });
             } else {
               errors.general = "Register failed. Please try again.";
@@ -179,20 +199,20 @@ const Register = () => {
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
             <defs>
               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
+                <stop offset="0%" style={{ stopColor: "#015CAC", stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: "#018ED2", stopOpacity: 1 }} />
               </linearGradient>
             </defs>
-            <path fill="url(#grad1)"
-              d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
+            <path
+              fill="url(#grad1)"
+              d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"
+            ></path>
           </svg>
         </div>
 
         <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10 px-4">
           <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md mx-4 transform transition-all duration-500 hover:scale-105">
-            <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">
-              Daftar Akun Baru
-            </h2>
+            <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">Daftar Akun Baru</h2>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
                 {/* Nama Field */}
@@ -241,7 +261,7 @@ const Register = () => {
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Email Field */}
                 <FormField
                   control={form.control}
@@ -278,9 +298,13 @@ const Register = () => {
                         <div className="relative">
                           <Input
                             placeholder="Enter your password"
-                            type={showPassword ? "text" : "password"} // Toggle input type
+                            type={showPassword ? "text" : "password"}
                             {...field}
                             className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
+                            onChange={(e) => {
+                              field.onChange(e);
+                              checkPasswordStrength(e.target.value);
+                            }}
                           />
                           <button
                             type="button"
@@ -291,6 +315,51 @@ const Register = () => {
                           </button>
                         </div>
                       </FormControl>
+                      <FormDescription className="text-blue-600/80">
+                        Password baru harus memenuhi kriteria berikut
+                      </FormDescription>
+                      <div className="mt-2 space-y-2 rounded-md bg-blue-50/50 p-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          {passwordStrength.length ? (
+                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                          ) : (
+                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                          )}
+                          <p>Minimal 8 karakter</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {passwordStrength.uppercase ? (
+                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                          ) : (
+                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                          )}
+                          <p>Minimal 1 huruf kapital</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {passwordStrength.lowercase ? (
+                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                          ) : (
+                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                          )}
+                          <p>Minimal 1 huruf kecil</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {passwordStrength.number ? (
+                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                          ) : (
+                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                          )}
+                          <p>Minimal 1 angka</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {passwordStrength.specialChar ? (
+                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                          ) : (
+                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                          )}
+                          <p>Minimal 1 karakter khusus</p>
+                        </div>
+                      </div>
                       <FormMessage />
                       {fieldErrors.password && <p className="text-red-500">{fieldErrors.password}</p>}
                     </FormItem>

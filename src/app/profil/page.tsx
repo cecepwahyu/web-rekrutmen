@@ -38,9 +38,11 @@ interface ProfileData {
     telp: string;
     pendidikanTerakhir: string;
     statusKawin: string;
-    profilePicture?: string; // Add profilePicture field
-    is_final?: boolean; // Add is_final field
-    isFinal?: boolean; // Add isFinal field
+    profilePicture?: string;
+    tinggi: string;
+    berat: string;
+    is_final?: boolean;
+    isFinal?: boolean;
 }
 
 interface PengalamanData {
@@ -48,9 +50,11 @@ interface PengalamanData {
     posisiKerja: string;
     periodeKerja: string;
     deskripsiKerja: string;
+    suratPengalamanKerja: string;
 }
 
 interface PendidikanData {
+    idJenjang: number;
     namaInstitusi: String;
     jurusan: String;
     thnMasuk: String;
@@ -712,7 +716,7 @@ const Profile = () => {
                                     </div>
                                     <button 
                                         onClick={handleChangeProfilePicture} 
-                                        className="mt-4 bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400">
+                                        className="mt-4 w-full bg-darkBlue text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400">
                                         Change Profile Picture
                                     </button>
                                     <input 
@@ -721,55 +725,103 @@ const Profile = () => {
                                         style={{ display: 'none' }} 
                                         onChange={handleProfilePictureChange} 
                                     />
+                                    <button 
+                                        onClick={handleUpdateDataClick} 
+                                        className={`mt-4 w-full py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${isFinal ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-400'}`}
+                                        disabled={isFinal}
+                                    >
+                                        Update Data
+                                    </button>
+                                    <button 
+                                        onClick={handleChangePassword} 
+                                        className="mt-4 w-full bg-darkBlue text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
+                                    >
+                                        Change Password
+                                    </button>
                                 </div>
 
                                 {/* Section Profile Data */}
                                 <div className="w-full lg:w-3/4 bg-white shadow-lg rounded-lg p-6 lg:ml-6">
                                     <h2 className="text-2xl font-bold mb-4 text-darkBlue">Informasi Personal</h2>
-                                    <div className="flex items-center mb-2">
-                                        <FaUser className="mr-2 text-darkBlue" />
-                                        <p><strong>Nama:</strong> {profileData.nama || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaEnvelope className="mr-2 text-darkBlue" />
-                                        <p><strong>Email:</strong> {profileData.email || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaIdCard className="mr-2 text-darkBlue" />
-                                        <p><strong>No Identitas:</strong> {profileData.noIdentitas || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaMapMarkerAlt className="mr-2 text-darkBlue" />
-                                        <p><strong>Tempat Lahir:</strong> {profileData.tempatLahir || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaMapMarkerAlt className="mr-2 text-darkBlue" />
-                                        <p><strong>Tanggal Lahir:</strong> {profileData.tglLahir ? new Date(profileData.tglLahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaUser className="mr-2 text-darkBlue" />
-                                        <p><strong>Jenis Kelamin:</strong> {profileData.jnsKelamin === 1 ? 'Laki-laki' : 'Perempuan'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaMapMarkerAlt className="mr-2 text-darkBlue" />
-                                        <p><strong>Alamat Identitas:</strong> {profileData.alamatIdentitas}, {profileData.desaIdentitas}, {profileData.kecamatanIdentitas}, {profileData.kotaIdentitas}, {profileData.provinsiIdentitas}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaMapMarkerAlt className="mr-2 text-darkBlue" />
-                                        <p><strong>Alamat Domisili:</strong> {profileData.alamatDomisili}, {profileData.desaDomisili}, {profileData.kecamatanDomisili}, {profileData.kotaDomisili}, {profileData.provinsiDomisili}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaPhone className="mr-2 text-darkBlue" />
-                                        <p><strong>Telepon:</strong> {profileData.telp || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaGraduationCap className="mr-2 text-darkBlue" />
-                                        <p><strong>Pendidikan Terakhir:</strong> {profileData.pendidikanTerakhir || '-'}</p>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <FaHeart className="mr-2 text-darkBlue" />
-                                        <p><strong>Status Kawin:</strong> {profileData.statusKawin === '1' ? 'Menikah' : 'Belum Menikah'}</p>
-                                    </div>
+                                    {profileData.nama && (
+                                        <div className="flex items-center mb-2">
+                                            <FaUser className="mr-2 text-darkBlue" />
+                                            <p><strong>Nama:</strong> {profileData.nama}</p>
+                                        </div>
+                                    )}
+                                    {profileData.email && (
+                                        <div className="flex items-center mb-2">
+                                            <FaEnvelope className="mr-2 text-darkBlue" />
+                                            <p><strong>Email:</strong> {profileData.email}</p>
+                                        </div>
+                                    )}
+                                    {profileData.noIdentitas && (
+                                        <div className="flex items-center mb-2">
+                                            <FaIdCard className="mr-2 text-darkBlue" />
+                                            <p><strong>No Identitas:</strong> {profileData.noIdentitas}</p>
+                                        </div>
+                                    )}
+                                    {profileData.tempatLahir && (
+                                        <div className="flex items-center mb-2">
+                                            <FaMapMarkerAlt className="mr-2 text-darkBlue" />
+                                            <p><strong>Tempat Lahir:</strong> {profileData.tempatLahir}</p>
+                                        </div>
+                                    )}
+                                    {profileData.tglLahir && (
+                                        <div className="flex items-center mb-2">
+                                            <FaMapMarkerAlt className="mr-2 text-darkBlue" />
+                                            <p><strong>Tanggal Lahir:</strong> {new Date(profileData.tglLahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                                        </div>
+                                    )}
+                                    {profileData.jnsKelamin !== undefined && (
+                                        <div className="flex items-center mb-2">
+                                            <FaUser className="mr-2 text-darkBlue" />
+                                            <p><strong>Jenis Kelamin:</strong> {profileData.jnsKelamin === 1 ? 'Laki-laki' : 'Perempuan'}</p>
+                                        </div>
+                                    )}
+                                    {profileData.alamatIdentitas && (
+                                        <div className="flex items-center mb-2">
+                                            <FaMapMarkerAlt className="mr-2 text-darkBlue" />
+                                            <p><strong>Alamat Identitas:</strong> {profileData.alamatIdentitas}, {profileData.desaIdentitas}, {profileData.kecamatanIdentitas}, {profileData.kotaIdentitas}, {profileData.provinsiIdentitas}</p>
+                                        </div>
+                                    )}
+                                    {profileData.alamatDomisili && (
+                                        <div className="flex items-center mb-2">
+                                            <FaMapMarkerAlt className="mr-2 text-darkBlue" />
+                                            <p><strong>Alamat Domisili:</strong> {profileData.alamatDomisili}, {profileData.desaDomisili}, {profileData.kecamatanDomisili}, {profileData.kotaDomisili}, {profileData.provinsiDomisili}</p>
+                                        </div>
+                                    )}
+                                    {profileData.telp && (
+                                        <div className="flex items-center mb-2">
+                                            <FaPhone className="mr-2 text-darkBlue" />
+                                            <p><strong>Telepon:</strong> {profileData.telp}</p>
+                                        </div>
+                                    )}
+                                    {profileData.pendidikanTerakhir && (
+                                        <div className="flex items-center mb-2">
+                                            <FaGraduationCap className="mr-2 text-darkBlue" />
+                                            <p><strong>Pendidikan Terakhir:</strong> {profileData.pendidikanTerakhir}</p>
+                                        </div>
+                                    )}
+                                    {profileData.statusKawin && (
+                                        <div className="flex items-center mb-2">
+                                            <FaHeart className="mr-2 text-darkBlue" />
+                                            <p><strong>Status Kawin:</strong></p>
+                                            <p className="ml-2">{profileData.statusKawin === '1' ? 'Menikah' : 'Belum Menikah'}</p>
+                                        </div>
+                                    )}
+                                    {profileData.tinggi && (
+                                        <div className="flex items-center mb-2">
+                                            <FaUser className="mr-2 text-darkBlue" />
+                                            <p><strong>Tinggi Badan:</strong> {profileData.tinggi} cm</p>
+                                        </div>
+                                    )}
+                                    {profileData.berat && (
+                                        <div className="flex items-center mb-2">
+                                            <FaUser className="mr-2 text-darkBlue" />
+                                            <p><strong>Berat Badan:</strong> {profileData.berat} kg</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -796,11 +848,25 @@ const Profile = () => {
                                                     <FaPen className="mr-2 text-darkBlue" />
                                                     <p><strong>Deskripsi Kerja:</strong> {pengalaman.deskripsiKerja || '-'}</p>
                                                 </div>
+                                                {/* <div className="flex items-center mb-2">
+                                                    <FaPen className="mr-2 text-darkBlue" />
+                                                    <p><strong>Surat Pengalaman Kerja:</strong></p>
+                                                    {pengalaman.suratPengalamanKerja ? (
+                                                        <button
+                                                            onClick={() => window.open(pengalaman.suratPengalamanKerja, '_blank')}
+                                                            className="ml-2 bg-darkBlue text-white py-1 px-3 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
+                                                        >
+                                                            Preview
+                                                        </button>
+                                                    ) : (
+                                                        <span className="ml-2">-</span>
+                                                    )}
+                                                </div> */}
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
-                                            Data pengalaman kerja tidak ditemukan
+                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                            Data pengalaman kerja belum dilengkapi
                                         </p>
                                     )}
                                 </div>
@@ -830,8 +896,8 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
-                                            Data riwayat organisasi tidak ditemukan
+                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                            Data riwayat organisasi belum dilengkapi
                                         </p>
                                     )}
                                 </div>
@@ -844,6 +910,10 @@ const Profile = () => {
                                     {pendidikanData.length > 0 ? (
                                         pendidikanData.map((pendidikan, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
+                                                <div className="flex items-center mb-2">
+                                                    <FaBook className="mr-2 text-darkBlue" />
+                                                    <p><strong>Jenjang Pendidikan:</strong> {pendidikan.idJenjang || '-'}</p>
+                                                </div>
                                                 <div className="flex items-center mb-2">
                                                     <FaBook className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Instansi:</strong> {pendidikan.namaInstitusi || '-'}</p>
@@ -871,8 +941,8 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
-                                            Data riwayat pendidikan tidak ditemukan
+                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                            Data riwayat pendidikan belum dilengkapi
                                         </p>
                                     )}
                                 </div>
@@ -906,26 +976,12 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
-                                            Data kontak tidak ditemukan
+                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                            Data kontak belum dilengkapi
                                         </p>
                                     )}
                                 </div>
                             </div>
-
-                            <button 
-                                onClick={handleUpdateDataClick} 
-                                className={`mt-4 py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${isFinal ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-darkBlue text-white hover:bg-blue-400'}`}
-                                disabled={isFinal}
-                            >
-                                Update Data
-                            </button>
-                            <button 
-                                onClick={handleChangePassword} 
-                                className="mt-4 bg-darkBlue text-white py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-blue-400"
-                            >
-                                Change Password
-                            </button>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center mt-10">

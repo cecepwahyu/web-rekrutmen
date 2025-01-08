@@ -79,7 +79,7 @@ function DesktopNavLinks() {
               'Accept': 'application/json',
               'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({}) // Ensure the body is properly formatted
+            body: JSON.stringify({})
           });
           const result = await response.json();
           if (result.responseCode === '000') {
@@ -234,7 +234,7 @@ function DesktopNavLinks() {
                     onClick={() => handleProfileClick('/profil')}
                   >
                     <FontAwesomeIcon icon={faUserCircle} className="mr-2" />
-                    Profile
+                    Profil
                   </button>
                 </li>
                 <li>
@@ -243,7 +243,7 @@ function DesktopNavLinks() {
                     onClick={handleLogoutClick}
                   >
                     <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-                    Logout
+                    Keluar
                   </button>
                 </li>
               </ul>
@@ -273,13 +273,13 @@ function DesktopNavLinks() {
                 className="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200"
                 onClick={handleCancelLogout}
               >
-                Cancel
+                Batal
               </button>
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-200"
                 onClick={handleSignOut}
               >
-                Logout
+                Keluar
               </button>
             </div>
           </div>

@@ -29,6 +29,15 @@ import loadingAnimation from '../../public/animations/loading.json'; // Import l
 
 const CariKarirButton = dynamic(() => import('../components/CariKarirButton'), { ssr: false });
 
+import { FaExclamationTriangle } from 'react-icons/fa';
+
+const MessageBanner = () => (
+    <div className="bg-yellow-500 text-white text-center py-2 flex items-center justify-center">
+        <FaExclamationTriangle className="mr-2" />
+        Tidak ada perantara dan pungutan biaya atau imbalan dalam bentuk apapun berkaitan dengan penerimaan pegawai Bank BPD DIY
+    </div>
+);
+
 const Home = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -80,6 +89,8 @@ const Home = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
+            {/* Message Banner */}
+            <MessageBanner />
             {/* Section MenuBar */}
             <MenuBar />
 
@@ -101,8 +112,8 @@ const Home = () => {
                             <div className="flex flex-wrap">
                                 <div className="w-full md:w-1/2 pl-20 flex items-center justify-center">
                                     <div className="p-8 rounded-lg">
-                                        <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Temukan Jalanmu untuk Berinovasi dan Mewujudkan Mimpi</h1>
-                                        <p className="text-white hover:text-yellow-500 transition-colors duration-300">Jelajahi dan temukan tujuan karirmu bersama BPD DIY <b>#MungkinAndaCocok</b> kerja di BPD DIY</p>
+                                        <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Bank BPD DIY membuka peluang!</h1>
+                                        <p className="text-white hover:text-yellow-500 transition-colors duration-300">Bagi putra-putri terbaik bangsa untuk bergabung menjadi bagian dari perusahaan yang terus berkembang melalui proses seleksi penerimaan pegawai untuk berbagai posisi.</p>
                                         <br />
                                         <button 
                                             className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition"
@@ -113,14 +124,14 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
-                                    <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300">
-                                        <svg className="h-auto w-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                    <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(100px)' }}>
+                                        <svg className="h-100 w-full rounded-lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img1" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="/images/photo-slider.webp" />
+                                                    <image x="0" y="0" width="100%" height="80%" preserveAspectRatio="xMidYMid slice" href="/images/slider1.jpg" />
                                                 </pattern>
                                             </defs>
-                                            <path fill="url(#img1)" d="M40,-62.6C52.2,-54.5,62.5,-43.9,66.9,-31.4C71.3,-18.9,69.6,-4.6,65.9,8.3C62.2,21.1,56.4,32.5,49.2,45.2C42.1,57.9,33.7,72.1,22.2,75.3C10.7,78.5,-3.9,70.7,-14.8,62.1C-25.7,53.5,-32.8,44.1,-44.9,35.8C-57,27.5,-74,20.3,-82.1,7.7C-90.3,-4.8,-89.5,-22.7,-80.8,-34.8C-72,-46.9,-55.2,-53.3,-40.4,-60.2C-25.6,-67,-12.8,-74.3,0.6,-75.2C13.9,-76.1,27.9,-70.6,40,-62.6Z" transform="translate(100 100)" />
+                                            <rect width="80%" height="60%" fill="url(#img1)" rx="15" ry="15" />
                                         </svg>
                                     </div>
                                 </div>
@@ -131,7 +142,7 @@ const Home = () => {
                                 <div className="w-full md:w-1/2 pl-20 flex items-center justify-center">
                                     <div className="p-8 rounded-lg">
                                         <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Karir di BPD DIY</h1>
-                                        <p className="text-white hover:text-yellow-500 transition-colors duration-300">Bergabunglah dengan tim kami dan kembangkan karirmu di BPD DIY. Kami menyediakan berbagai posisi yang sesuai dengan minat dan keahlianmu.</p>
+                                        <p className="text-white hover:text-yellow-500 transition-colors duration-300">Temukan posisi yang sesuai dengan kualifikasi anda dan berkembang bersama Bank BPD DIY.</p>
                                         <br />
                                         <button 
                                             className="px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-400 transition"
@@ -143,19 +154,19 @@ const Home = () => {
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
                                     <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300">
-                                        <svg className="h-auto w-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                        <svg className="h-100 w-full rounded-lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
-                                                <pattern id="img2" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="80%" preserveAspectRatio="xMaxYMax slice" href="/images/photo-slider.webp" />
+                                                <pattern id="img2" x="0" y="0.1" width="1" height="1">
+                                                    <image x="0" y="0" width="80%" height="70%" preserveAspectRatio="xMidYMid slice" href="/images/slider2.png" />
                                                 </pattern>
                                             </defs>
-                                            <path fill="url(#img2)" d="M30,-50C40,-40,50,-30,60,-20C70,-10,80,0,70,10C60,20,50,30,40,40C30,50,20,60,10,70C0,80,-10,70,-20,60C-30,50,-40,40,-50,30C-60,20,-70,10,-80,0C-70,-10,-60,-20,-50,-30C-40,-40,-30,-50,-20,-60C-10,-70,0,-80,10,-70C20,-60,30,-50,30,-50Z" transform="translate(100 100)" />
+                                            <rect width="100%" height="100%" fill="url(#img2)" rx="15" ry="15" />
                                         </svg>
                                     </div>
                                 </div>
                             </div>
                         </SwiperSlide>
-                        <SwiperSlide>
+                        {/* <SwiperSlide>
                             <div className="flex flex-wrap">
                                 <div className="w-full md:w-1/2 pl-20 flex items-center justify-center">
                                     <div className="p-8 rounded-lg">
@@ -183,7 +194,7 @@ const Home = () => {
                                     </div>
                                 </div>
                             </div>
-                        </SwiperSlide>
+                        </SwiperSlide> */}
                     </Swiper>
                 </div>
 

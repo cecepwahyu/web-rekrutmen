@@ -84,7 +84,7 @@ const Karir = () => {
                         setJobs(allJobs); // Update jobs with current page content
                         setFilteredJobs(allJobs); // Update filtered jobs with current page content
                         setRekrutmenJobs(allJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
-                        setJobDescJobs(allJobs.filter((job: Job) => job.status === "2")); // Filter Job Desc jobs
+                        setJobDescJobs(allJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
                         setTotalPages(data.data.totalPages); // Set total pages
                     }
                 } catch (error) {
@@ -119,7 +119,7 @@ const Karir = () => {
         if (activeTab === "Rekrutmen") {
             setFilteredJobs(filtered.filter(job => job.status === "1"));
         } else if (activeTab === "Job Desc") {
-            setFilteredJobs(filtered.filter(job => job.status === "2"));
+            setFilteredJobs(filtered.filter(job => job.status === "4"));
         }
     }, [searchTerm, jobs, activeTab]);
 
@@ -317,9 +317,10 @@ const Karir = () => {
                                             </div>
                                             <div className="w-3/4 pl-6 text-left">
                                                 <h2 className="text-xl font-bold mb-2 text-darkBlue">{job.judulLowongan}</h2>
-                                                <span className="text-black">
-                                                    {(job.tentangPekerjaan || '').replace(/<[^>]+>/g, '').replace(/\n/g, ' ').slice(0, 100) + (job.tentangPekerjaan && job.tentangPekerjaan.length > 100 ? '...' : '')}
-                                                </span>
+                                                <div className="flex items-center text-gray-500 text-xs space-x-4 mt-2">
+                                                        <FontAwesomeIcon icon={faUsers} className="mr-1" />
+                                                        <span>{job.posisi}</span>
+                                                </div>
                                             </div>
                                         </button>
                                     </div>

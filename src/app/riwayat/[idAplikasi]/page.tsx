@@ -13,7 +13,9 @@ interface Tahapan {
     idTahapan: number;
     namaTahapan: string;
     deskripsi: string;
-    isActive: boolean;
+    isActive: boolean | null;
+    announcementTitle?: string;
+    announcementContent?: string;
 }
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
@@ -141,7 +143,9 @@ const DetailRiwayat = () => {
             idTahapan: step[2],
             namaTahapan: step[4],
             deskripsi: step[5],
-            isActive: false // You can set this based on your logic
+            isActive: step[6] === null ? null : step[6] === true,
+            announcementTitle: step[7],
+            announcementContent: step[8]
           }));
           setSteps(stepsData);
         }
@@ -176,8 +180,20 @@ const DetailRiwayat = () => {
           },
           body: JSON.stringify({ id_lowongan: applicantData.idLowongan }) // Use dynamic idLowongan
         });
-        const data = await response.text();
-        setAnnouncementContent(data || "Pesan tidak ditemukan");
+        const data = await response.json();
+        if (data.responseCode === '000') {
+          const flgTahapan = data.data.flg_tahapan;
+          if (flgTahapan === null) {
+            setAnnouncementContent("Belum ada pengumuman");
+          } else if (flgTahapan === false) {
+            setAnnouncementContent("Terima kasih atas partisipasi Anda,<br/>Mohon Maaf, Anda TIDAK LOLOS Seleksi Administrasi,<br/><br/>Semoga sukses di kesempatan berikutnya.<br/><br/>Tim Rekrutmen Bank BPD DIY");
+          } else {
+            setAnnouncementContent(data.data.content); // Set the announcement content
+          }
+        } else {
+          console.error('Error fetching announcement content:', data.responseMessage);
+          setAnnouncementContent("Pesan tidak ditemukan");
+        }
       } catch (error) {
         console.error('Error fetching announcement content:', error);
         setAnnouncementContent("Pesan tidak ditemukan");
@@ -348,14 +364,22 @@ const DetailRiwayat = () => {
                   {steps.map((step, index) => (
                     <li key={step.idTahapan} className="flex-1">
                       <div className="flex-start flex items-center pt-2 md:block md:pt-0">
-                        <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${passedSteps.includes(index + 1) ? 'bg-green-600 border-green-500' : 'bg-gray-300 border-gray-100'} md:-mt-[22px] md:me-0 md:ms-0`}>
+                        <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${step.isActive === null ? 'bg-gray-300 border-gray-100' : step.isActive ? 'bg-green-600 border-green-500' : 'bg-red-600 border-red-500'} md:-mt-[22px] md:me-0 md:ms-0`}>
                           <span className="text-white">{index + 1}</span>
                         </div>
                         <div>
-                          <h4 className={`md:mt-2 mb-1.5 ${passedSteps.includes(index + 1) ? 'text-green-600' : 'text-gray-700'} font-medium`}>{step.namaTahapan}</h4>
-                          {passedSteps.includes(index + 1) && (
-                            <span className="py-1 px-2 inline-block bg-green-100 text-green-600 font-semibold text-xs rounded-lg">Lolos</span>
+                          <h4 className={`md:mt-2 mb-1.5 ${step.isActive === null ? 'text-gray-700' : step.isActive ? 'text-green-600' : 'text-red-600'} font-medium`}>{step.namaTahapan}</h4>
+                          {step.isActive !== null && (
+                            <span className={`py-1 px-2 inline-block ${step.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} font-semibold text-xs rounded-lg`}>
+                              {step.isActive ? 'Lolos' : 'Tidak Lolos'}
+                            </span>
                           )}
+                          {/* {step.isActive && step.announcementTitle && (
+                            <div className="mt-2">
+                              <h5 className="font-semibold">{step.announcementTitle}</h5>
+                              <div dangerouslySetInnerHTML={{ __html: step.announcementContent || "" }} />
+                            </div>
+                          )} */}
                         </div>
                       </div>
                     </li>
@@ -371,6 +395,14 @@ const DetailRiwayat = () => {
 
                   {/* Details */}
                   <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent }} />
+                  {steps.map((step) => (
+                    step.isActive && step.announcementTitle && (
+                      <div className="mt-2" key={step.idTahapan}>
+                        <h5 className="font-semibold">{step.announcementTitle}</h5>
+                        <div dangerouslySetInnerHTML={{ __html: step.announcementContent || "" }} />
+                      </div>
+                    )
+                  ))}
                 </div>
               </div>
               
