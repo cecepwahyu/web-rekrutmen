@@ -1,0 +1,18 @@
+.custom-tab-list {
+    border-bottom: 2px solid #ddd;
+}
+
+.custom-tab {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.custom-tab:hover {
+    background-color: #017bb5;
+    color: #fff;
+}
+
+.custom-tab-selected {
+    background-color: #015CAC;
+    color: #fff;
+    border-bottom: 2px solid #015CAC;
+}
