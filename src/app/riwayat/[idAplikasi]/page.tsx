@@ -188,7 +188,7 @@ const DetailRiwayat = () => {
           } else if (flgTahapan === false) {
             setAnnouncementContent("Terima kasih atas partisipasi Anda,<br/>Mohon Maaf, Anda TIDAK LOLOS Seleksi Administrasi,<br/><br/>Semoga sukses di kesempatan berikutnya.<br/><br/>Tim Rekrutmen Bank BPD DIY");
           } else {
-            setAnnouncementContent(data.data.content); // Set the announcement content
+            setAnnouncementContent(data.data.content);
           }
         } else {
           console.error('Error fetching announcement content:', data.responseMessage);
