@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import DesktopNavLinks from './DesktopNavLinks';
 import MobileMenuButton from './MobileMenuButton';
+import Router from 'next/router';
 
 const MenuBar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +26,26 @@ const MenuBar = () => {
         };
     }, []);
 
+    useEffect(() => {
+        const handleRouteChangeStart = () => {
+            setIsLoading(true);
+        };
+
+        const handleRouteChangeComplete = () => {
+            setIsLoading(false);
+        };
+
+        Router.events.on('routeChangeStart', handleRouteChangeStart);
+        Router.events.on('routeChangeComplete', handleRouteChangeComplete);
+        Router.events.on('routeChangeError', handleRouteChangeComplete);
+
+        return () => {
+            Router.events.off('routeChangeStart', handleRouteChangeStart);
+            Router.events.off('routeChangeComplete', handleRouteChangeComplete);
+            Router.events.off('routeChangeError', handleRouteChangeComplete);
+        };
+    }, []);
+
     const handleDrawerToggle = () => {
         setIsDrawerOpen(!isDrawerOpen);
     };
@@ -34,8 +55,7 @@ const MenuBar = () => {
     };
 
     const handleMenuClick = (path: string) => {
-        setIsLoading(true);
-        window.location.href = path;
+        Router.push(path);
     };
 
     const handleSignOut = () => {
