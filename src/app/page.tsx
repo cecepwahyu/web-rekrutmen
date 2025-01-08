@@ -32,8 +32,8 @@ const CariKarirButton = dynamic(() => import('../components/CariKarirButton'), {
 import { FaExclamationTriangle } from 'react-icons/fa';
 
 const MessageBanner = () => (
-    <div className="bg-yellow-500 text-white text-center py-2 flex items-center justify-center">
-        <FaExclamationTriangle className="mr-2" />
+    <div className="bg-white text-black text-center py-2 flex items-center justify-center">
+        <FaExclamationTriangle className="mr-2 text-red-500" />
         Tidak ada perantara dan pungutan biaya atau imbalan dalam bentuk apapun berkaitan dengan penerimaan pegawai Bank BPD DIY
     </div>
 );
@@ -41,7 +41,7 @@ const MessageBanner = () => (
 const Home = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter(); 
 
@@ -75,7 +75,7 @@ const Home = () => {
             if (token) {
                 setIsAuthenticated(true);
             }
-            setIsLoading(false); // Set loading to false after checking authentication
+            setIsLoading(false);
         }
     }, []);
 
@@ -128,7 +128,7 @@ const Home = () => {
                                         <svg className="h-100 w-full rounded-lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img1" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="100%" height="80%" preserveAspectRatio="xMidYMid slice" href="/images/slider1.jpg" />
+                                                    <image x="0" y="0" width="80%" height="60%" preserveAspectRatio="xMidYMid slice" href="/images/slider1.jpg" />
                                                 </pattern>
                                             </defs>
                                             <rect width="80%" height="60%" fill="url(#img1)" rx="15" ry="15" />
