@@ -245,7 +245,7 @@ const Profile = () => {
             }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/profile/${id}/set-is-final`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/set-is-final`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
