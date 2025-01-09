@@ -222,7 +222,7 @@ const Login = () => {
 
       if (result.responseCode === "000") {
         if (!result.data.isActive) {
-          showDialog("Akun anda belum aktif! Anda bisa melakukan verifikasi dahulu.", true);
+          showDialog("Akun Anda tidak aktif. Silahkan hubungi Administrator.", true);
           setLoading(false);
           return;
         }
