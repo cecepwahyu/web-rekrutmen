@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -353,4 +353,10 @@ const Otp = () => {
   );
 };
 
-export default Otp;
+const OtpPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Otp />
+  </Suspense>
+);
+
+export default OtpPage;
