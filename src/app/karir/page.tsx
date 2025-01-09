@@ -294,7 +294,7 @@ const Karir = () => {
                                         <LottieAnimation animationData={animation404} />
                                     </div>
                                     <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
-                                        Job descriptions are not available
+                                        Job descriptions tidak tersedia
                                     </p>
                                 </div>
                             ) : (
