@@ -18,7 +18,7 @@ const FooterSection = () => {
                         <br />
                         PHONE : +62274561614
                         <br />
-                        EMAIL : contactcenter@bpddiy.co.id
+                        EMAIL : sdm@bpddiy.co.id
                         <br />
                         FAX : +62274561614
                         <br />
