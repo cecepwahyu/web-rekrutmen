@@ -124,14 +124,14 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
-                                    <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(100px)' }}>
+                                    <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300">
                                         <svg className="h-100 w-full rounded-lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
-                                                <pattern id="img1" x="0" y="0" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="60%" preserveAspectRatio="xMidYMid slice" href="/images/slider3.png" />
+                                                <pattern id="img2" x="0" y="0.1" width="1" height="1">
+                                                    <image x="0" y="0" width="70%" height="70%" preserveAspectRatio="xMidYMid slice" href="/images/slider3.png" />
                                                 </pattern>
                                             </defs>
-                                            <rect width="80%" height="60%" fill="url(#img1)" rx="15" ry="15" />
+                                            <rect width="100%" height="100%" fill="url(#img2)" rx="15" ry="15" />
                                         </svg>
                                     </div>
                                 </div>
