@@ -157,7 +157,7 @@ const Home = () => {
                                         <svg className="h-100 w-full rounded-lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img2" x="0" y="0.1" width="1" height="1">
-                                                    <image x="0" y="0" width="80%" height="70%" preserveAspectRatio="xMidYMid slice" href="/images/slider2.png" />
+                                                    <image x="0" y="0" width="70%" height="70%" preserveAspectRatio="xMidYMid slice" href="/images/slider3.png" />
                                                 </pattern>
                                             </defs>
                                             <rect width="100%" height="100%" fill="url(#img2)" rx="15" ry="15" />

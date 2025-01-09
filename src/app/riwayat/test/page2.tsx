@@ -59,7 +59,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-success-600 border-4 border-success-500 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-success.svg" alt="icon pendaftaran" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-success.svg" alt="icon pendaftaran" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Pendaftaran</h4>
@@ -70,7 +70,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-success-600 border-4 border-success-500 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-regist-success.svg" alt="icon pendaftaran" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-regist-success.svg" alt="icon pendaftaran" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Seleksi Administrasi</h4>
@@ -81,7 +81,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-success-600 border-4 border-success-500 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" alt="icon assesment" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" alt="icon assesment" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Tes Potensi Dasar</h4>
@@ -92,7 +92,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-neutral-500 border-4 border-neutral-300 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" alt="icon assesment" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" alt="icon assesment" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Tes Kemampuan Umum</h4>
@@ -102,7 +102,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-neutral-500 border-4 border-neutral-300 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" alt="icon assesment" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-assesment-not-ready.svg" alt="icon assesment" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Tes Kepribadian & Wawancara Psikolog</h4>
@@ -112,7 +112,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-neutral-500 border-4 border-neutral-300 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-healt-test-not-ready.svg" alt="icon assesment" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-healt-test-not-ready.svg" alt="icon assesment" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Tes Kesehatan</h4>
@@ -122,7 +122,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-neutral-500 border-4 border-neutral-300 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-user-not-ready.svg" alt="icon wawancara" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-user-not-ready.svg" alt="icon wawancara" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Wawancara Panel</h4>
@@ -132,7 +132,7 @@ const Riwayat = () => {
               <li>
                 <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                   <div className="-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full bg-neutral-500 border-4 border-neutral-300 md:-mt-[22px] md:me-0 md:ms-0">
-                    <img src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-filling-not-ready.svg" alt="icon assesment" />
+                    <Image src="https://ojkpcs8pct2.shl.co.id/images/icon-status/ic-filling-not-ready.svg" alt="icon assesment" width={40} height={40} />
                   </div>
                   <div>
                     <h4 className="md:mt-2 mb-1.5 text-grey font-medium">Penetapan & Pemberkasan</h4>
