@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -183,125 +183,61 @@ const Riwayat = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans relative">
-            <Head>
-                <title>Karir | Rekrutmen BPD DIY</title>
-            </Head>
-            <MenuBar />
+        <Suspense fallback={<div>Loading...</div>}>
+            <div className="min-h-screen bg-gray-100 font-sans relative">
+                <Head>
+                    <title>Karir | Rekrutmen BPD DIY</title>
+                </Head>
+                <MenuBar />
 
-            <main className="pt-32 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 h-80">
-                
-                {/* Adjusted height for blue and white areas */}
-                <div className="bg-white relative z-10 h-32"></div>
+                <main className="pt-32 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10 h-80">
+                    
+                    {/* Adjusted height for blue and white areas */}
+                    <div className="bg-white relative z-10 h-32"></div>
 
-                {/* Section List Pekerjaan */}
-                <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32 pt-20">
-                    <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Riwayat Lamaran Anda</h1>
-                    <p className="text-center text-gray-700 mt-4 px-6">
-                        Berikut adalah daftar lamaran yang pernah Anda ajukan. Silakan klik untuk melihat detail lamaran.:
-                    </p>
+                    {/* Section List Pekerjaan */}
+                    <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32 pt-20">
+                        <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Riwayat Lamaran Anda</h1>
+                        <p className="text-center text-gray-700 mt-4 px-6">
+                            Berikut adalah daftar lamaran yang pernah Anda ajukan. Silakan klik untuk melihat detail lamaran.:
+                        </p>
 
-                    {/* Search Bar */}
-                    <div className="flex justify-center mb-4 mt-6 w-full px-4">
-                        <div className="relative w-full max-w-md">
-                            <input
-                                type="text"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Cari Posisi..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-3 text-gray-400" />
-                        </div>
-                    </div>
-
-                    {/* Tab Buttons */}
-                    <div className="flex justify-center mb-4 mt-6">
-                        <button
-                            className={`px-4 py-2 mx-2 transition-all duration-300 rounded-lg ${activeTab === "Rekrutmen" ? "bg-darkBlue text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-                            onClick={() => setActiveTab("Rekrutmen")}
-                        >
-                            Aktif
-                        </button>
-                        <button
-                            className={`px-4 py-2 mx-2 transition-all duration-300 rounded-lg ${activeTab === "Job Desc" ? "bg-darkBlue text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-                            onClick={() => setActiveTab("Job Desc")}
-                        >
-                            Tidak Aktif
-                        </button>
-                    </div>
-
-                    {isLoading ? (
-                        <div className="flex justify-center items-center mt-10">
-                            <LottieAnimation animationData={loadingAnimation} />
-                        </div>
-                    ) : activeTab === "Rekrutmen" ? (
-                        Array.isArray(filteredHistories) && filteredHistories.length === 0 ? (
-                            <div className="flex flex-col items-center mt-10">
-                                <div className="w-3/4 sm:w-3/4 lg:w-1/4">
-                                    <LottieAnimation animationData={animation404} />
-                                </div>
-                                <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
-                                    Tidak ada lamaran
-                                </p>
+                        {/* Search Bar */}
+                        <div className="flex justify-center mb-4 mt-6 w-full px-4">
+                            <div className="relative w-full max-w-md">
+                                <input
+                                    type="text"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Cari Posisi..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-3 text-gray-400" />
                             </div>
-                        ) : (
-                            <>
-                                <div className="grid grid-cols-1 gap-8 mt-6 w-11/12 lg:w-3/5 pb-10">
-                                    {Array.isArray(filteredHistories) && filteredHistories.map((history: History) => (
-                                        <button
-                                            key={history.idAplikasi}
-                                            className="bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
-                                            onClick={() => handleJobClick(history.idAplikasi)}
-                                        >
-                                            <div className="w-full text-left">
-                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">
-                                                    {history.judulLowongan}
-                                                </h2>
-                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                        <span className="font-semibold">ID Aplikasi:</span>
-                                                        <span className="ml-1">{history.idAplikasi}</span>
-                                                    </div>
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                        <span className="font-semibold">Tanggal Aplikasi:</span>
-                                                        <span className="ml-1">
-                                                            {new Date(history.tanggalAplikasi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                        <span className="font-semibold">Update Terakhir:</span>
-                                                        <span className="ml-1">
-                                                            {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
+                        </div>
 
-                                {/* Pagination Buttons */}
-                                <div className="flex justify-center mt-6 space-x-2 mb-8">
-                                    {Array.from({ length: totalPages }).map((_, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => setCurrentPage(index)}
-                                            className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                                                index === currentPage
-                                                    ? "bg-darkBlue text-white"
-                                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                            }`}
-                                        >
-                                            {index + 1}
-                                        </button>
-                                    ))}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 pb-10">
-                            {Array.isArray(filteredHistories) && filteredHistories.length === 0 ? (
+                        {/* Tab Buttons */}
+                        <div className="flex justify-center mb-4 mt-6">
+                            <button
+                                className={`px-4 py-2 mx-2 transition-all duration-300 rounded-lg ${activeTab === "Rekrutmen" ? "bg-darkBlue text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                                onClick={() => setActiveTab("Rekrutmen")}
+                            >
+                                Aktif
+                            </button>
+                            <button
+                                className={`px-4 py-2 mx-2 transition-all duration-300 rounded-lg ${activeTab === "Job Desc" ? "bg-darkBlue text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                                onClick={() => setActiveTab("Job Desc")}
+                            >
+                                Tidak Aktif
+                            </button>
+                        </div>
+
+                        {isLoading ? (
+                            <div className="flex justify-center items-center mt-10">
+                                <LottieAnimation animationData={loadingAnimation} />
+                            </div>
+                        ) : activeTab === "Rekrutmen" ? (
+                            Array.isArray(filteredHistories) && filteredHistories.length === 0 ? (
                                 <div className="flex flex-col items-center mt-10">
                                     <div className="w-3/4 sm:w-3/4 lg:w-1/4">
                                         <LottieAnimation animationData={animation404} />
@@ -311,48 +247,114 @@ const Riwayat = () => {
                                     </p>
                                 </div>
                             ) : (
-                                Array.isArray(filteredHistories) && filteredHistories.map((history: History) => (
-                                    <div key={history.idAplikasi} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
-                                        <button
-                                            className="w-full bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                            onClick={() => handleJobClick(history.idAplikasi)}
-                                        >
-                                            <div className="w-full text-left">
-                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">{history.judulLowongan}</h2>
-                                                <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                        <span className="font-semibold">ID Aplikasi:</span>
-                                                        <span className="ml-1">{history.idAplikasi}</span>
-                                                    </div>
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                        <span className="font-semibold">Update Terakhir:</span>
-                                                        <span className="ml-1">
-                                                            {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
-                                                        </span>
+                                <>
+                                    <div className="grid grid-cols-1 gap-8 mt-6 w-11/12 lg:w-3/5 pb-10">
+                                        {Array.isArray(filteredHistories) && filteredHistories.map((history: History) => (
+                                            <button
+                                                key={history.idAplikasi}
+                                                className="bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
+                                                onClick={() => handleJobClick(history.idAplikasi)}
+                                            >
+                                                <div className="w-full text-left">
+                                                    <h2 className="text-xl font-bold mb-2 text-darkBlue">
+                                                        {history.judulLowongan}
+                                                    </h2>
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                            <span className="font-semibold">ID Aplikasi:</span>
+                                                            <span className="ml-1">{history.idAplikasi}</span>
+                                                        </div>
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                            <span className="font-semibold">Tanggal Aplikasi:</span>
+                                                            <span className="ml-1">
+                                                                {new Date(history.tanggalAplikasi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                            <span className="font-semibold">Update Terakhir:</span>
+                                                            <span className="ml-1">
+                                                                {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </button>
+                                            </button>
+                                        ))}
                                     </div>
-                                ))
-                            )}
-                        </div>
-                    )}
-                </div>
 
-                {/* Section Footer */}
-                <FooterSection />
+                                    {/* Pagination Buttons */}
+                                    <div className="flex justify-center mt-6 space-x-2 mb-8">
+                                        {Array.from({ length: totalPages }).map((_, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => setCurrentPage(index)}
+                                                className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                                                    index === currentPage
+                                                        ? "bg-darkBlue text-white"
+                                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                                }`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            )
+                        ) : (
+                            <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 pb-10">
+                                {Array.isArray(filteredHistories) && filteredHistories.length === 0 ? (
+                                    <div className="flex flex-col items-center mt-10">
+                                        <div className="w-3/4 sm:w-3/4 lg:w-1/4">
+                                            <LottieAnimation animationData={animation404} />
+                                        </div>
+                                        <p className="text-darkBlue font-bold text-xl sm:text-2xl mt-4 mb-20 text-center">
+                                            Tidak ada lamaran
+                                        </p>
+                                    </div>
+                                ) : (
+                                    Array.isArray(filteredHistories) && filteredHistories.map((history: History) => (
+                                        <div key={history.idAplikasi} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
+                                            <button
+                                                className="w-full bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
+                                                onClick={() => handleJobClick(history.idAplikasi)}
+                                            >
+                                                <div className="w-full text-left">
+                                                    <h2 className="text-xl font-bold mb-2 text-darkBlue">{history.judulLowongan}</h2>
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                            <span className="font-semibold">ID Aplikasi:</span>
+                                                            <span className="ml-1">{history.idAplikasi}</span>
+                                                        </div>
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                            <span className="font-semibold">Update Terakhir:</span>
+                                                            <span className="ml-1">
+                                                                {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+                    </div>
 
-                {/* Footer Copyright */}
-                <FooterCopyright />
-            </main>
+                    {/* Section Footer */}
+                    <FooterSection />
 
-            {/* Scroll to Top Button */}
-            <ScrollToTopButton />
+                    {/* Footer Copyright */}
+                    <FooterCopyright />
+                </main>
 
-            {/* Search Button */}
-            <CariKarirButton />
-        </div>
+                {/* Scroll to Top Button */}
+                <ScrollToTopButton />
+
+                {/* Search Button */}
+                <CariKarirButton />
+            </div>
+        </Suspense>
     );
 };
 
