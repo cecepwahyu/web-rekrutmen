@@ -774,8 +774,8 @@ const Profile = () => {
                         <div className="mt-6 w-11/12 lg:w-4/5 flex flex-col space-y-6">
                             <div className="flex flex-col lg:flex-row items-center lg:items-start">
                                 {/* Section Profile Picture */}
-                                <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4">
-                                    <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center">
+                                <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4 rounded-lg">
+                                    <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center rounded-lg overflow-hidden">
                                         {profilePicture ? (
                                             <Image
                                                 src={profilePicture}
@@ -902,10 +902,11 @@ const Profile = () => {
                             <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
                                 {/* Section Pengalaman Kerja */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">Pengalaman Kerja</h2>
+                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Pengalaman Kerja</h2>
                                     {pengalamanData.length > 0 ? (
                                         pengalamanData.map((pengalaman, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
+                                                <h3 className="text-xl font-semibold mb-2 text-blue-400">Pengalaman Kerja {index + 1}</h3>
                                                 <div className="flex items-center mb-2">
                                                     <FaBuilding className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Instansi:</strong> {pengalaman.namaInstansi || '-'}</p>
@@ -922,20 +923,6 @@ const Profile = () => {
                                                     <FaPen className="mr-2 text-darkBlue" />
                                                     <p><strong>Deskripsi Kerja:</strong> {pengalaman.deskripsiKerja || '-'}</p>
                                                 </div>
-                                                {/* <div className="flex items-center mb-2">
-                                                    <FaPen className="mr-2 text-darkBlue" />
-                                                    <p><strong>Surat Pengalaman Kerja:</strong></p>
-                                                    {pengalaman.suratPengalamanKerja ? (
-                                                        <button
-                                                            onClick={() => window.open(pengalaman.suratPengalamanKerja, '_blank')}
-                                                            className="ml-2 bg-darkBlue text-white py-1 px-3 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
-                                                        >
-                                                            Preview
-                                                        </button>
-                                                    ) : (
-                                                        <span className="ml-2">-</span>
-                                                    )}
-                                                </div> */}
                                             </div>
                                         ))
                                     ) : (
@@ -947,10 +934,11 @@ const Profile = () => {
 
                                 {/* Section Pengalaman Organisasi */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">Pengalaman Organisasi</h2>
+                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Pengalaman Organisasi</h2>
                                     {organisasiData.length > 0 ? (
                                         organisasiData.map((organisasi, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
+                                                <h3 className="text-xl font-semibold mb-2 text-blue-400">Pengalaman Organisasi {index + 1}</h3>
                                                 <div className="flex items-center mb-2">
                                                     <FaUsers className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Organisasi:</strong> {organisasi.namaOrganisasi || '-'}</p>
@@ -980,10 +968,11 @@ const Profile = () => {
                             <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
                                 {/* Section Riwayat Pendidikan */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">Riwayat Pendidikan</h2>
+                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Riwayat Pendidikan</h2>
                                     {pendidikanData.length > 0 ? (
                                         pendidikanData.map((pendidikan, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
+                                                <h3 className="text-xl font-semibold mb-2 text-blue-500 text-blue-500">Pendidikan {index + 1}</h3>
                                                 <div className="flex items-center mb-2">
                                                     <FaBook className="mr-2 text-darkBlue" />
                                                     <p><strong>Jenjang Pendidikan:</strong> {pendidikan.idJenjang || '-'}</p>
@@ -1023,10 +1012,11 @@ const Profile = () => {
 
                                 {/* Section Kontak Kerabat */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">Kontak Kerabat</h2>
+                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Kontak Kerabat</h2>
                                     {kontakData.length > 0 ? (
                                         kontakData.map((kontak, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
+                                                <h3 className="text-xl font-semibold mb-2 text-blue-400">Kontak {index + 1}</h3>
                                                 <div className="flex items-center mb-2">
                                                     <FaAddressBook className="mr-2 text-darkBlue" />
                                                     <p><strong>Nama Kontak:</strong> {kontak.namaKontak}</p>
