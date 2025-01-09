@@ -23,6 +23,7 @@ function DesktopNavLinks() {
   const [name, setName] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showForceLogout, setShowForceLogout] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
   const getInitials = (name: string) => {
@@ -109,6 +110,34 @@ function DesktopNavLinks() {
     }
   }, []);
 
+  // useEffect(() => {
+  //   const checkTokenValidity = async () => {
+  //     const token = localStorage.getItem('token');
+  //     if (token) {
+  //       try {
+  //         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/validate-token`, {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //             'Accept': 'application/json',
+  //             'Authorization': `Bearer ${token}`
+  //           },
+  //           body: JSON.stringify({})
+  //         });
+  //         const result = await response.json();
+  //         if (result.responseCode !== '000') {
+  //           setShowForceLogout(true);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error validating token:', error);
+  //         setShowForceLogout(true);
+  //       }
+  //     }
+  //   };
+
+  //   checkTokenValidity();
+  // }, []);
+
   const handleProfileDropdownToggle = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
@@ -119,6 +148,11 @@ function DesktopNavLinks() {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }, 500);
+  };
+
+  const handleForceLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
 
   const handleLogoutClick = () => {
@@ -280,6 +314,21 @@ function DesktopNavLinks() {
                 onClick={handleSignOut}
               >
                 Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showForceLogout && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out">
+          <div className="bg-white p-6 rounded-lg shadow-lg transform transition-transform duration-300 ease-in-out scale-95">
+            <p className="text-lg font-semibold mb-4">Your session has expired. Please log in again.</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-200"
+                onClick={handleForceLogout}
+              >
+                Log In
               </button>
             </div>
           </div>
