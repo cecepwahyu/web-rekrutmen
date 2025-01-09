@@ -148,7 +148,7 @@ const Otp = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/update-password", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/update-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
