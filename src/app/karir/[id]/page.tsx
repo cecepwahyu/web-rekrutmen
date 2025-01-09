@@ -148,13 +148,13 @@ const DetailKarir = () => {
                 const id = await getIdFromToken(token);
                 setIdPeserta(id);
 
-                // Check profile completion first
-                if (id) {
-                    const isProfileComplete = await checkProfileCompletion(id);
-                    if (!isProfileComplete) {
-                        setIsProfileIncompleteDialogOpen(true);
-                    }
-                }
+                // // Check profile completion first
+                // if (id) {
+                //     const isProfileComplete = await checkProfileCompletion(id);
+                //     if (!isProfileComplete) {
+                //         setIsProfileIncompleteDialogOpen(true);
+                //     }
+                // }
             }
         };
 
