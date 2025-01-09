@@ -1052,7 +1052,7 @@ const EditProfil = () => {
                                                 </label>
                                                 <textarea
                                                     id="deskripsiKerja"
-                                                    name="deskripsiKerja"
+                                                    name="deskripsi_kerja"
                                                     value={pengalaman.deskripsi_kerja || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
