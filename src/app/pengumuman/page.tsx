@@ -67,7 +67,8 @@ const Pengumuman = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    setAnnouncements(data.data.content); // Set the current page's announcements
+                    const publishedAnnouncements = data.data.content.filter((announcement: any) => announcement.statusPublish === "1" && announcement.approved === true);
+                    setAnnouncements(publishedAnnouncements); // Set only published and approved announcements
                     setTotalPages(data.data.totalPages); // Set total pages
                 } else {
                     console.error("Error fetching data:", data.message);
