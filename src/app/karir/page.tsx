@@ -160,7 +160,7 @@ const Karir = () => {
 
                         <div className="w-full md:w-1/2 px-4">
                             <Image
-                                src="/images/magang.png"
+                                src="/images/slider4.png"
                                 alt="Magang"
                                 width={800}
                                 height={600}
