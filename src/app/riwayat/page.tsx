@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faUsers, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -76,7 +76,6 @@ const Riwayat = () => {
     const [searchTerm, setSearchTerm] = useState(""); // State for search term
     const [idPeserta, setIdPeserta] = useState<string | null>(null);
     const router = useRouter();
-    const searchParams = useSearchParams();
 
     // Check if user is authenticated when the page loads
     useEffect(() => {
