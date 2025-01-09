@@ -783,13 +783,15 @@ const DetailKarir = () => {
                                             <div className="bg-gray-100 p-4 rounded-lg md:sticky md:top-28">
                                                 <h2 className="font-semibold text-lg">Periode Pendaftaran</h2>
                                                 <p>
-                                                    <span>
-                                                        {new Date(article.periodeAwal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: new Date(article.periodeAwal).getFullYear() !== new Date(article.periodeAkhir).getFullYear() ? 'numeric' : undefined })} s/d{' '}
-                                                        {new Date(article.periodeAkhir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                                    </span>
+                                                    {status === '4' ? '-' : (
+                                                        <span>
+                                                            {new Date(article.periodeAwal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: new Date(article.periodeAwal).getFullYear() !== new Date(article.periodeAkhir).getFullYear() ? 'numeric' : undefined })} s/d{' '}
+                                                            {new Date(article.periodeAkhir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                        </span>
+                                                    )}
                                                 </p>
                                                 <h2 className="font-semibold text-lg mt-4">Lokasi Tes</h2>
-                                                <p>Yogyakarta</p>
+                                                <p>{status === '4' ? '-' : 'Yogyakarta'}</p>
                                             </div>
                                         </div>
                                     </div>
