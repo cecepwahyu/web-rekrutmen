@@ -129,6 +129,40 @@ const deleteDocument = async (endpoint: string) => {
     }
 };
 
+const fetchProfileDetails = async (idPeserta: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/details`, {
+            method: 'GET',
+            headers: getHeaders(token),
+        });
+
+        const data = await response.json();
+        if (data.responseCode === '000') {
+            return data.data;
+        } else {
+            console.error('Error fetching profile details:', data.responseMessage);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching profile details:', error);
+        return null;
+    }
+};
+
+const isProfileDataComplete = (profileData: any) => {
+    const requiredFields = [
+        'organisasi_periode', 'achievements', 'kontak_id', 'thn_masuk', 'nilai', 'nama_instansi', 'posisi_kerja',
+        'telp_kontak', 'periode_kerja', 'pendidikan_jenjang', 'organisasi_id', 'organisasi_deskripsi', 'gelar',
+        'pengalaman_id', 'email_kontak', 'nama_kontak', 'jurusan', 'nama_institusi', 'pengalaman_deskripsi',
+        'pendidikan_id', 'thn_lulus', 'peserta_id', 'nama_organisasi', 'hub_kontak', 'posisi_organisasi', 'alamat_kontak'
+    ];
+
+    return requiredFields.every(field => profileData[field]);
+};
+
 const DetailKarir = () => {
     const params = useParams();
     const slug = params?.id as string;
@@ -311,6 +345,12 @@ const DetailKarir = () => {
 
         const idPeserta = await getIdFromToken(token);
         if (!idPeserta) return;
+
+        const profileData = await fetchProfileDetails(idPeserta);
+        if (!profileData || !isProfileDataComplete(profileData)) {
+            setIsProfileIncompleteDialogOpen(true);
+            return;
+        }
 
         const isProfileComplete = await checkProfileCompletion(idPeserta);
         if (!isProfileComplete) {
@@ -534,6 +574,12 @@ const DetailKarir = () => {
 
         const idPeserta = await getIdFromToken(token);
         if (!idPeserta) return;
+
+        const profileData = await fetchProfileDetails(idPeserta);
+        if (!profileData || !isProfileDataComplete(profileData)) {
+            setIsProfileIncompleteDialogOpen(true);
+            return;
+        }
 
         const isProfileComplete = await checkProfileCompletion(idPeserta);
         if (!isProfileComplete) {
