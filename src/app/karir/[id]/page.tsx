@@ -107,6 +107,28 @@ const checkProfileCompletion = async (idPeserta: string) => {
     return true;
 };
 
+const deleteDocument = async (endpoint: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const idPeserta = await getIdFromToken(token);
+    if (!idPeserta) return;
+
+    try {
+        const response = await fetch(endpoint.replace('{idPeserta}', idPeserta), {
+            method: 'DELETE',
+            headers: getHeaders(token),
+        });
+
+        const data = await response.json();
+        if (data.responseCode !== '000') {
+            console.error('Failed to delete document:', data.responseMessage);
+        }
+    } catch (error) {
+        console.error('Error deleting document:', error);
+    }
+};
+
 const DetailKarir = () => {
     const params = useParams();
     const slug = params?.id as string;
@@ -374,12 +396,15 @@ const DetailKarir = () => {
                         previewButton.className = 'bg-blue-500 text-white py-2 px-4 rounded-lg';
                         previewButton.onclick = () => window.open(URL.createObjectURL(file), '_blank');
                         inputField.replaceWith(previewButton);
-
+    
                         // Add change/update button
                         const updateButton = document.createElement('button');
                         updateButton.textContent = 'Change/Update Berkas';
                         updateButton.className = 'bg-yellow-500 text-white py-2 px-4 rounded-lg ml-2';
-                        updateButton.onclick = () => {
+                        updateButton.onclick = async () => {
+                            // Delete the existing document before allowing the user to upload a new one
+                            await deleteDocument(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/{idPeserta}/delete-${fieldName}`);
+    
                             const newInputField = document.createElement('input');
                             newInputField.type = 'file';
                             newInputField.name = fieldName;
@@ -393,6 +418,15 @@ const DetailKarir = () => {
                             };
                             previewButton.replaceWith(newInputField);
                             updateButton.remove(); // Remove the update button
+    
+                            // Reattach the submit event listener to the new input field
+                            const form = newInputField.closest('form');
+                            if (form) {
+                                form.addEventListener('submit', (e) => {
+                                    e.preventDefault();
+                                    handleFileSubmit(data, endpoint, fieldName, maxSizeMB);
+                                });
+                            }
                         };
                         previewButton.after(updateButton);
                     }
@@ -405,6 +439,7 @@ const DetailKarir = () => {
             }
         };
     };
+    
 
     const handleApplyNow = async () => {
         const token = localStorage.getItem('token');
