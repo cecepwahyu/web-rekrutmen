@@ -529,7 +529,7 @@ const DetailKarir = () => {
 
     const handleAgreementSubmitForCv = async () => {
         if (!agreements.submitCv) {
-            setAgreementError('Please check the box to proceed.');
+            setAgreementError('Silahkan ceklist persetujuan untuk melanjutkan.');
             return;
         }
     
@@ -677,9 +677,9 @@ const DetailKarir = () => {
                                                             disabled={isLocked}
                                                         >
                                                             {status === '4' ? (
-                                                                'Submit CV'
+                                                                'Submit'
                                                             ) : (
-                                                                isLocked ? 'Anda telah mendaftar' : 'Daftar'
+                                                                isLocked ? 'Anda telah mendaftar' : 'Apply'
                                                             )}
                                                         </button>
                                                     </DialogTrigger>
