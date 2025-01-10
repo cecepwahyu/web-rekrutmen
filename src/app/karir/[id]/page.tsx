@@ -784,7 +784,12 @@ const DetailKarir = () => {
                                                                         </DialogFooter>
                                                                         {showPreviewButtons[doc[3].toLowerCase().replace(/\s+/g, '-')] && uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')] && (
                                                                             <>
-                                                                                <button onClick={() => window.open(URL.createObjectURL(uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')]), '_blank')} className="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 w-full md:w-auto ml-4">Preview</button>
+                                                                                <button onClick={() => {
+                                                                                    const file = uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')];
+                                                                                    if (file) {
+                                                                                        window.open(URL.createObjectURL(file), '_blank');
+                                                                                    }
+                                                                                }} className="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 w-full md:w-auto ml-4">Preview</button>
                                                                                 <button onClick={() => setShowPreviewButtons(prev => ({ ...prev, [doc[3].toLowerCase().replace(/\s+/g, '-')]: false }))} className="bg-yellow-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-yellow-700 transition duration-300 w-full md:w-auto ml-4">Change File</button>
                                                                             </>
                                                                         )}
@@ -830,7 +835,11 @@ const DetailKarir = () => {
                                                                     <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
                                                                     {showPreviewButton && uploadedFile && (
                                                                         <>
-                                                                            <button onClick={() => window.open(URL.createObjectURL(uploadedFile), '_blank')} className="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 w-full md:w-auto ml-4">Preview</button>
+                                                                            <button onClick={() => {
+                                                                                if (uploadedFile) {
+                                                                                    window.open(URL.createObjectURL(uploadedFile), '_blank');
+                                                                                }
+                                                                            }} className="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 w-full md:w-auto ml-4">Preview</button>
                                                                             <button onClick={() => setShowPreviewButton(false)} className="bg-yellow-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-yellow-700 transition duration-300 w-full md:w-auto ml-4">Change File</button>
                                                                         </>
                                                                     )}
