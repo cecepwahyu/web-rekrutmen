@@ -17,6 +17,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2'; // Import Swal
 
 const dummyProfilePic: StaticImageData = require('../../../public/images/dummyProfilePic.jpg');
 
@@ -177,12 +178,21 @@ const Profile = () => {
     const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64Image = reader.result as string;
-                setNewProfilePicture(base64Image);
-            };
-            reader.readAsDataURL(file);
+            const fileType = file.type;
+            if (fileType === "image/png" || fileType === "image/jpeg") {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64Image = reader.result as string;
+                    setNewProfilePicture(base64Image);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format File Tidak Sesuai',
+                    text: 'Silakan pilih file gambar yang valid (PNG atau JPG).',
+                });
+            }
         }
     };
 
@@ -602,11 +612,12 @@ const Profile = () => {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Ubah Foto Porfil</DialogTitle>
-                        <DialogDescription>Pilih foto yang akan Anda jadikan foto profil.</DialogDescription>
+                        <DialogTitle>Ubah Foto Profil</DialogTitle>
+                        <DialogDescription>Pilih foto yang akan Anda jadikan foto profil (PNG atau JPG).</DialogDescription>
                     </DialogHeader>
                     <input 
                         type="file" 
+                        accept="image/png, image/jpeg" // Restrict file types
                         onChange={handleProfilePictureChange} 
                         className="mb-4"
                     />
