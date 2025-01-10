@@ -17,6 +17,7 @@ import LottieAnimation from "../../../components/Animations";
 
 interface Article {
     judul: string;
+    gambar: string;
     isi: string;
 }
 
@@ -142,7 +143,7 @@ const DetailArtikel = () => {
                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div className="relative w-full h-48">
                                     <Image
-                                        src="/images/arcticle1.jpeg"
+                                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/artikel/image/${article.gambar}`}
                                         alt={article.judul}
                                         layout="fill"
                                         objectFit="cover"
