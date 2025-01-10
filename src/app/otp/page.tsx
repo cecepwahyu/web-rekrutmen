@@ -47,14 +47,18 @@ const Otp = () => {
     }
   }, [searchParams]);
 
-  // Extract email from localStorage or sessionStorage
+  // Extract email and no_identitas from localStorage or sessionStorage
   useEffect(() => {
     const storedEmail = localStorage.getItem("forgotPasswordEmail");
+    const storedIdentitas = localStorage.getItem("forgotPasswordIdentitas");
     if (storedEmail) {
       setEmail(storedEmail);
     } else {
       toast.error("Email not found. Please go back to the login/forgot password page.");
       router.push("/login"); // Redirect to login page if email is not found
+    }
+    if (storedIdentitas) {
+      setNoIdentitas(storedIdentitas);
     }
   }, [router]);
 
