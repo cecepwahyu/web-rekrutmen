@@ -35,6 +35,7 @@ interface History {
     tahunAplikasi: number;
     slug: string;
     status: string;
+    isRekrutmen: string;
 }
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
@@ -122,8 +123,8 @@ const Riwayat = () => {
                         const allHistories: History[] = [data.data]; // Wrap the single object in an array
                         setHistories(allHistories); // Update histories with fetched data
                         setFilteredHistories(allHistories); // Update filtered histories with fetched data
-                        setRekrutmenJobs(allHistories.filter(history => history.status === "1")); // Filter for "Aktif" tab
-                        setJobDescJobs(allHistories.filter(history => history.status !== "1")); // Filter for "Tidak Aktif" tab
+                        setRekrutmenJobs(allHistories.filter(history => history.status === "1" && history.isRekrutmen)); // Filter for "Aktif" tab
+                        setJobDescJobs(allHistories.filter(history => history.status !== "1" && history.isRekrutmen)); // Filter for "Tidak Aktif" tab
                     }
                 } catch (error) {
                     console.error("Error fetching history data:", error);
@@ -155,9 +156,9 @@ const Riwayat = () => {
         ) : [];
 
         if (activeTab === "Rekrutmen") {
-            setFilteredHistories(filtered.filter(history => history.status === "1"));
+            setFilteredHistories(filtered.filter(history => history.status === "1" && history.isRekrutmen));
         } else if (activeTab === "Job Desc") {
-            setFilteredHistories(filtered.filter(history => history.status !== "1"));
+            setFilteredHistories(filtered.filter(history => history.status !== "1" && history.isRekrutmen));
         }
     }, [searchTerm, histories, activeTab]);
 
