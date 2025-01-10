@@ -195,6 +195,10 @@ const DetailKarir = () => {
     const [isSubmitCvDialogOpen, setIsSubmitCvDialogOpen] = useState(false);
     const [isProfileIncompleteDialogOpen, setIsProfileIncompleteDialogOpen] = useState(false);
     const [isCvSubmitWarningDialogOpen, setIsCvSubmitWarningDialogOpen] = useState(false);
+    const [showPreviewButton, setShowPreviewButton] = useState(false);
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File | null }>({});
+    const [showPreviewButtons, setShowPreviewButtons] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -427,49 +431,9 @@ const DetailKarir = () => {
                 const responseData = await response.json();
                 if (responseData.responseCode === '000') {
                     toast.success("Document submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
-                    reset();
-                    // Change the input field to a preview button
-                    const inputField = document.querySelector(`input[name="${fieldName}"]`);
-                    if (inputField) {
-                        const previewButton = document.createElement('button');
-                        previewButton.textContent = 'Preview';
-                        previewButton.className = 'bg-blue-500 text-white py-2 px-4 rounded-lg';
-                        previewButton.onclick = () => window.open(URL.createObjectURL(file), '_blank');
-                        inputField.replaceWith(previewButton);
-    
-                        // Add change/update button
-                        const updateButton = document.createElement('button');
-                        updateButton.textContent = 'Change/Update Berkas';
-                        updateButton.className = 'bg-yellow-500 text-white py-2 px-4 rounded-lg ml-2';
-                        updateButton.onclick = async () => {
-                            // Delete the existing document before allowing the user to upload a new one
-                            await deleteDocument(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/{idPeserta}/delete-${fieldName}`);
-    
-                            const newInputField = document.createElement('input');
-                            newInputField.type = 'file';
-                            newInputField.name = fieldName;
-                            newInputField.accept = 'application/pdf';
-                            newInputField.className = 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500';
-                            newInputField.onchange = () => {
-                                const form = newInputField.closest('form');
-                                if (form) {
-                                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                                }
-                            };
-                            previewButton.replaceWith(newInputField);
-                            updateButton.remove(); // Remove the update button
-    
-                            // Reattach the submit event listener to the new input field
-                            const form = newInputField.closest('form');
-                            if (form) {
-                                form.addEventListener('submit', (e) => {
-                                    e.preventDefault();
-                                    handleFileSubmit(data, endpoint, fieldName, maxSizeMB);
-                                });
-                            }
-                        };
-                        previewButton.after(updateButton);
-                    }
+                    setShowPreviewButtons(prev => ({ ...prev, [fieldName]: true })); // Show preview button for the specific field
+                    setUploadedFiles(prev => ({ ...prev, [fieldName]: file })); // Store the uploaded file for the specific field
+                    // Do not reset the form to allow re-selection of the file
                 } else {
                     toast.error("Failed to submit document: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
                 }
@@ -818,6 +782,12 @@ const DetailKarir = () => {
                                                                         <DialogFooter className="w-full md:w-auto">
                                                                             <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Simpan</button>
                                                                         </DialogFooter>
+                                                                        {showPreviewButtons[doc[3].toLowerCase().replace(/\s+/g, '-')] && uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')] && (
+                                                                            <>
+                                                                                <button onClick={() => window.open(URL.createObjectURL(uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')]), '_blank')} className="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 w-full md:w-auto ml-4">Preview</button>
+                                                                                <button onClick={() => setShowPreviewButtons(prev => ({ ...prev, [doc[3].toLowerCase().replace(/\s+/g, '-')]: false }))} className="bg-yellow-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-yellow-700 transition duration-300 w-full md:w-auto ml-4">Change File</button>
+                                                                            </>
+                                                                        )}
                                                                     </form>
                                                                 ))}
                                                                 {isHeightMandatory && (
@@ -858,6 +828,12 @@ const DetailKarir = () => {
                                                                 )}
                                                                 <div className="flex justify-end mt-4">
                                                                     <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
+                                                                    {showPreviewButton && uploadedFile && (
+                                                                        <>
+                                                                            <button onClick={() => window.open(URL.createObjectURL(uploadedFile), '_blank')} className="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition duration-300 w-full md:w-auto ml-4">Preview</button>
+                                                                            <button onClick={() => setShowPreviewButton(false)} className="bg-yellow-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-yellow-700 transition duration-300 w-full md:w-auto ml-4">Change File</button>
+                                                                        </>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
