@@ -688,7 +688,7 @@ const DetailKarir = () => {
                                                         <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
                                                             {status === '4' ? (
                                                                 <>
-                                                                    Mengunggah Curriculum Vitae (CV) bukan berarti Anda telah mengajukan lamaran. Ketika ada lowongan yang telah dibuka, Anda diwajibkan melengkapi berkas persyaratan dan melakukan pendaftaran sesuai dengan posisi yang diinginkan. Informasi selanjutnya akan diberitahukan melalui email.
+                                                                    Pastikan data pada profil Anda adalah data terbaru. Mengunggah Curriculum Vitae (CV) bukan berarti Anda telah mengajukan lamaran. Ketika ada lowongan yang telah dibuka, Anda diwajibkan melengkapi berkas persyaratan dan melakukan pendaftaran sesuai dengan posisi yang diinginkan. Informasi selanjutnya akan diberitahukan melalui email.
                                                                     <FormGroup className="mt-4 space-y-4">
                                                                         <FormControlLabel
                                                                             control={<Checkbox checked={agreements.submitCv} onChange={(e) => setAgreements({ ...agreements, submitCv: e.target.checked })} />}
@@ -707,7 +707,7 @@ const DetailKarir = () => {
                                                                     </DialogFooter>
                                                                 </>
                                                             ) : (
-                                                                'Silakan lengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.'
+                                                                'Pastikan data pada profil Anda adalah data terbaru dan silakan melengkapi berkas lamaran Anda untuk melanjutkan pendaftaran.'
                                                             )}
                                                         </DialogDescription>
                                                         {status !== '4' && (
