@@ -602,8 +602,8 @@ const Profile = () => {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Change Profile Picture</DialogTitle>
-                        <DialogDescription>Select an image to update your profile picture.</DialogDescription>
+                        <DialogTitle>Ubah Foto Porfil</DialogTitle>
+                        <DialogDescription>Pilih foto yang akan Anda jadikan foto profil.</DialogDescription>
                     </DialogHeader>
                     <input 
                         type="file" 
@@ -791,7 +791,7 @@ const Profile = () => {
                                     <button 
                                         onClick={handleChangeProfilePicture} 
                                         className="mt-4 w-full bg-darkBlue text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400">
-                                        Change Profile Picture
+                                        Update Foto Profil
                                     </button>
                                     <input 
                                         type="file" 
