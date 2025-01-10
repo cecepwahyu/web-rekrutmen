@@ -887,21 +887,41 @@ const EditProfil = () => {
                                     {pendidikanList.map((pendidikan, index) => (
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
-                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
-                                                    Universitas
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="idJenjang">
+                                                    Jenjang
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("pendidikan", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
                                                 </button>
                                             </div>
-                                            <input
-                                                type="text"
-                                                id="namaInstitusi"
-                                                name="namaInstitusi"
-                                                value={pendidikan.namaInstitusi || ""}
+                                            <select
+                                                id="idJenjang"
+                                                name="idJenjang"
+                                                value={pendidikan.idJenjang || ""}
                                                 onChange={(e) => handleChange(e, index, "pendidikan")}
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                            />
+                                            >
+                                                <option value="">Pilih Jenjang</option>
+                                                <option value="1">SD</option>
+                                                <option value="2">SMP</option>
+                                                <option value="3">SMA</option>
+                                                <option value="4">S1</option>
+                                                <option value="5">S2</option>
+                                                <option value="6">S3</option>
+                                            </select>
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
+                                                    Universitas
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="namaInstitusi"
+                                                    name="namaInstitusi"
+                                                    value={pendidikan.namaInstitusi || ""}
+                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                />
+                                            </div>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="jurusan">
                                                     Jurusan
