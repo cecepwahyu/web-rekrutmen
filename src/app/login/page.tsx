@@ -277,8 +277,9 @@ const Login = () => {
       showDialog("Password reset link sent! Please check your email.");
       setIsForgotPasswordOpen(false);
 
-      // Store email in localStorage
+      // Store email and identitas in localStorage
       localStorage.setItem("forgotPasswordEmail", forgotPasswordEmail);
+      localStorage.setItem("forgotPasswordIdentitas", forgotPasswordIdentitas);
 
       // Redirect to OTP page
       setTimeout(() => {
