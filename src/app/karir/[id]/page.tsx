@@ -138,6 +138,7 @@ const DetailKarir = () => {
     const [status, setStatus] = useState<string | null>(null);
     const [isSubmitCvDialogOpen, setIsSubmitCvDialogOpen] = useState(false);
     const [isProfileIncompleteDialogOpen, setIsProfileIncompleteDialogOpen] = useState(false);
+    const [isCvSubmitWarningDialogOpen, setIsCvSubmitWarningDialogOpen] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -147,14 +148,6 @@ const DetailKarir = () => {
             if (token) {
                 const id = await getIdFromToken(token);
                 setIdPeserta(id);
-
-                // // Check profile completion first
-                // if (id) {
-                //     const isProfileComplete = await checkProfileCompletion(id);
-                //     if (!isProfileComplete) {
-                //         setIsProfileIncompleteDialogOpen(true);
-                //     }
-                // }
             }
         };
 
@@ -536,6 +529,28 @@ const DetailKarir = () => {
         const token = localStorage.getItem('token');
         if (!token || !idPeserta) return;
     
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/peserta/id/${idPeserta}`, {
+                method: 'GET',
+                headers: getHeaders(token),
+            });
+    
+            const responseData = await response.json();
+            if (responseData.responseCode === '000') {
+                if (!responseData.data.isRekrutmen) {
+                    setIsCvSubmitWarningDialogOpen(true);
+                    return;
+                }
+            } else {
+                toast.error("Failed to fetch application history: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
+                return;
+            }
+        } catch (error) {
+            console.error('Error fetching application history:', error);
+            alert('An error occurred. Please try again.');
+            return;
+        }
+    
         const payload = {
             id_peserta: idPeserta,
         };
@@ -878,6 +893,19 @@ const DetailKarir = () => {
                     <DialogFooter className="mt-6 flex justify-end">
                         <button onClick={() => { router.push('/profil'); }} className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
                             Lengkapi data
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isCvSubmitWarningDialogOpen} onOpenChange={setIsCvSubmitWarningDialogOpen}>
+                <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+                    <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">Peringatan</DialogTitle>
+                    <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
+                        Anda hanya bisa submit CV sekali, silahkan perbarui data anda secara berkala di halaman profil.
+                    </DialogDescription>
+                    <DialogFooter className="mt-6 flex justify-end">
+                        <button onClick={() => setIsCvSubmitWarningDialogOpen(false)} className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                            OK
                         </button>
                     </DialogFooter>
                 </DialogContent>
