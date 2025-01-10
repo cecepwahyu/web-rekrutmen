@@ -975,7 +975,7 @@ const Profile = () => {
                                                 <h3 className="text-xl font-semibold mb-2 text-blue-500 text-blue-500">Pendidikan {index + 1}</h3>
                                                 <div className="flex items-center mb-2">
                                                     <FaBook className="mr-2 text-darkBlue" />
-                                                    <p><strong>Jenjang Pendidikan:</strong> {pendidikan.idJenjang || '-'}</p>
+                                                    <p><strong>Jenjang Pendidikan:</strong> {Number(pendidikan.idJenjang) === 1 ? 'SD' : Number(pendidikan.idJenjang) === 2 ? 'SMP' : Number(pendidikan.idJenjang) === 3 ? 'SMA' : Number(pendidikan.idJenjang) === 4 ? 'S1' : Number(pendidikan.idJenjang) === 5 ? 'S2' : Number(pendidikan.idJenjang) === 6 ? 'S3' : pendidikan.idJenjang || '-'}</p>
                                                 </div>
                                                 <div className="flex items-center mb-2">
                                                     <FaBook className="mr-2 text-darkBlue" />
