@@ -4,7 +4,7 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendar, faTag, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faTag, faPlus, faTrash, faUser, faGraduationCap, faBriefcase, faUsers, faAddressBook } from "@fortawesome/free-solid-svg-icons";
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../../components/FooterCopyright";
 import FooterSection from "../../../components/FooterSection";
@@ -550,7 +550,8 @@ const EditProfil = () => {
                 toast.success("Data berhasil disimpan.", { style: { backgroundColor: 'white', color: 'green' } });
                 router.push("/profil");
             } else {
-                toast.error("Gagal menyimpan data: " + data.message, { style: { backgroundColor: 'white', color: 'red' } });
+                const errorMessage = data.data ? data.data : data.message;
+                toast.error(`Gagal menyimpan data: ${errorMessage}`, { style: { backgroundColor: 'white', color: 'red' } });
             }
         } catch (error) {
             console.error("Error updating profile data:", error);
@@ -587,11 +588,21 @@ const EditProfil = () => {
                     ) : (
                         <Tabs selectedIndex={activeTab} onSelect={(index) => setActiveTab(index)}>
                             <TabList className="flex justify-center mb-4 custom-tab-list">
-                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 0 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Informasi Personal</Tab>
-                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 1 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Pendidikan</Tab>
-                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 2 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Pengalaman</Tab>
-                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 3 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Organisasi</Tab>
-                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 4 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">Kontak</Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 0 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
+                                    <FontAwesomeIcon icon={faUser} className="mr-2" /> Informasi Personal
+                                </Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 1 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
+                                    <FontAwesomeIcon icon={faGraduationCap} className="mr-2" /> Pendidikan
+                                </Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 2 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
+                                    <FontAwesomeIcon icon={faBriefcase} className="mr-2" /> Pengalaman
+                                </Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 3 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
+                                    <FontAwesomeIcon icon={faUsers} className="mr-2" /> Organisasi
+                                </Tab>
+                                <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 4 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
+                                    <FontAwesomeIcon icon={faAddressBook} className="mr-2" /> Kontak
+                                </Tab>
                             </TabList>
 
                             <TabPanel>
@@ -1236,7 +1247,10 @@ const EditProfil = () => {
                             </TabPanel>
                         </Tabs>
                     )}
-                    <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
+                    <button 
+                        onClick={handleSave} 
+                        className="bg-blue-500 text-white px-6 py-3 rounded-lg mt-6 shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                    >
                         Simpan Semua Data
                     </button>
                     <br />
