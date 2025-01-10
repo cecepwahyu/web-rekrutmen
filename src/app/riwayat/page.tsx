@@ -198,7 +198,7 @@ const Riwayat = () => {
                     <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32 pt-20">
                         <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Riwayat Lamaran Anda</h1>
                         <p className="text-center text-gray-700 mt-4 px-6">
-                            Berikut adalah daftar lamaran yang pernah Anda ajukan. Silakan klik untuk melihat detail lamaran.:
+                            Berikut adalah daftar lamaran yang pernah Anda ajukan. Silakan klik untuk melihat detail lamaran:
                         </p>
 
                         {/* Search Bar */}
