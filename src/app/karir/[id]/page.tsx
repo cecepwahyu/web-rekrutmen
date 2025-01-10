@@ -148,7 +148,7 @@ const DetailKarir = () => {
         recruitment: false,
         dataUsage: false,
         holdDiploma: false,
-        submitCv: false, // Add this line
+        submitCv: false,
     });
     const [agreementError, setAgreementError] = useState('');
     const [minHeight, setMinHeight] = useState<number | null>(null);
