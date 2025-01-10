@@ -679,7 +679,7 @@ const DetailKarir = () => {
                                                             {status === '4' ? (
                                                                 'Submit'
                                                             ) : (
-                                                                isLocked ? 'Anda telah mendaftar' : 'Apply'
+                                                                isLocked ? 'Anda sudah mendaftar pada periode ini' : 'Apply'
                                                             )}
                                                         </button>
                                                     </DialogTrigger>
