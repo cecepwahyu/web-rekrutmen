@@ -16,8 +16,9 @@ import type { StaticImageData } from 'next/image';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon, faUser as faUserIcon, faBriefcase as faBriefcaseIcon, faUsers as faUsersIcon, faGraduationCap as faGraduationCapIcon, faAddressBook as faAddressBookIcon } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2'; // Import Swal
+import { toast } from 'sonner'; // Import toast from Sonner
 
 const dummyProfilePic: StaticImageData = require('../../../public/images/dummyProfilePic.jpg');
 
@@ -162,6 +163,8 @@ const Profile = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState({
         length: false,
         uppercase: false,
@@ -169,6 +172,15 @@ const Profile = () => {
         number: false,
         specialChar: false,
     });
+    const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false); // State for redirecting
+
+    const showDialog = (message: string) => {
+        setDialogMessage(message);
+        setDialogOpen(true);
+    };
+
     const router = useRouter(); // Initialize useRouter
 
     const handleChangeProfilePicture = () => {
@@ -294,7 +306,7 @@ const Profile = () => {
 
     const handleSaveNewPassword = async () => {
         if (newPassword !== confirmNewPassword) {
-            alert("New password and confirm password do not match");
+            showDialog("New password and confirm password do not match");
             return;
         }
 
@@ -310,26 +322,37 @@ const Profile = () => {
             return;
         }
 
+        if (!profileData?.email) {
+            console.error("No email found in profile data");
+            return;
+        }
+
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}/change-password`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/change-password`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
                     Accept: "application/json",
                 },
-                body: JSON.stringify({ currentPassword, newPassword }),
+                body: JSON.stringify({
+                    email: profileData.email,
+                    currentPassword,
+                    newPassword,
+                    confirmPassword: confirmNewPassword,
+                }),
             });
 
             const data = await response.json();
             if (data.responseCode === "000") {
-                console.log("Password changed successfully");
+                toast.success("Password changed successfully");
                 setIsChangePasswordDialogOpen(false); // Close dialog after saving
             } else {
-                console.error("Error changing password:", data.responseMessage);
+                showDialog(data.responseMessage || "An error occurred while changing the password.");
             }
         } catch (error) {
             console.error("Error changing password:", error);
+            showDialog("An error occurred while changing the password.");
         }
     };
 
@@ -596,12 +619,21 @@ const Profile = () => {
     };
 
     const handleUpdateDataClick = () => {
+        setIsRedirecting(true); // Set redirecting state to true
         router.push('/profil/edit'); // Redirect to edit profile page
     };
 
     if (!isAuthenticated) {
         return null;
     }
+
+    // if (isRedirecting) {
+    //     return (
+    //         <div className="flex justify-center items-center min-h-screen">
+    //             <p>Loading...</p>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
@@ -659,21 +691,30 @@ const Profile = () => {
                 </DialogTrigger>
                 <DialogContent className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-darkBlue">Change Password</DialogTitle>
-                        <DialogDescription className="text-gray-600">Enter your current password and new password to change your password.</DialogDescription>
+                        <DialogTitle className="text-2xl font-bold text-darkBlue">Ubah Password</DialogTitle>
+                        <DialogDescription className="text-gray-600">Masukkan kata sandi saat ini dan kata sandi baru Anda untuk mengubah kata sandi Anda.</DialogDescription>
                     </DialogHeader>
                     <div className="mt-4 space-y-4">
-                        <input 
-                            type="password" 
-                            placeholder="Current Password" 
-                            value={currentPassword} 
-                            onChange={(e) => setCurrentPassword(e.target.value)} 
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
+                        <div className="relative">
+                            <input 
+                                type={showCurrentPassword ? "text" : "password"} 
+                                placeholder="Password Saat Ini" 
+                                value={currentPassword} 
+                                onChange={(e) => setCurrentPassword(e.target.value)} 
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                            >
+                                <FontAwesomeIcon icon={showCurrentPassword ? faEyeSlash : faEye} />
+                            </button>
+                        </div>
                         <div className="relative">
                             <input 
                                 type={showPassword ? "text" : "password"} 
-                                placeholder="New Password" 
+                                placeholder="Password Baru" 
                                 value={newPassword} 
                                 onChange={(e) => {
                                     setNewPassword(e.target.value);
@@ -731,26 +772,55 @@ const Profile = () => {
                                 <p>Minimal 1 karakter khusus</p>
                             </div>
                         </div>
-                        <input 
-                            type="password" 
-                            placeholder="Confirm New Password" 
-                            value={confirmNewPassword} 
-                            onChange={(e) => setConfirmNewPassword(e.target.value)} 
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
+                        <div className="relative">
+                            <input 
+                                type={showConfirmPassword ? "text" : "password"} 
+                                placeholder="Konfirmasi Password Baru" 
+                                value={confirmNewPassword} 
+                                onChange={(e) => setConfirmNewPassword(e.target.value)} 
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                            >
+                                <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                            </button>
+                        </div>
                     </div>
                     <DialogFooter className="mt-6 flex justify-end space-x-4">
                         <button
                             onClick={() => setIsChangePasswordDialogOpen(false)}
                             className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:bg-gray-300"
                         >
-                            Cancel
+                            Batal
                         </button>
                         <button
                             onClick={handleSaveNewPassword} // Save new password
                             className="bg-darkBlue text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
                         >
-                            Save
+                            Simpan
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent className="font-normal">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">Info</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 flex items-center">
+                        {dialogMessage && (
+                            <span>{dialogMessage}</span>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <button
+                            onClick={() => setDialogOpen(false)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+                        >
+                            OK
                         </button>
                     </DialogFooter>
                 </DialogContent>
@@ -759,19 +829,36 @@ const Profile = () => {
             <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
                 <div className="bg-white relative z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                        <defs>
+                        {/* <defs>
                             <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
                                 <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
                             </linearGradient>
-                        </defs>
-                        <path fill="url(#grad1)"
-                            d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
+                        </defs> */}
+                        {/* <path fill="url(#grad1)"
+                            d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z">
+                        </path> */}
                     </svg>
                 </div>
 
                 <div className="flex flex-col justify-center items-center w-full bg-white h-min-[400px] relative z-10 -mt-32">
                     <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Profil Pribadi</h1>
+                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4 flex justify-between items-center" role="alert">
+                        <div>
+                            <p className="font-bold">Perhatian</p>
+                            <p>Anda diwajibkan untuk melengkapi data diri Anda untuk dapat melamar pekerjaan.</p>
+                        </div>
+                        <button onClick={() => {
+                            const alertBox = document.querySelector('.bg-yellow-100');
+                            if (alertBox) {
+                                (alertBox as HTMLElement).style.display = 'none';
+                            }
+                        }} className="text-yellow-700 font-bold ml-4">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
                     <br />
                     <p className="font-sans text-base font-normal leading-relaxed text-gray-800 text-center px-6 md:px-32 lg:px-56">
                         Berikut adalah informasi profil:
@@ -796,7 +883,7 @@ const Profile = () => {
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <span className="text-gray-500">3x4 Rectangle</span>
+                                            <span className="text-gray-500">3x4 Foto</span>
                                         )}
                                     </div>
                                     <button 
@@ -821,13 +908,18 @@ const Profile = () => {
                                         onClick={handleChangePassword} 
                                         className="mt-4 w-full bg-darkBlue text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
                                     >
-                                        Change Password
+                                        Ubah Password
                                     </button>
                                 </div>
 
                                 {/* Section Profile Data */}
                                 <div className="w-full lg:w-3/4 bg-white shadow-lg rounded-lg p-6 lg:ml-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue">Informasi Personal</h2>
+                                    <div className="flex items-center mb-4">
+                                        <div className="bg-blue-100 p-2 rounded-lg mr-2">
+                                            <FontAwesomeIcon icon={faUserIcon} className="text-darkBlue" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-darkBlue">Informasi Personal</h2>
+                                    </div>
                                     {profileData.nama && (
                                         <div className="flex items-center mb-2">
                                             <FaUser className="mr-2 text-darkBlue" />
@@ -858,7 +950,8 @@ const Profile = () => {
                                             <p><strong>Tanggal Lahir:</strong> {new Date(profileData.tglLahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                                         </div>
                                     )}
-                                    {profileData.jnsKelamin !== undefined && (
+                                    {profileData.jnsKelamin && (
+                                    //{profileData.jnsKelamin !== undefined && (
                                         <div className="flex items-center mb-2">
                                             <FaUser className="mr-2 text-darkBlue" />
                                             <p><strong>Jenis Kelamin:</strong> {profileData.jnsKelamin === 1 ? 'Laki-laki' : profileData.jnsKelamin === 2 ? 'Perempuan' : 'Tidak Diketahui'}</p>
@@ -913,7 +1006,12 @@ const Profile = () => {
                             <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
                                 {/* Section Pengalaman Kerja */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Pengalaman Kerja</h2>
+                                    <div className="flex items-center mb-4">
+                                        <div className="bg-blue-100 p-2 rounded-lg mr-2">
+                                            <FontAwesomeIcon icon={faBriefcaseIcon} className="text-darkBlue" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-darkBlue text-center">Pengalaman Kerja</h2>
+                                    </div>
                                     {pengalamanData.length > 0 ? (
                                         pengalamanData.map((pengalaman, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
@@ -937,7 +1035,7 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                        <p className="text-gray-400 text-base sm:text-lg mt-4 mb-20 text-center font-light">
                                             Data pengalaman kerja belum dilengkapi
                                         </p>
                                     )}
@@ -945,7 +1043,12 @@ const Profile = () => {
 
                                 {/* Section Pengalaman Organisasi */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Pengalaman Organisasi</h2>
+                                    <div className="flex items-center mb-4">
+                                        <div className="bg-blue-100 p-2 rounded-lg mr-2">
+                                            <FontAwesomeIcon icon={faUsersIcon} className="text-darkBlue" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-darkBlue text-center">Pengalaman Organisasi</h2>
+                                    </div>
                                     {organisasiData.length > 0 ? (
                                         organisasiData.map((organisasi, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
@@ -969,7 +1072,7 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                        <p className="text-gray-400 text-base sm:text-lg mt-4 mb-20 text-center font-light">
                                             Data riwayat organisasi belum dilengkapi
                                         </p>
                                     )}
@@ -979,7 +1082,12 @@ const Profile = () => {
                             <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
                                 {/* Section Riwayat Pendidikan */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Riwayat Pendidikan</h2>
+                                    <div className="flex items-center mb-4">
+                                        <div className="bg-blue-100 p-2 rounded-lg mr-2">
+                                            <FontAwesomeIcon icon={faGraduationCapIcon} className="text-darkBlue" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-darkBlue text-center">Riwayat Pendidikan</h2>
+                                    </div>
                                     {pendidikanData.length > 0 ? (
                                         pendidikanData.map((pendidikan, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
@@ -1015,7 +1123,7 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                        <p className="text-gray-400 text-base sm:text-lg mt-4 mb-20 text-center font-light">
                                             Data riwayat pendidikan belum dilengkapi
                                         </p>
                                     )}
@@ -1023,7 +1131,12 @@ const Profile = () => {
 
                                 {/* Section Kontak Kerabat */}
                                 <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6">
-                                    <h2 className="text-2xl font-bold mb-4 text-darkBlue text-center">Kontak Kerabat</h2>
+                                    <div className="flex items-center mb-4">
+                                        <div className="bg-blue-100 p-2 rounded-lg mr-2">
+                                            <FontAwesomeIcon icon={faAddressBookIcon} className="text-darkBlue" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-darkBlue text-center">Kontak Kerabat</h2>
+                                    </div>
                                     {kontakData.length > 0 ? (
                                         kontakData.map((kontak, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
@@ -1051,7 +1164,7 @@ const Profile = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-600 text-base sm:text-lg mt-4 mb-20 text-center">
+                                        <p className="text-gray-400 text-base sm:text-lg mt-4 mb-20 text-center font-light">
                                             Data kontak belum dilengkapi
                                         </p>
                                     )}
