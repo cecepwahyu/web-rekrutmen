@@ -111,6 +111,18 @@ function DesktopNavLinks() {
   }, []);
 
   // useEffect(() => {
+  //   const handleBeforeUnload = () => {
+  //     localStorage.removeItem('token');
+  //   };
+
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
   //   const checkTokenValidity = async () => {
   //     const token = localStorage.getItem('token');
   //     if (token) {
