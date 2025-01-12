@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation"; // Import useSearchParams from next/navigation
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,11 +30,9 @@ const AccountVerification = () => {
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState<string | null>(null);
 
-  // Hardcoded payload for now
-  const payload = {
-    no_identitas: "4303110709990015",
-    email: "cefadic468@owube.com",
-  };
+  // Get no_identitas and email from local storage
+  const no_identitas = typeof window !== "undefined" ? localStorage.getItem("no_identitas") : null;
+  const email = typeof window !== "undefined" ? localStorage.getItem("email") : null;
 
   // Initialize the form with react-hook-form and zod resolver
   const form = useForm<OtpFormValues>({
@@ -80,7 +79,7 @@ const AccountVerification = () => {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ no_identitas, email }),
         }
       );
 
@@ -145,7 +144,7 @@ const AccountVerification = () => {
       });
 
       setTimeout(() => {
-        window.location.href = "/karir";
+        window.location.href = "/login"; // Redirect to login page
       }, 2000);
       } else {
       toast.error(
@@ -217,11 +216,9 @@ const AccountVerification = () => {
                 type="button"
                 onClick={handleOtpClick}
                 className={`w-full py-3 mt-4 text-white font-bold rounded-md transition duration-300 ${
-                  isDisabled
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-darkBlue hover:bg-blue-700"
+                  loading ? "bg-gray-400 cursor-not-allowed" : "bg-darkBlue hover:bg-blue-700"
                 }`}
-                disabled={isDisabled}
+                disabled={loading} // Disable button during API call
               >
                 {loading ? "Sedang memverifikasi..." : "Verifikasi OTP"}
               </button>
