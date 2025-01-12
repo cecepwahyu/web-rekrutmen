@@ -456,15 +456,17 @@ const DetailKarir = () => {
             const inputField = document.querySelector(`input[name="${docName}"]`);
             const errorMessage = document.querySelector(`#error-${docName}`);
 
-            if (inputField !== null) {
+            if (!uploadedFiles[docName]) {
                 allDocumentsUploaded = false;
-                inputField.classList.add('border-red-500');
-                if (errorMessage) {
-                    errorMessage.textContent = 'Please upload this document.';
-                    setTimeout(() => {
-                        errorMessage.textContent = '';
-                        inputField.classList.remove('border-red-500');
-                    }, 3000);
+                if (inputField !== null) {
+                    inputField.classList.add('border-red-500');
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Please upload this document.';
+                        setTimeout(() => {
+                            errorMessage.textContent = '';
+                            inputField.classList.remove('border-red-500');
+                        }, 3000);
+                    }
                 }
             } else {
                 if (errorMessage) {
@@ -776,7 +778,9 @@ const DetailKarir = () => {
                                                                     <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                                                         <div className="flex-1 mb-4 md:mb-0 md:mr-4">
                                                                             <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
-                                                                            <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                                            <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf, image/jpeg" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                                            <p className="text-gray-500 text-sm mt-1">Format file: PDF, JPG</p>
+                                                                            <p className="text-gray-500 text-sm mt-1">Ukuran maksimal file: {doc[5]} MB</p>
                                                                             <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
                                                                         </div>
                                                                         <DialogFooter className="w-full md:w-auto">
