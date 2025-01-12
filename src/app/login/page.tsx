@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import Image from 'next/image';
-import Swal from 'sweetalert2';
 import { toast, Toaster } from 'sonner';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -93,27 +92,6 @@ const handleKeyDown = (e: React.KeyboardEvent, nextFieldId: string) => {
   }
 };
 
-const showDialog = (message: string, isError: boolean = false) => {
-  if (isError) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: message,
-      timer: 3000,
-      showConfirmButton: false,
-    });
-  } else {
-    toast.success(message, {
-      position: "bottom-right",
-      style: {
-        background: "white",
-        color: "green",
-      },
-      duration: 3000,
-    });
-  }
-};
-
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -133,6 +111,11 @@ const Login = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  const showDialog = (message: string, isError: boolean = false) => {
+    setDialogMessage(message);
+    setDialogOpen(true);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -193,7 +176,8 @@ const Login = () => {
 
   const handleLogin = async (data: LoginFormValues) => {
     if (captchaInput !== captcha.answer) {
-      showDialog("Invalid CAPTCHA. Please try again.", true);
+      showDialog("CAPTCHA Tidak Valid. Anda bisa mencoba ulang.", true);
+      regenerateCaptcha(); // Regenerate CAPTCHA on wrong input
       return;
     }
 
@@ -230,17 +214,23 @@ const Login = () => {
         const token = result.data.token;
         localStorage.setItem("token", token);
 
-        showDialog("Login successful! Redirecting...");
+        toast.success("Login successful! Redirecting...", {
+          style: {
+        background: 'white',
+        color: 'green',
+          },
+        });
 
         setTimeout(() => {
           window.location.href = "/karir";
         }, 2000);
       } else {
         showDialog(result.responseMessage || "Login failed. Please try again.", true);
+        regenerateCaptcha(); // Regenerate CAPTCHA on failed login
       }
     } catch (error) {
-      //console.error("Error during login:", error);
       showDialog((error as Error).message || "An error occurred. Please try again later.", true);
+      regenerateCaptcha(); // Regenerate CAPTCHA on error
     } finally {
       setLoading(false);
     }
@@ -249,11 +239,25 @@ const Login = () => {
   const handleForgotPassword = async () => {
     if (forgotPasswordCaptchaInput !== forgotPasswordCaptcha.answer) {
       showDialog("CAPTCHA Tidak Valid. Anda bisa mencoba ulang.", true);
+      regenerateForgotPasswordCaptcha(); // Regenerate CAPTCHA on wrong input
       return;
     }
 
     if (!forgotPasswordEmail || !forgotPasswordIdentitas) {
       showDialog("Please enter your email and identification number.", true);
+      return;
+    }
+
+    // Email format validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(forgotPasswordEmail)) {
+      showDialog("Format email tidak valid!", true);
+      return;
+    }
+
+    // KTP number validation
+    if (forgotPasswordIdentitas.length !== 16 || !/^\d+$/.test(forgotPasswordIdentitas)) {
+      showDialog("Nomor KTP harus terdiri dari 16 digit angka.", true);
       return;
     }
 
@@ -288,6 +292,7 @@ const Login = () => {
     } catch (error) {
       console.error("Error during password reset:", error);
       showDialog("An error occurred. Please try again later.", true);
+      regenerateForgotPasswordCaptcha(); // Regenerate CAPTCHA on error
     } finally {
       setForgotPasswordLoading(false);
     }
@@ -365,6 +370,7 @@ const Login = () => {
                           </button>
                         </div>
                       </FormControl>
+                      <span className="mt-1 text-grey text-xs">* (min 8 karakter)</span>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -381,7 +387,7 @@ const Login = () => {
 
                 <div className="flex flex-col items-center space-y-2">
                   {captchaImage && (
-                    <Image src={captchaImage} alt="CAPTCHA" width={200} height={70} className="border p-2 rounded-md shadow-md" />
+                    <Image src={captchaImage} alt="CAPTCHA" width={200} height={70} className="rounded-md" />
                   )}
                   <button type="button" onClick={regenerateCaptcha} className="text-xs text-blue-500 hover:underline">
                     Generate ulang CAPTCHA
@@ -390,7 +396,7 @@ const Login = () => {
                     placeholder="Captcha (Jawab soal di atas)"
                     value={captchaInput}
                     onChange={(e) => setCaptchaInput(e.target.value)}
-                    className="transition-transform duration-300 focus:scale-105"
+                    className="mt-4 form-input w-full"
                     id="captchaInput"
                     onKeyDown={(e) => handleKeyDown(e, "loginButton")}
                   />
@@ -437,12 +443,17 @@ const Login = () => {
               placeholder="Masukkan No KTP"
               type="text"
               value={forgotPasswordIdentitas}
-              onChange={(e) => setForgotPasswordIdentitas(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value) && value.length <= 16) {
+                  setForgotPasswordIdentitas(value);
+                }
+              }}
               className="transition-transform duration-300 focus:scale-105"
             />
             <div className="flex flex-col items-center space-y-2">
               {forgotPasswordCaptchaImage && (
-                <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={200} height={70} className="border p-2 rounded-md shadow-md" />
+                <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={200} height={70} className="rounded-md" />
               )}
               <button type="button" onClick={regenerateForgotPasswordCaptcha} className="text-xs text-blue-500 hover:underline">
                 Generate ulang CAPTCHA
@@ -451,7 +462,7 @@ const Login = () => {
                 placeholder="Enter CAPTCHA"
                 value={forgotPasswordCaptchaInput}
                 onChange={(e) => setForgotPasswordCaptchaInput(e.target.value)}
-                className="transition-transform duration-300 focus:scale-105"
+                className="mt-4 form-input w-full"
               />
             </div>
           </div>
@@ -469,13 +480,21 @@ const Login = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="font-normal">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold">Notification</DialogTitle>
+            <DialogTitle className="text-lg font-bold">Info</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 flex items-center">
             {dialogMessage && (
               <span>{dialogMessage}</span>
             )}
           </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setDialogOpen(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+            >
+              OK
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
