@@ -160,9 +160,10 @@ const Register = () => {
       const result = await response.json();
 
       if (result.responseCode === "000") {
-        // Login successful
+        // Store no_identitas and email in local storage
         if (typeof window !== "undefined") {
-          //localStorage.setItem("token", result.data.token);
+          localStorage.setItem("no_identitas", data.no_identitas);
+          localStorage.setItem("email", data.email);
         }
 
         // Show success toast
@@ -197,7 +198,7 @@ const Register = () => {
         <MenuBar />
         <div className="bg-white flex-grow relative z-10 shadow-lg rounded-b-3xl">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <defs>
+            {/* <defs>
               <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" style={{ stopColor: "#015CAC", stopOpacity: 1 }} />
                 <stop offset="100%" style={{ stopColor: "#018ED2", stopOpacity: 1 }} />
@@ -206,183 +207,188 @@ const Register = () => {
             <path
               fill="url(#grad1)"
               d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"
-            ></path>
+            ></path> */}
           </svg>
         </div>
 
-        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10 px-4">
-          <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md mx-4 transform transition-all duration-500 hover:scale-105">
-            <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">Daftar Akun Baru</h2>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
-                {/* Nama Field */}
-                <FormField
-                  control={form.control}
-                  name="nama"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Nama Lengkap (Sesuai KTP) <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your name"
-                          type="text"
-                          {...field}
-                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                      {fieldErrors.nama && <p className="text-red-500">{fieldErrors.nama}</p>}
-                    </FormItem>
-                  )}
-                />
-
-                {/* No Identitas Field */}
-                <FormField
-                  control={form.control}
-                  name="no_identitas"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        No Identitas (KTP) <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your No Identitas"
-                          type="number"
-                          value={field.value}
-                          onChange={handleNoIdentitasChange}
-                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                      {fieldErrors.no_identitas && <p className="text-red-500">{fieldErrors.no_identitas}</p>}
-                    </FormItem>
-                  )}
-                />
-
-                {/* Email Field */}
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Email Address <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your email"
-                          type="email"
-                          {...field}
-                          className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                      {fieldErrors.email && <p className="text-red-500">{fieldErrors.email}</p>}
-                    </FormItem>
-                  )}
-                />
-
-                {/* Password Field */}
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Password <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
+        <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-12 pb-10 px-4">
+          <div className="flex flex-col md:flex-row w-full max-w-4xl mx-4">
+            <div className="hidden md:flex md:w-1/2 bg-gradient-to-r from-[#015CAC] to-[#018ED2] text-white rounded-lg shadow-2xl p-8 items-center justify-center">
+              <h2 className="text-2xl font-bold text-center">Temukan karirmu disini</h2>
+            </div>
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full md:w-1/2 transform transition-all duration-500 hover:scale-105">
+              <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">Daftar Akun Baru</h2>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
+                  {/* Nama Field */}
+                  <FormField
+                    control={form.control}
+                    name="nama"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Nama Lengkap (Sesuai KTP) <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
                           <Input
-                            placeholder="Enter your password"
-                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your name"
+                            type="text"
                             {...field}
                             className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
-                            onChange={(e) => {
-                              field.onChange(e);
-                              checkPasswordStrength(e.target.value);
-                            }}
                           />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                          >
-                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormDescription className="text-blue-600/80">
-                        Password baru harus memenuhi kriteria berikut
-                      </FormDescription>
-                      <div className="mt-2 space-y-2 rounded-md bg-blue-50/50 p-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          {passwordStrength.length ? (
-                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
-                          )}
-                          <p>Minimal 8 karakter</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {passwordStrength.uppercase ? (
-                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
-                          )}
-                          <p>Minimal 1 huruf kapital</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {passwordStrength.lowercase ? (
-                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
-                          )}
-                          <p>Minimal 1 huruf kecil</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {passwordStrength.number ? (
-                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
-                          )}
-                          <p>Minimal 1 angka</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {passwordStrength.specialChar ? (
-                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTimes} className="text-red-500" />
-                          )}
-                          <p>Minimal 1 karakter khusus</p>
-                        </div>
-                      </div>
-                      <FormMessage />
-                      {fieldErrors.password && <p className="text-red-500">{fieldErrors.password}</p>}
-                    </FormItem>
-                  )}
-                />
+                        </FormControl>
+                        <FormMessage />
+                        {fieldErrors.nama && <p className="text-red-500">{fieldErrors.nama}</p>}
+                      </FormItem>
+                    )}
+                  />
 
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
-                  disabled={loading}
-                >
-                  {loading ? "Register in progress..." : "Register"}
-                </Button>
-                {fieldErrors.general && <p className="text-red-500 text-center mt-4">{fieldErrors.general}</p>}
-              </form>
-            </Form>
+                  {/* No Identitas Field */}
+                  <FormField
+                    control={form.control}
+                    name="no_identitas"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          No Identitas (KTP) <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your No Identitas"
+                            type="number"
+                            value={field.value}
+                            onChange={handleNoIdentitasChange}
+                            className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {fieldErrors.no_identitas && <p className="text-red-500">{fieldErrors.no_identitas}</p>}
+                      </FormItem>
+                    )}
+                  />
 
-            <div className="text-center text-gray-700 mt-4">
-              Sudah memiliki Akun?{" "}
-              <a href="/login" className="text-blue-500 hover:underline">
-                Login
-              </a>
+                  {/* Email Field */}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Email Address <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your email"
+                            type="email"
+                            {...field}
+                            className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {fieldErrors.email && <p className="text-red-500">{fieldErrors.email}</p>}
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Password Field */}
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Password <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              placeholder="Enter your password"
+                              type={showPassword ? "text" : "password"}
+                              {...field}
+                              className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
+                              onChange={(e) => {
+                                field.onChange(e);
+                                checkPasswordStrength(e.target.value);
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                            >
+                              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-blue-600/80">
+                          Password baru harus memenuhi kriteria berikut
+                        </FormDescription>
+                        <div className="mt-2 space-y-2 rounded-md bg-blue-50/50 p-3 text-sm">
+                          <div className="flex items-center gap-2">
+                            {passwordStrength.length ? (
+                              <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                            ) : (
+                              <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                            )}
+                            <p>Minimal 8 karakter</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordStrength.uppercase ? (
+                              <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                            ) : (
+                              <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                            )}
+                            <p>Minimal 1 huruf kapital</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordStrength.lowercase ? (
+                              <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                            ) : (
+                              <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                            )}
+                            <p>Minimal 1 huruf kecil</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordStrength.number ? (
+                              <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                            ) : (
+                              <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                            )}
+                            <p>Minimal 1 angka</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordStrength.specialChar ? (
+                              <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                            ) : (
+                              <FontAwesomeIcon icon={faTimes} className="text-red-500" />
+                            )}
+                            <p>Minimal 1 karakter khusus</p>
+                          </div>
+                        </div>
+                        <FormMessage />
+                        {fieldErrors.password && <p className="text-red-500">{fieldErrors.password}</p>}
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
+                    disabled={loading}
+                  >
+                    {loading ? "Register in progress..." : "Register"}
+                  </Button>
+                  {fieldErrors.general && <p className="text-red-500 text-center mt-4">{fieldErrors.general}</p>}
+                </form>
+              </Form>
+
+              <div className="text-center text-gray-700 mt-4">
+                Sudah memiliki Akun?{" "}
+                <a href="/login" className="text-blue-500 hover:underline">
+                  Login
+                </a>
+              </div>
             </div>
           </div>
         </div>
