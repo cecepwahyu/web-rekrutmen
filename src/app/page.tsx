@@ -29,14 +29,27 @@ import loadingAnimation from '../../public/animations/loading.json'; // Import l
 
 const CariKarirButton = dynamic(() => import('../components/CariKarirButton'), { ssr: false });
 
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 
-const MessageBanner = () => (
-    <div className="bg-white text-black text-center py-2 flex items-center justify-center">
-        <FaExclamationTriangle className="mr-2 text-red-500" />
-        Tidak ada perantara dan pungutan biaya atau imbalan dalam bentuk apapun berkaitan dengan penerimaan pegawai Bank BPD DIY
-    </div>
-);
+const MessageBanner = () => {
+    const [visible, setVisible] = useState(true);
+
+    if (!visible) return null;
+
+    return (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-500 bg-opacity-25 text-white text-center py-2 px-4 flex flex-col sm:flex-row items-center justify-between rounded shadow-lg z-50" style={{ backgroundColor: '#F97316', maxWidth: '90%', width: 'auto', fontSize: '0.875rem' }}>
+            <div className="flex items-center mb-2 sm:mb-0 text-sm sm:text-base">
+                <FaExclamationTriangle className="mr-2" />
+                <span>
+                    <strong>Tidak ada perantara</strong> dan <strong>pungutan biaya</strong> atau <strong>imbalan</strong> dalam bentuk apapun berkaitan dengan penerimaan pegawai Bank BPD DIY
+                </span>
+            </div>
+            <button onClick={() => setVisible(false)} className="ml-0 sm:ml-4">
+                <FaTimes />
+            </button>
+        </div>
+    );
+};
 
 const Home = () => {
     const [isScrolled, setIsScrolled] = useState(false);
