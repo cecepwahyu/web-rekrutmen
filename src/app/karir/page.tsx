@@ -42,6 +42,10 @@ const Karir = () => {
     const [isLoading, setIsLoading] = useState(true); // State for loading animation
     const [isAuthenticated, setIsAuthenticated] = useState(false); // State for authentication check
     const [searchTerm, setSearchTerm] = useState(""); // State for search term
+    const [currentPageRekrutmen, setCurrentPageRekrutmen] = useState(0); // Current page for Rekrutmen
+    const [currentPageJobDesc, setCurrentPageJobDesc] = useState(0); // Current page for Job Desc
+    const [totalPagesRekrutmen, setTotalPagesRekrutmen] = useState(0); // Total pages for Rekrutmen
+    const [totalPagesJobDesc, setTotalPagesJobDesc] = useState(0); // Total pages for Job Desc
     const router = useRouter();
 
     // Check if user is authenticated when the page loads
@@ -85,7 +89,8 @@ const Karir = () => {
                         setFilteredJobs(allJobs); // Update filtered jobs with current page content
                         setRekrutmenJobs(allJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
                         setJobDescJobs(allJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
-                        setTotalPages(data.data.totalPages); // Set total pages
+                        setTotalPagesRekrutmen(Math.ceil(allJobs.filter((job: Job) => job.status === "1").length / ITEMS_PER_PAGE)); // Set total pages for Rekrutmen
+                        setTotalPagesJobDesc(Math.ceil(allJobs.filter((job: Job) => job.status === "4").length / ITEMS_PER_PAGE)); // Set total pages for Job Desc
                     }
                 } catch (error) {
                     console.error("Error fetching job data:", error);
@@ -133,6 +138,22 @@ const Karir = () => {
 
     const goToPreviousPage = () => {
         if (currentPage > 0) setCurrentPage(currentPage - 1);
+    };
+
+    const goToNextPageRekrutmen = () => {
+        if (currentPageRekrutmen < totalPagesRekrutmen - 1) setCurrentPageRekrutmen(currentPageRekrutmen + 1);
+    };
+
+    const goToPreviousPageRekrutmen = () => {
+        if (currentPageRekrutmen > 0) setCurrentPageRekrutmen(currentPageRekrutmen - 1);
+    };
+
+    const goToNextPageJobDesc = () => {
+        if (currentPageJobDesc < totalPagesJobDesc - 1) setCurrentPageJobDesc(currentPageJobDesc + 1);
+    };
+
+    const goToPreviousPageJobDesc = () => {
+        if (currentPageJobDesc > 0) setCurrentPageJobDesc(currentPageJobDesc - 1);
     };
 
     if (!isAuthenticated) {
@@ -229,7 +250,7 @@ const Karir = () => {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 w-11/12 lg:w-4/5 pb-10">
-                                    {filteredJobs.map((job: Job) => (
+                                    {filteredJobs.slice(currentPageRekrutmen * ITEMS_PER_PAGE, (currentPageRekrutmen + 1) * ITEMS_PER_PAGE).map((job: Job) => (
                                         <button
                                             key={job.idLowongan}
                                             className="bg-white shadow-lg rounded-lg p-6 flex items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
@@ -270,12 +291,12 @@ const Karir = () => {
 
                                 {/* Pagination Buttons */}
                                 <div className="flex justify-center mt-6 space-x-2 mb-8">
-                                    {Array.from({ length: totalPages }).map((_, index) => (
+                                    {Array.from({ length: totalPagesRekrutmen }).map((_, index) => (
                                         <button
                                             key={index}
-                                            onClick={() => setCurrentPage(index)}
+                                            onClick={() => setCurrentPageRekrutmen(index)}
                                             className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                                                index === currentPage
+                                                index === currentPageRekrutmen
                                                     ? "bg-darkBlue text-white"
                                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                                             }`}
@@ -298,7 +319,7 @@ const Karir = () => {
                                     </p>
                                 </div>
                             ) : (
-                                filteredJobs.map((job: Job) => (
+                                filteredJobs.slice(currentPageJobDesc * ITEMS_PER_PAGE, (currentPageJobDesc + 1) * ITEMS_PER_PAGE).map((job: Job) => (
                                     <div key={job.idLowongan} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
                                         <button
                                             className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
