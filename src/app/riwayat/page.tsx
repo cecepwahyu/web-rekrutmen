@@ -208,7 +208,7 @@ const Riwayat = () => {
                                 <input
                                     type="text"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Cari Posisi..."
+                                    placeholder="Cari Lamaran..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
