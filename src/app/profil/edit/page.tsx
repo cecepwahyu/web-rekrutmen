@@ -580,6 +580,22 @@ const EditProfil = () => {
 
                 <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 px-4 pt-16 md:px-8 lg:px-16 xl:px-32">
                     <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Edit Profile</h1>
+                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4 flex justify-between items-center" role="alert">
+                        <div>
+                            <p className="font-bold">Perhatian</p>
+                            <p>Anda diwajibkan untuk melengkapi data diri Anda untuk dapat melamar pekerjaan.</p>
+                        </div>
+                        <button onClick={() => {
+                            const alertBox = document.querySelector('.bg-yellow-100');
+                            if (alertBox) {
+                                (alertBox as HTMLElement).style.display = 'none';
+                            }
+                        }} className="text-yellow-700 font-bold ml-4">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
                     <br />
                     {isLoading ? (
                         <div className="flex justify-center items-center mt-10">
@@ -610,7 +626,7 @@ const EditProfil = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="nama">
-                                                Nama
+                                                Nama <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -618,12 +634,13 @@ const EditProfil = () => {
                                                 name="nama"
                                                 value={profileData.nama || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Nama"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="tempatLahir">
-                                                Tempat Lahir
+                                                Tempat Lahir <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -631,12 +648,13 @@ const EditProfil = () => {
                                                 name="tempatLahir"
                                                 value={profileData.tempatLahir || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Tempat Lahir"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="tglLahir">
-                                                Tanggal Lahir
+                                                Tanggal Lahir <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="date"
@@ -644,12 +662,13 @@ const EditProfil = () => {
                                                 name="tglLahir"
                                                 value={profileData.tglLahir || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Tanggal Lahir"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="jnsKelamin">
-                                                Jenis Kelamin
+                                                Jenis Kelamin <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 id="jnsKelamin"
@@ -665,7 +684,7 @@ const EditProfil = () => {
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="agama">
-                                                Agama
+                                                Agama <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 id="agama"
@@ -685,7 +704,7 @@ const EditProfil = () => {
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="telp">
-                                                No Telepon
+                                                No Telepon <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -693,12 +712,13 @@ const EditProfil = () => {
                                                 name="telp"
                                                 value={profileData.telp || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan No Telepon"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="pendidikanTerakhir">
-                                                Pendidikan Terakhir
+                                                Pendidikan Terakhir <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 id="pendidikanTerakhir"
@@ -715,7 +735,7 @@ const EditProfil = () => {
                                         </div>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="statusKawin">
-                                                Status Kawin
+                                                Status Kawin <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 id="statusKawin"
@@ -733,7 +753,7 @@ const EditProfil = () => {
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatIdentitas">
-                                                Alamat Identitas
+                                                Alamat Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -741,13 +761,14 @@ const EditProfil = () => {
                                                 name="alamatIdentitas"
                                                 value={profileData.alamatIdentitas || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Alamat Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiIdentitas">
-                                                Provinsi Identitas
+                                                Provinsi Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -755,13 +776,14 @@ const EditProfil = () => {
                                                 name="provinsiIdentitas"
                                                 value={profileData.provinsiIdentitas || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Provinsi Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaIdentitas">
-                                                Kota Identitas
+                                                Kota Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -769,13 +791,14 @@ const EditProfil = () => {
                                                 name="kotaIdentitas"
                                                 value={profileData.kotaIdentitas || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Kota Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="kecamatanIdentitas">
-                                                Kecamatan Identitas
+                                                Kecamatan Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -783,13 +806,14 @@ const EditProfil = () => {
                                                 name="kecamatanIdentitas"
                                                 value={profileData.kecamatanIdentitas || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Kecamatan Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="desaIdentitas">
-                                                Desa Identitas
+                                                Desa Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -797,13 +821,14 @@ const EditProfil = () => {
                                                 name="desaIdentitas"
                                                 value={profileData.desaIdentitas || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Desa Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatDomisili">
-                                                Alamat Domisili
+                                                Alamat Domisili <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -811,13 +836,14 @@ const EditProfil = () => {
                                                 name="alamatDomisili"
                                                 value={profileData.alamatDomisili || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Alamat Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiDomisili">
-                                                Provinsi Domisili
+                                                Provinsi Domisili <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -825,13 +851,14 @@ const EditProfil = () => {
                                                 name="provinsiDomisili"
                                                 value={profileData.provinsiDomisili || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Provinsi Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaDomisili">
-                                                Kabupaten/Kota Domisili
+                                                Kabupaten/Kota Domisili <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -839,13 +866,14 @@ const EditProfil = () => {
                                                 name="kotaDomisili"
                                                 value={profileData.kotaDomisili || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Kabupaten/Kota Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="kecamatanDomisili">
-                                                Kecamatan Domisili
+                                                Kecamatan Domisili <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -853,13 +881,14 @@ const EditProfil = () => {
                                                 name="kecamatanDomisili"
                                                 value={profileData.kecamatanDomisili || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Kecamatan Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
 
                                         <div className="mb-8">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="desaDomisili">
-                                                Desa Domisili
+                                                Desa Domisili <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -867,10 +896,14 @@ const EditProfil = () => {
                                                 name="desaDomisili"
                                                 value={profileData.desaDomisili || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Desa Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                         </div>
                                     </div>
+                                    <p className="mt-4">
+                                        Kolom dengan tanda (<span className="text-red-500">*</span>) wajib untuk diisi
+                                    </p>
                                 </div>
                             </TabPanel>
 
@@ -878,7 +911,7 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="pendidikan">
-                                            PENDIDIKAN
+                                            PENDIDIKAN <span className="text-red-500">*</span>
                                         </label>
                                         <button onClick={() => handleAddEntry("pendidikan")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
@@ -888,7 +921,7 @@ const EditProfil = () => {
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="idJenjang">
-                                                    Jenjang
+                                                    Jenjang <span className="text-red-500">*</span>
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("pendidikan", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -911,7 +944,7 @@ const EditProfil = () => {
                                             </select>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
-                                                    Universitas
+                                                    Universitas <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -919,12 +952,13 @@ const EditProfil = () => {
                                                     name="namaInstitusi"
                                                     value={pendidikan.namaInstitusi || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Nama Institusi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="jurusan">
-                                                    Jurusan
+                                                    Jurusan <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -932,13 +966,14 @@ const EditProfil = () => {
                                                     name="jurusan"
                                                     value={pendidikan.jurusan || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Jurusan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="thnMasuk">
-                                                    Tahun Masuk
+                                                    Tahun Masuk <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -946,6 +981,7 @@ const EditProfil = () => {
                                                     name="thnMasuk"
                                                     value={pendidikan.thnMasuk || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Tahun Masuk"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     pattern="\d{4}"
                                                 />
@@ -953,7 +989,7 @@ const EditProfil = () => {
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="thnLulus">
-                                                    Tahun Lulus
+                                                    Tahun Lulus <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -961,13 +997,14 @@ const EditProfil = () => {
                                                     name="thnLulus"
                                                     value={pendidikan.thnLulus || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Tahun Lulus"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="nilai">
-                                                    Nilai
+                                                    Nilai <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -975,13 +1012,14 @@ const EditProfil = () => {
                                                     name="nilai"
                                                     value={pendidikan.nilai || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Nilai"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="gelar">
-                                                    Gelar
+                                                    Gelar <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -989,6 +1027,7 @@ const EditProfil = () => {
                                                     name="gelar"
                                                     value={pendidikan.gelar || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Gelar"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
@@ -1002,11 +1041,15 @@ const EditProfil = () => {
                                                     name="achievements"
                                                     value={pendidikan.achievements || ""}
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    placeholder="Masukkan Penghargaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
                                         </div>
                                     ))}
+                                    <p className="mt-4">
+                                        Kolom dengan tanda (<span className="text-red-500">*</span>) wajib untuk diisi
+                                    </p>
                                 </div>
                             </TabPanel>
 
@@ -1014,7 +1057,7 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanKerja">
-                                            PENGALAMAN KERJA
+                                            PENGALAMAN KERJA <span className="text-red-500">*</span>
                                         </label>
                                         <button onClick={() => handleAddEntry("pengalaman")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
@@ -1024,7 +1067,7 @@ const EditProfil = () => {
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstansi">
-                                                    Nama Perusahaan / Instansi
+                                                    Nama Perusahaan / Instansi <span className="text-red-500">*</span>
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("pengalaman", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -1036,11 +1079,12 @@ const EditProfil = () => {
                                                 name="namaInstansi"
                                                 value={pengalaman.namaInstansi || ""}
                                                 onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                placeholder="Masukkan Nama Instansi"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
-                                                    Posisi / Jabatan
+                                                    Posisi / Jabatan <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1048,13 +1092,14 @@ const EditProfil = () => {
                                                     name="posisiKerja"
                                                     value={pengalaman.posisiKerja || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    placeholder="Masukkan Posisi Kerja"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
-                                                    Tanggal Mulai Bekerja
+                                                    Tanggal Mulai Bekerja <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1062,10 +1107,11 @@ const EditProfil = () => {
                                                     name="periodeKerjaStart"
                                                     value={pengalaman.periodeKerjaStart || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    placeholder="Masukkan Tanggal Mulai Bekerja"
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
-                                                    Tanggal Akhir Bekerja
+                                                    Tanggal Akhir Bekerja <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1073,24 +1119,29 @@ const EditProfil = () => {
                                                     name="periodeKerjaEnd"
                                                     value={pengalaman.periodeKerjaEnd || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    placeholder="Masukkan Tanggal Akhir Bekerja"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                    Deskripsi Pekerjaan
+                                                    Deskripsi Pekerjaan <span className="text-red-500">*</span>
                                                 </label>
                                                 <textarea
                                                     id="deskripsiKerja"
                                                     name="deskripsi_kerja"
                                                     value={pengalaman.deskripsi_kerja || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    placeholder="Masukkan Deskripsi Pekerjaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
                                         </div>
                                     ))}
+                                    <p className="mt-4">
+                                        Kolom dengan tanda (<span className="text-red-500">*</span>) wajib untuk diisi
+                                    </p>
                                 </div>
                             </TabPanel>
 
@@ -1098,7 +1149,7 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="organisasi">
-                                            ORGANISASI
+                                            ORGANISASI <span className="text-red-500">*</span>
                                         </label>
                                         <button onClick={() => handleAddEntry("organisasi")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
@@ -1108,7 +1159,7 @@ const EditProfil = () => {
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaOrganisasi">
-                                                    Nama Organisasi
+                                                    Nama Organisasi <span className="text-red-500">*</span>
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("organisasi", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -1120,11 +1171,12 @@ const EditProfil = () => {
                                                 name="namaOrganisasi"
                                                 value={organisasi.namaOrganisasi || ""}
                                                 onChange={(e) => handleChange(e, index, "organisasi")}
+                                                placeholder="Masukkan Nama Organisasi"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
-                                                    Posisi
+                                                    Posisi <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1132,13 +1184,14 @@ const EditProfil = () => {
                                                     name="posisiOrganisasi"
                                                     value={organisasi.posisiOrganisasi || ""}
                                                     onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    placeholder="Masukkan Posisi Organisasi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeStart">
-                                                    Tanggal Mulai
+                                                    Tanggal Mulai <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1146,10 +1199,11 @@ const EditProfil = () => {
                                                     name="periodeStart"
                                                     value={organisasi.periodeStart || ""}
                                                     onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    placeholder="Masukkan Tanggal Mulai"
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeEnd">
-                                                    Tanggal Akhir
+                                                    Tanggal Akhir <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1157,24 +1211,29 @@ const EditProfil = () => {
                                                     name="periodeEnd"
                                                     value={organisasi.periodeEnd || ""}
                                                     onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    placeholder="Masukkan Tanggal Akhir"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                    Deskripsi
+                                                    Deskripsi <span className="text-red-500">*</span>
                                                 </label>
                                                 <textarea
                                                     id="deskripsiKerja"
                                                     name="deskripsiKerja"
                                                     value={organisasi.deskripsiKerja || ""}
                                                     onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    placeholder="Masukkan Deskripsi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
                                         </div>
                                     ))}
+                                    <p className="mt-4">
+                                        Kolom dengan tanda (<span className="text-red-500">*</span>) wajib untuk diisi
+                                    </p>
                                 </div>
                             </TabPanel>
 
@@ -1182,7 +1241,7 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="kontakKerabat">
-                                            KONTAK KERABAT
+                                            KONTAK KERABAT <span className="text-red-500">*</span>
                                         </label>
                                         <button onClick={() => handleAddEntry("kontak")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
@@ -1192,7 +1251,7 @@ const EditProfil = () => {
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaKontak">
-                                                    Nama Kontak
+                                                    Nama Kontak <span className="text-red-500">*</span>
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("kontak", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -1204,11 +1263,12 @@ const EditProfil = () => {
                                                 name="namaKontak"
                                                 value={kontak.namaKontak || ""}
                                                 onChange={(e) => handleChange(e, index, "kontak")}
+                                                placeholder="Masukkan Nama Kontak"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
-                                                    Hubungan Kerabat
+                                                    Hubungan Kerabat <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1216,13 +1276,14 @@ const EditProfil = () => {
                                                     name="hubKontak"
                                                     value={kontak.hubKontak || ""}
                                                     onChange={(e) => handleChange(e, index, "kontak")}
+                                                    placeholder="Masukkan Hubungan Kerabat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
-                                                    No Telepon
+                                                    No Telepon <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1230,13 +1291,14 @@ const EditProfil = () => {
                                                     name="telpKontak"
                                                     value={kontak.telpKontak || ""}
                                                     onChange={(e) => handleChange(e, index, "kontak")}
+                                                    placeholder="Masukkan No Telepon"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     pattern="\d{4}"
                                                 />
                                             </div>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="emailKontak">
-                                                    Email
+                                                    Email <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="email"
@@ -1244,6 +1306,7 @@ const EditProfil = () => {
                                                     name="emailKontak"
                                                     value={kontak.emailKontak || ""}
                                                     onChange={(e) => handleChange(e, index, "kontak")}
+                                                    placeholder="Masukkan Email"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     pattern="\d{4}"
                                                 />
@@ -1251,18 +1314,22 @@ const EditProfil = () => {
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatKontak">
-                                                    Alamat
+                                                    Alamat <span className="text-red-500">*</span>
                                                 </label>
                                                 <textarea
                                                     id="alamatKontak"
                                                     name="alamatKontak"
                                                     value={kontak.alamatKontak || ""}
                                                     onChange={(e) => handleChange(e, index, "kontak")}
+                                                    placeholder="Masukkan Alamat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                             </div>
                                         </div>
                                     ))}
+                                    <p className="mt-4">
+                                        Kolom dengan tanda (<span className="text-red-500">*</span>) wajib untuk diisi
+                                    </p>
                                 </div>
                             </TabPanel>
                         </Tabs>
