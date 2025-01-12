@@ -90,7 +90,7 @@ const EditProfil = () => {
         posisiKerja: "",
         periodeKerjaStart: "",
         periodeKerjaEnd: "",
-        deskripsi_kerja: "",
+        deskripsiKerja: "",
     });
 
     const [organisasiData, setOrganisasiData] = useState({
@@ -250,6 +250,21 @@ const EditProfil = () => {
         fetchPendidikanData();
     }, []);
 
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "";
+        const [year, month, day] = dateString.split("-");
+        return `${day}/${month}/${year}`;
+    };
+
+    const parseDateRange = (dateRange: string) => {
+        if (!dateRange) return { start: "2024/09/09", end: "" };
+        const [start, end] = dateRange.split(" to ");
+        return {
+            start: formatDate(start),
+            end: formatDate(end),
+        };
+    };
+
     useEffect(() => {
         const fetchPengalamanData = async () => {
             setIsLoading(true); // Show loading animation
@@ -280,7 +295,16 @@ const EditProfil = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     const pengalaman = Array.isArray(data.data) ? data.data : [data.data];
-                    setPengalamanList(pengalaman);
+                    const formattedPengalaman = pengalaman.map((exp: Pengalaman) => {
+                        const { start, end } = parseDateRange(exp.periode_kerja);
+                        return {
+                            ...exp,
+                            periodeKerjaStart: start,
+                            periodeKerjaEnd: end,
+                        };
+                    });
+                    console.log("Formatted Pengalaman:", formattedPengalaman);
+                    setPengalamanList(formattedPengalaman);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -530,7 +554,7 @@ const EditProfil = () => {
                 nama_instansi: exp.namaInstansi,
                 posisi_kerja: exp.posisiKerja,
                 periode_kerja: formatDateRange(exp.periodeKerjaStart, exp.periodeKerjaEnd),
-                deskripsi_kerja: exp.deskripsi_kerja,
+                deskripsi_kerja: exp.deskripsiKerja,
             })),
         };
 
@@ -1098,7 +1122,7 @@ const EditProfil = () => {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerjaStart">
                                                     Tanggal Mulai Bekerja <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
@@ -1110,7 +1134,7 @@ const EditProfil = () => {
                                                     placeholder="Masukkan Tanggal Mulai Bekerja"
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
-                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerja">
+                                                <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerjaEnd">
                                                     Tanggal Akhir Bekerja <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
@@ -1131,7 +1155,7 @@ const EditProfil = () => {
                                                 <textarea
                                                     id="deskripsiKerja"
                                                     name="deskripsi_kerja"
-                                                    value={pengalaman.deskripsi_kerja || ""}
+                                                    value={pengalaman.deskripsiKerja || ""}
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
                                                     placeholder="Masukkan Deskripsi Pekerjaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
@@ -1360,3 +1384,14 @@ const EditProfil = () => {
 };
 
 export default EditProfil;
+
+interface Pengalaman {
+    idDataKerja: string;
+    idPeserta: string;
+    namaInstansi: string;
+    posisiKerja: string;
+    periode_kerja: string;
+    deskripsi_kerja: string;
+    periodeKerjaStart?: string;
+    periodeKerjaEnd?: string;
+}
