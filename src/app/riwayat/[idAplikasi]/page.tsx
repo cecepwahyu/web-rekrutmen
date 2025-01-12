@@ -8,6 +8,7 @@ import MenuBar from "../../../components/MenuBar";
 import { ScrollToTopButton } from "../../../components/ScrollToTopButton";
 import { Skeleton } from "@/components/ui/skeleton"
 import { jsPDF } from "jspdf";
+import QRCode from "qrcode";
 
 interface Tahapan {
     idTahapan: number;
@@ -247,36 +248,51 @@ const DetailRiwayat = () => {
     setShowRegistrationCard(true);
   };
 
-  const handleDownloadPDF = () => {
+  const toRoman = (num: number): string => {
+    const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+    return romanNumerals[num - 1] || num.toString();
+  };
+
+  const handleDownloadPDF = async () => {
     const doc = new jsPDF("portrait", "mm", "a4");
   
     // Load and add the logo image
     const logoPath = "/images/Logo_Color.png"; // Path to your logo
-    const logoWidth = 60; // Adjust logo width
+    const logoWidth = 40; // Adjust logo width
     const logoHeight = 20; // Adjust logo height
   
-    doc.addImage(logoPath, "PNG", 140, 10, logoWidth, logoHeight); // Position the logo at the top-right corner
-  
-    // Add the title and subtitle (aligned left)
+    // Add header
+    doc.addImage(logoPath, "PNG", 10, 10, logoWidth, logoHeight); // Position the logo at the top-left corner
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text("Kartu Peserta Tes", 20, 20); // Title aligned left
+    doc.text("Kartu Peserta Tes", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" }); // Title centered
     doc.setFontSize(14);
-    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", 20, 30); // Subtitle aligned left
-  
-    // Draw a horizontal line
+    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", doc.internal.pageSize.getWidth() / 2, 30, { align: "center" }); // Subtitle centered
     doc.setLineWidth(0.5);
     doc.line(10, 40, 200, 40);
+  
+    // Add footer
+    const pageHeight = doc.internal.pageSize.getHeight();
+    doc.setFontSize(10);
+    doc.text("PT Bank BPD DIY", 10, pageHeight - 10);
   
     // Add the applicant's information with consistent spacing
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
     const textX = 20;
-    const textYStart = 60;
+    const textYStart = 50;
     const textYIncrement = 10;
-    doc.text(`Nama       : ${applicantData.nama || "....................."}`, textX, textYStart);
-    doc.text(`Posisi     : ${applicantData.posisi || "....................."}`, textX, textYStart + textYIncrement);
-    doc.text(`Nomer Test : ${applicantData.nomorPeserta || "....................."}`, textX, textYStart + 2 * textYIncrement);
+    const labelWidth = 30; // Adjust label width for alignment
+    doc.text(`Nama       `, textX, textYStart);
+    doc.text(`: ${applicantData.nama || "....................."}`, textX + labelWidth, textYStart);
+    doc.text(`Posisi     `, textX, textYStart + textYIncrement);
+    doc.text(`: ${applicantData.posisi || "....................."}`, textX + labelWidth, textYStart + textYIncrement);
+    doc.text(`Nomer Test `, textX, textYStart + 2 * textYIncrement);
+    doc.text(`: ${applicantData.nomorPeserta || "....................."}`, textX + labelWidth, textYStart + 2 * textYIncrement);
+  
+    // Generate QR code
+    const qrCodeData = await QRCode.toDataURL(applicantData.nomorPeserta || ".....................");
+    doc.addImage(qrCodeData, "PNG", textX, textYStart + 3 * textYIncrement, 30, 30); // Adjust position and size as needed
   
     // Add a rectangle for the picture with size 4x6 and text "4 x 6" in the middle
     const rectX = 140;
@@ -298,20 +314,20 @@ const DetailRiwayat = () => {
     doc.rect(30, signatureYStart + 5, 60, 30); // Box for participant signature
     doc.rect(120, signatureYStart + 5, 60, 30); // Box for committee signature
   
-    // Add a table with 6 columns labeled I, II, III, IV, V, VI
+    // Add a table with dynamic columns based on steps in Roman numeral format
     const tableStartY = 190;
     const columnWidth = 25;
-    const tableWidth = columnWidth * 6;
+    const tableWidth = columnWidth * steps.length;
     const tableStartX = (doc.internal.pageSize.getWidth() - tableWidth) / 2; // Center the table
-    const columns = ["I", "II", "III", "IV", "V", "VI"];
-    columns.forEach((col, index) => {
+    steps.forEach((step, index) => {
       const x = tableStartX + index * columnWidth;
-      doc.text(col, x + columnWidth / 2, tableStartY, { align: "center" });
+      doc.text(toRoman(index + 1), x + columnWidth / 2, tableStartY, { align: "center" });
       doc.rect(x, tableStartY + 5, columnWidth, 20); // Draw the cell
     });
   
-    // Save the PDF
-    doc.save("Kartu_Peserta_Tes.pdf");
+    // Save the PDF with dynamic file name
+    const fileName = `Kartu_Peserta_Test_${applicantData.nama.replace(/\s+/g, '_')}.pdf`;
+    doc.save(fileName);
   };
     
 
