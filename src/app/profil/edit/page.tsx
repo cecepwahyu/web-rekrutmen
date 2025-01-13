@@ -672,6 +672,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Nama"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
                                         <div className="mb-4">
@@ -686,6 +687,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Tempat Lahir"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
                                         <div className="mb-4">
@@ -805,6 +807,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Alamat Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -820,6 +823,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Provinsi Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -835,6 +839,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Kota Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -850,6 +855,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Kecamatan Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -865,6 +871,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Desa Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -880,6 +887,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Alamat Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -895,6 +903,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Provinsi Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -910,6 +919,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Kabupaten/Kota Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -925,6 +935,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Kecamatan Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
 
@@ -940,6 +951,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, 0, "profile")}
                                                 placeholder="Masukkan Desa Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                         </div>
                                     </div>
@@ -986,7 +998,7 @@ const EditProfil = () => {
                                             </select>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstitusi">
-                                                    Universitas <span className="text-red-500">*</span>
+                                                    Nama Institusi <span className="text-red-500">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
@@ -996,6 +1008,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     placeholder="Masukkan Nama Institusi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={50}
                                                 />
                                             </div>
                                             <div className="mb-4">
@@ -1010,6 +1023,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     placeholder="Masukkan Jurusan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={50}
                                                 />
                                             </div>
 
@@ -1026,6 +1040,7 @@ const EditProfil = () => {
                                                     placeholder="Masukkan Tahun Masuk"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     pattern="\d{4}"
+                                                    maxLength={4}
                                                 />
                                             </div>
 
@@ -1041,6 +1056,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     placeholder="Masukkan Tahun Lulus"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={4}
                                                 />
                                             </div>
 
@@ -1056,6 +1072,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     placeholder="Masukkan Nilai"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={5}
                                                 />
                                             </div>
 
@@ -1071,6 +1088,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     placeholder="Masukkan Gelar"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={50}
                                                 />
                                             </div>
 
@@ -1085,6 +1103,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pendidikan")}
                                                     placeholder="Masukkan Penghargaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={255}
                                                 />
                                             </div>
                                         </div>
@@ -1123,6 +1142,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, index, "pengalaman")}
                                                 placeholder="Masukkan Nama Instansi"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
@@ -1136,6 +1156,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
                                                     placeholder="Masukkan Posisi Kerja"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={50}
                                                 />
                                             </div>
 
@@ -1177,6 +1198,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "pengalaman")}
                                                     placeholder="Masukkan Deskripsi Pekerjaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={255}
                                                 />
                                             </div>
                                         </div>
@@ -1215,6 +1237,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, index, "organisasi")}
                                                 placeholder="Masukkan Nama Organisasi"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
@@ -1228,6 +1251,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "organisasi")}
                                                     placeholder="Masukkan Posisi Organisasi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={50}
                                                 />
                                             </div>
 
@@ -1269,6 +1293,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "organisasi")}
                                                     placeholder="Masukkan Deskripsi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={255}
                                                 />
                                             </div>
                                         </div>
@@ -1307,6 +1332,7 @@ const EditProfil = () => {
                                                 onChange={(e) => handleChange(e, index, "kontak")}
                                                 placeholder="Masukkan Nama Kontak"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
@@ -1320,6 +1346,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "kontak")}
                                                     placeholder="Masukkan Hubungan Kerabat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={50}
                                                 />
                                             </div>
 
@@ -1356,6 +1383,7 @@ const EditProfil = () => {
                                                     placeholder="Masukkan Email"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     pattern="\d{4}"
+                                                    maxLength={30}
                                                 />
                                             </div>
 
@@ -1370,6 +1398,7 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "kontak")}
                                                     placeholder="Masukkan Alamat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                    maxLength={255}
                                                 />
                                             </div>
                                         </div>
