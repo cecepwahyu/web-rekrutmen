@@ -747,9 +747,15 @@ const EditProfil = () => {
                                                 id="telp"
                                                 name="telp"
                                                 value={profileData.telp || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^\d*$/.test(value) && value.length <= 15) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan No Telepon"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={15}
                                             />
                                         </div>
                                         <div className="mb-4">
@@ -1326,10 +1332,15 @@ const EditProfil = () => {
                                                     id="telpKontak"
                                                     name="telpKontak"
                                                     value={kontak.telpKontak || ""}
-                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^\d*$/.test(value) && value.length <= 15) {
+                                                            handleChange(e, index, "kontak");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan No Telepon"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    pattern="\d{4}"
+                                                    maxLength={15}
                                                 />
                                             </div>
                                             <div className="mb-4">
