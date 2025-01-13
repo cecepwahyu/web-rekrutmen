@@ -16,6 +16,7 @@ import { toast } from 'sonner'; // Updated import
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import './custom-tabs.css'; // Import custom CSS for tabs
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
     try {
@@ -121,6 +122,16 @@ const EditProfil = () => {
 
     const router = useRouter();
     const [activeTab, setActiveTab] = useState(0); // State to track active tab
+    const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const showDialog = (message: string) => {
+        setDialogMessage(message);
+        setDialogOpen(true);
+        setTimeout(() => {
+            setDialogOpen(false);
+        }, 3000); // Auto close after 3 seconds
+    };
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -513,6 +524,16 @@ const EditProfil = () => {
             console.error("Invalid token");
             setIsLoading(false);
             return;
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        for (const kontak of kontakList) {
+            if (!emailRegex.test(kontak.emailKontak)) {
+                showDialog(`Format email tidak valid! Silahkan periksa email Anda.`);
+                setIsLoading(false);
+                return;
+            }
         }
 
         const formatDateRange = (start: string, end: string) => `${start} to ${end}`;
@@ -1431,6 +1452,18 @@ const EditProfil = () => {
 
             {/* Button Find Career/Opportunity */}
             <CariKarirButton />
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent className="font-normal">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">Info</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 flex items-center">
+                        {dialogMessage && (
+                            <span>{dialogMessage}</span>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
