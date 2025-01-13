@@ -253,16 +253,20 @@ const EditProfil = () => {
     const formatDate = (dateString: string) => {
         if (!dateString) return "";
         const [year, month, day] = dateString.split("-");
-        return `${day}/${month}/${year}`;
+        const formattedDate = `${year}-${month}-${day}`;
+        console.log("Formatted Date:", formattedDate);
+        return formattedDate;
     };
 
     const parseDateRange = (dateRange: string) => {
-        if (!dateRange) return { start: "2024/09/09", end: "" };
+        if (!dateRange) return { start: "", end: "" };
         const [start, end] = dateRange.split(" to ");
-        return {
+        const parsedRange = {
             start: formatDate(start),
             end: formatDate(end),
         };
+        console.log("Parsed Date Range:", parsedRange);
+        return parsedRange;
     };
 
     useEffect(() => {
@@ -296,7 +300,7 @@ const EditProfil = () => {
                 if (data.responseCode === "000") {
                     const pengalaman = Array.isArray(data.data) ? data.data : [data.data];
                     const formattedPengalaman = pengalaman.map((exp: Pengalaman) => {
-                        const { start, end } = parseDateRange(exp.periode_kerja);
+                        const { start, end } = parseDateRange(exp.periodeKerja);
                         return {
                             ...exp,
                             periodeKerjaStart: start,
@@ -317,7 +321,7 @@ const EditProfil = () => {
 
         fetchPengalamanData();
     }, []);
-    
+
     useEffect(() => {
         console.log("Updated pengalamanList:", pengalamanList);
     }, [pengalamanList]);
@@ -325,7 +329,6 @@ const EditProfil = () => {
     useEffect(() => {
         console.log("Updated organisasiList:", organisasiList);
     }, [organisasiList]);
-    
 
     useEffect(() => {
         const fetchOrganisasiData = async () => {
@@ -357,7 +360,16 @@ const EditProfil = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     const organisasi = Array.isArray(data.data) ? data.data : [data.data];
-                    setOrganisasiList(organisasi);
+                    const formattedOrganisasi = organisasi.map((org: Organisasi) => {
+                        const { start, end } = parseDateRange(org.periode);
+                        return {
+                            ...org,
+                            periodeStart: start,
+                            periodeEnd: end,
+                        };
+                    });
+                    console.log("Formatted Organisasi:", formattedOrganisasi);
+                    setOrganisasiList(formattedOrganisasi);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -1390,8 +1402,20 @@ interface Pengalaman {
     idPeserta: string;
     namaInstansi: string;
     posisiKerja: string;
-    periode_kerja: string;
-    deskripsi_kerja: string;
+    periodeKerja: string;
+    deskripsiKerja: string;
     periodeKerjaStart?: string;
     periodeKerjaEnd?: string;
+}
+
+interface Organisasi {
+    idOrgPeserta: string;
+    idPeserta: string;
+    namaOrganisasi: string;
+    posisiOrganisasi: string;
+    periode: string;
+    deskripsiKerja: string;
+    sertifikat: string;
+    periodeStart?: string;
+    periodeEnd?: string;
 }
