@@ -433,7 +433,6 @@ const DetailKarir = () => {
                     toast.success("Document submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
                     setShowPreviewButtons(prev => ({ ...prev, [fieldName]: true })); // Show preview button for the specific field
                     setUploadedFiles(prev => ({ ...prev, [fieldName]: file })); // Store the uploaded file for the specific field
-                    // Do not reset the form to allow re-selection of the file
                 } else {
                     toast.error("Failed to submit document: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
                 }
@@ -448,14 +447,14 @@ const DetailKarir = () => {
     const handleApplyNow = async () => {
         const token = localStorage.getItem('token');
         if (!token || !idPeserta) return;
-
+    
         let allDocumentsUploaded = true;
-
+    
         requiredDocuments.forEach(doc => {
             const docName = doc[3].toLowerCase().replace(/\s+/g, '-');
             const inputField = document.querySelector(`input[name="${docName}"]`);
             const errorMessage = document.querySelector(`#error-${docName}`);
-
+    
             if (!uploadedFiles[docName]) {
                 allDocumentsUploaded = false;
                 if (inputField !== null) {
@@ -474,22 +473,30 @@ const DetailKarir = () => {
                 }
             }
         });
-
+    
         if (!allDocumentsUploaded) {
             return;
         }
-
+    
         if (isHeightMandatory && (tinggiBadan === null)) {
             setTinggiBadanError('Anda harus mengisikan field ini');
             return;
         }
-
+    
         if (isHeightMandatory && (beratBadan === null)) {
             setBeratBadanError('Anda harus mengisikan field ini');
             return;
         }
-
+    
         setIsAgreementDialogOpen(true);
+    };
+    
+    const isApplyButtonDisabled = () => {
+        if (isHeightMandatory && (tinggiBadan === null || beratBadan === null)) {
+            return true;
+        }
+    
+        return requiredDocuments.some(doc => !uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')]);
     };
 
     const handleAgreementSubmit = async () => {
@@ -778,14 +785,20 @@ const DetailKarir = () => {
                                                                     <form key={doc[1]} onSubmit={handleSubmit((data) => handleFileSubmit(data, `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-${doc[3].toLowerCase().replace(/\s+/g, '-')}`, doc[3].toLowerCase().replace(/\s+/g, '-'), doc[5]))} className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                                                         <div className="flex-1 mb-4 md:mb-0 md:mr-4">
                                                                             <label className="block text-sm font-medium text-gray-700">Upload {doc[3]}</label>
-                                                                            <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf, image/jpeg" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                                                            <p className="text-gray-500 text-sm mt-1">Format file: PDF, JPG</p>
-                                                                            <p className="text-gray-500 text-sm mt-1">Ukuran maksimal file: {doc[5]} MB</p>
-                                                                            <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
+                                                                            {!showPreviewButtons[doc[3].toLowerCase().replace(/\s+/g, '-')] && (
+                                                                                <>
+                                                                                    <input type="file" {...register(doc[3].toLowerCase().replace(/\s+/g, '-'))} accept="application/pdf, image/jpeg" required className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                                                    <p className="text-gray-500 text-sm mt-1">Format file: PDF, JPG</p>
+                                                                                    <p className="text-gray-500 text-sm mt-1">Ukuran maksimal file: {doc[5]} MB</p>
+                                                                                    <p id={`error-${doc[3].toLowerCase().replace(/\s+/g, '-')}`} className="text-red-500 text-sm mt-1"></p>
+                                                                                </>
+                                                                            )}
                                                                         </div>
-                                                                        <DialogFooter className="w-full md:w-auto">
-                                                                            <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Simpan</button>
-                                                                        </DialogFooter>
+                                                                        {!showPreviewButtons[doc[3].toLowerCase().replace(/\s+/g, '-')] && (
+                                                                            <DialogFooter className="w-full md:w-auto">
+                                                                                <button type="submit" className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Simpan</button>
+                                                                            </DialogFooter>
+                                                                        )}
                                                                         {showPreviewButtons[doc[3].toLowerCase().replace(/\s+/g, '-')] && uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, '-')] && (
                                                                             <>
                                                                                 <button onClick={() => {
@@ -836,7 +849,7 @@ const DetailKarir = () => {
                                                                     </>
                                                                 )}
                                                                 <div className="flex justify-end mt-4">
-                                                                    <button onClick={handleApplyNow} className="bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">Apply Now</button>
+                                                                    <button onClick={handleApplyNow} className={`bg-darkBlue text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto ${isApplyButtonDisabled() ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isApplyButtonDisabled()}>Apply Now</button>
                                                                     {showPreviewButton && uploadedFile && (
                                                                         <>
                                                                             <button onClick={() => {
