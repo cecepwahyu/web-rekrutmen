@@ -133,6 +133,66 @@ const EditProfil = () => {
         }, 3000); // Auto close after 3 seconds
     };
 
+    const validateFields = () => {
+        const requiredFields = [
+            { name: "Nama", value: profileData.nama },
+            { name: "Tempat Lahir", value: profileData.tempatLahir },
+            { name: "Tanggal Lahir", value: profileData.tglLahir },
+            { name: "Jenis Kelamin", value: profileData.jnsKelamin },
+            { name: "Agama", value: profileData.agama },
+            { name: "Alamat Identitas", value: profileData.alamatIdentitas },
+            { name: "Provinsi Identitas", value: profileData.provinsiIdentitas },
+            { name: "Kota Identitas", value: profileData.kotaIdentitas },
+            { name: "Kecamatan Identitas", value: profileData.kecamatanIdentitas },
+            { name: "Desa Identitas", value: profileData.desaIdentitas },
+            { name: "Alamat Domisili", value: profileData.alamatDomisili },
+            { name: "Provinsi Domisili", value: profileData.provinsiDomisili },
+            { name: "Kota Domisili", value: profileData.kotaDomisili },
+            { name: "Kecamatan Domisili", value: profileData.kecamatanDomisili },
+            { name: "Desa Domisili", value: profileData.desaDomisili },
+            { name: "No Telepon", value: profileData.telp },
+            { name: "Pendidikan Terakhir", value: profileData.pendidikanTerakhir },
+            { name: "Status Kawin", value: profileData.statusKawin },
+        ];
+
+        for (const field of requiredFields) {
+            if (!field.value) {
+                showDialog(`Field ${field.name} wajib diisi.`);
+                return false;
+            }
+        }
+
+        for (const [index, kontak] of kontakList.entries()) {
+            if (!kontak.namaKontak || !kontak.hubKontak || !kontak.telpKontak || !kontak.emailKontak || !kontak.alamatKontak) {
+                showDialog(`Field Kontak Kerabat ke-${index + 1} wajib diisi.`);
+                return false;
+            }
+        }
+
+        for (const [index, pendidikan] of pendidikanList.entries()) {
+            if (!pendidikan.idJenjang || !pendidikan.namaInstitusi || !pendidikan.jurusan || !pendidikan.thnMasuk || !pendidikan.thnLulus || !pendidikan.nilai || !pendidikan.gelar) {
+                showDialog(`Field Pendidikan ke-${index + 1} wajib diisi.`);
+                return false;
+            }
+        }
+
+        for (const [index, pengalaman] of pengalamanList.entries()) {
+            if (!pengalaman.namaInstansi || !pengalaman.posisiKerja || !pengalaman.periodeKerjaStart || !pengalaman.periodeKerjaEnd || !pengalaman.deskripsiKerja) {
+                showDialog(`Field Pengalaman Kerja ke-${index + 1} wajib diisi.`);
+                return false;
+            }
+        }
+
+        for (const [index, organisasi] of organisasiList.entries()) {
+            if (!organisasi.namaOrganisasi || !organisasi.posisiOrganisasi || !organisasi.periodeStart || !organisasi.periodeEnd || !organisasi.deskripsiKerja) {
+                showDialog(`Field Organisasi ke-${index + 1} wajib diisi.`);
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     useEffect(() => {
         const fetchArticle = async () => {
             setIsLoading(true); // Show loading animation
@@ -512,6 +572,10 @@ const EditProfil = () => {
     };
 
     const handleSave = async () => {
+        if (!validateFields()) {
+            return;
+        }
+
         const token = localStorage.getItem("token");
         if (!token) {
             console.error("No token found in localStorage");
