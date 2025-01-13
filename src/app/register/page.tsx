@@ -212,11 +212,8 @@ const Register = () => {
         </div>
 
         <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-12 pb-10 px-4">
-          <div className="flex flex-col md:flex-row w-full max-w-4xl mx-4">
-            <div className="hidden md:flex md:w-1/2 bg-gradient-to-r from-[#015CAC] to-[#018ED2] text-white rounded-lg shadow-2xl p-8 items-center justify-center">
-              <h2 className="text-2xl font-bold text-center">Temukan karirmu disini</h2>
-            </div>
-            <div className="bg-white rounded-lg shadow-2xl p-8 w-full md:w-1/2 transform transition-all duration-500 hover:scale-105">
+          <div className="w-full max-w-4xl mx-4">
+            <div className="bg-white rounded-lg shadow-2xl p-8 w-full transform transition-all duration-500 hover:scale-105">
               <h2 className="text-3xl font-bold text-center text-darkBlue mb-6">Daftar Akun Baru</h2>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-6">
