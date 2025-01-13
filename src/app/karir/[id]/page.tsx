@@ -871,11 +871,15 @@ const DetailKarir = () => {
                                             <div className="col-span-2">
                                                 <h2 className="font-semibold text-lg text-darkBlue mb-4">TENTANG PEKERJAAN</h2>
                                                 <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                                                    <p dangerouslySetInnerHTML={{ __html: article.tentangPekerjaan }} />
+                                                    <div className="prose prose-blue">
+                                                        <p dangerouslySetInnerHTML={{ __html: article.tentangPekerjaan }} />
+                                                    </div>
                                                 </div>
                                                 <h2 className="font-semibold text-lg text-darkBlue mt-6 mb-4">PERSYARATAN</h2>
                                                 <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                                                    <p dangerouslySetInnerHTML={{ __html: article.persyaratan }} />
+                                                    <div className="prose prose-blue">
+                                                        <p dangerouslySetInnerHTML={{ __html: article.persyaratan }} />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="bg-gray-100 p-4 rounded-lg md:sticky md:top-28">
