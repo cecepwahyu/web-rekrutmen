@@ -972,7 +972,7 @@ const EditProfil = () => {
                                             <select
                                                 id="idJenjang"
                                                 name="idJenjang"
-                                                value={pendidikan.idJenjang || ""}
+                                                value={pendidikan.idJenjang.trim() || ""}
                                                 onChange={(e) => handleChange(e, index, "pendidikan")}
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                             >
