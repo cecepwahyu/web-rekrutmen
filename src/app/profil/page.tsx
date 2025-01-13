@@ -985,7 +985,7 @@ const Profile = () => {
                                         <div className="flex items-center mb-2">
                                             <FaHeart className="mr-2 text-darkBlue" />
                                             <p><strong>Status Kawin:</strong></p>
-                                            <p className="ml-2">{profileData.statusKawin === '1' ? 'Menikah' : 'Belum Menikah'}</p>
+                                            <p className="ml-2">{profileData.statusKawin === '1' ? 'Lajang' : profileData.statusKawin === '2' ? 'Menikah' : 'Tidak Diketahui'}</p>
                                         </div>
                                     )}
                                     {profileData.tinggi && (
