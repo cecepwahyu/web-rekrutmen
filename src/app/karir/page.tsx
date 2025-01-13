@@ -27,6 +27,7 @@ interface Job {
     slug: string;
     tentangPekerjaan?: string; // Add tentangPekerjaan property
     status: string; // Add status property
+    flgApprove: boolean
 }
 
 const Karir = () => {
@@ -122,9 +123,9 @@ const Karir = () => {
         );
 
         if (activeTab === "Rekrutmen") {
-            setFilteredJobs(filtered.filter(job => job.status === "1"));
+            setFilteredJobs(filtered.filter(job => job.status === "1" && job.flgApprove === true));
         } else if (activeTab === "Job Desc") {
-            setFilteredJobs(filtered.filter(job => job.status === "4"));
+            setFilteredJobs(filtered.filter(job => job.status === "4" && job.flgApprove === true));
         }
     }, [searchTerm, jobs, activeTab]);
 
