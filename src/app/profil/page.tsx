@@ -175,6 +175,8 @@ const Profile = () => {
     const [dialogMessage, setDialogMessage] = useState<string | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false); // State for redirecting
+    const [isFileErrorDialogOpen, setIsFileErrorDialogOpen] = useState(false); // State for file error dialog
+    const [fileErrorMessage, setFileErrorMessage] = useState(""); // State for file error message
 
     const showDialog = (message: string) => {
         setDialogMessage(message);
@@ -191,6 +193,12 @@ const Profile = () => {
         const file = event.target.files?.[0];
         if (file) {
             const fileType = file.type;
+            const fileSize = file.size / 1024; // Convert size to KB
+            if (fileSize > 500) {
+                setFileErrorMessage('Ukuran file maksimal adalah 500KB. Silakan pilih file yang lebih kecil.');
+                setIsFileErrorDialogOpen(true);
+                return;
+            }
             if (fileType === "image/png" || fileType === "image/jpeg") {
                 const reader = new FileReader();
                 reader.onloadend = () => {
@@ -199,11 +207,8 @@ const Profile = () => {
                 };
                 reader.readAsDataURL(file);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Format File Tidak Sesuai',
-                    text: 'Silakan pilih file gambar yang valid (PNG atau JPG).',
-                });
+                setFileErrorMessage('Silakan pilih file gambar yang valid (PNG atau JPG).');
+                setIsFileErrorDialogOpen(true);
             }
         }
     };
@@ -645,7 +650,7 @@ const Profile = () => {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Ubah Foto Profil</DialogTitle>
-                        <DialogDescription>Pilih foto yang akan Anda jadikan foto profil (PNG atau JPG).</DialogDescription>
+                        <DialogDescription>Pilih foto yang akan Anda jadikan foto profil (PNG atau JPG, maksimal 500KB).</DialogDescription>
                     </DialogHeader>
                     <input 
                         type="file" 
@@ -818,6 +823,26 @@ const Profile = () => {
                     <DialogFooter>
                         <button
                             onClick={() => setDialogOpen(false)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+                        >
+                            OK
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isFileErrorDialogOpen} onOpenChange={setIsFileErrorDialogOpen}>
+                <DialogContent className="font-normal">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">Error</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 flex items-center">
+                        {fileErrorMessage && (
+                            <span>{fileErrorMessage}</span>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <button
+                            onClick={() => setIsFileErrorDialogOpen(false)}
                             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
                         >
                             OK
