@@ -157,10 +157,11 @@ const isProfileDataComplete = (profileData: any) => {
         'organisasi_periode', 'achievements', 'kontak_id', 'thn_masuk', 'nilai', 'nama_instansi', 'posisi_kerja',
         'telp_kontak', 'periode_kerja', 'pendidikan_jenjang', 'organisasi_id', 'organisasi_deskripsi', 'gelar',
         'pengalaman_id', 'email_kontak', 'nama_kontak', 'jurusan', 'nama_institusi', 'pengalaman_deskripsi',
-        'pendidikan_id', 'thn_lulus', 'peserta_id', 'nama_organisasi', 'hub_kontak', 'posisi_organisasi', 'alamat_kontak'
+        'pendidikan_id', 'thn_lulus', 'peserta_id', 'nama_organisasi', 'hub_kontak', 'posisi_organisasi', 'alamat_kontak',
+        'profile_picture'
     ];
 
-    return requiredFields.every(field => profileData[field]);
+    return requiredFields.every(field => profileData[field] !== null && profileData[field] !== '');
 };
 
 const DetailKarir = () => {
