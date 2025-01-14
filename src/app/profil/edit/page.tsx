@@ -69,6 +69,8 @@ const EditProfil = () => {
         telp: "",
         pendidikanTerakhir: "",
         statusKawin: "",
+        tinggi: "",
+        berat: "",
     });
 
     const [pendidikanData, setPendidikanData] = useState({
@@ -621,6 +623,8 @@ const EditProfil = () => {
             telp: profileData.telp,
             pendidikan_terakhir: profileData.pendidikanTerakhir,
             status_kawin: profileData.statusKawin,
+            tinggi: profileData.tinggi,
+            berat: profileData.berat,
             id_session: "29348293923",
             flg_status: "2",
             kontak: kontakList.map(kontak => ({
@@ -1024,7 +1028,7 @@ const EditProfil = () => {
                                             />
                                         </div>
 
-                                        <div className="mb-8">
+                                        <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="desaDomisili">
                                                 Desa Domisili <span className="text-red-500">*</span>
                                             </label>
@@ -1037,6 +1041,48 @@ const EditProfil = () => {
                                                 placeholder="Masukkan Desa Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
+                                            />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="tinggi">
+                                                Tinggi Badan
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="tinggi"
+                                                name="tinggi"
+                                                value={profileData.tinggi || ""}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^\d{0,3}$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
+                                                placeholder="Masukkan Tinggi Badan (cm)"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={3}
+                                            />
+                                        </div>
+
+                                        <div className="mb-8">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="berat">
+                                                Berat Badan
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="berat"
+                                                name="berat"
+                                                value={profileData.berat || ""}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^\d{0,3}$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
+                                                placeholder="Masukkan Berat Badan (kg)"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={3}
                                             />
                                         </div>
                                     </div>
