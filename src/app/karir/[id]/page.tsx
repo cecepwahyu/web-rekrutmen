@@ -164,6 +164,24 @@ const isProfileDataComplete = (profileData: any) => {
     return requiredFields.every(field => profileData[field] !== null && profileData[field] !== '');
 };
 
+const checkCvSubmission = async (idLowongan: number, idPeserta: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/jobdesc/query?idLowongan=${idLowongan}&idPeserta=${idPeserta}&isRekrutmen=false`, {
+            method: 'GET',
+            headers: getHeaders(token),
+        });
+
+        const data = await response.json();
+        return data.responseCode === '000' && data.data.length > 0;
+    } catch (error) {
+        console.error('Error checking CV submission:', error);
+        return false;
+    }
+};
+
 const DetailKarir = () => {
     const params = useParams();
     const slug = params?.id as string;
@@ -343,6 +361,17 @@ const DetailKarir = () => {
 
         fetchRequiredDocuments();
     }, [slug]);
+
+    useEffect(() => {
+        const fetchCvSubmissionStatus = async () => {
+            if (status === '4' && idPeserta && article) {
+                const isCvSubmitted = await checkCvSubmission(Number(article.kodeLowongan), idPeserta);
+                setIsLocked(isCvSubmitted);
+            }
+        };
+
+        fetchCvSubmissionStatus();
+    }, [status, idPeserta, article]);
 
     const handleApply = async () => {
         const token = localStorage.getItem('token');
@@ -725,7 +754,7 @@ const DetailKarir = () => {
                                                             disabled={isLocked}
                                                         >
                                                             {status === '4' ? (
-                                                                'Submit'
+                                                                isLocked ? 'Anda sudah submit CV untuk job desc ini' : 'Submit'
                                                             ) : (
                                                                 isLocked ? 'Anda sudah mendaftar pada periode ini' : 'Apply'
                                                             )}
