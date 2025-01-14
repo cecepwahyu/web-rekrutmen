@@ -56,7 +56,7 @@ const DetailRiwayat = () => {
     posisi: "",
     idLowongan: null,
   });
-  const [announcementContent, setAnnouncementContent] = useState("Pesan tidak ditemukan");
+  const [announcementContent, setAnnouncementContent] = useState("");
   const [currentSortOrder, setCurrentSortOrder] = useState(0);
   const [showRegistrationCard, setShowRegistrationCard] = useState(false);
   const [participantId, setParticipantId] = useState<number | null>(null);
@@ -181,7 +181,10 @@ const DetailRiwayat = () => {
           },
           body: JSON.stringify({ id_lowongan: applicantData.idLowongan }) // Use dynamic idLowongan
         });
-        const data = await response.json();
+
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+
         if (data.responseCode === '000') {
           const flgTahapan = data.data.flg_tahapan;
           if (flgTahapan === null) {
@@ -193,11 +196,15 @@ const DetailRiwayat = () => {
           }
         } else {
           console.error('Error fetching announcement content:', data.responseMessage);
-          setAnnouncementContent("Pesan tidak ditemukan");
+          //setAnnouncementContent("Pesan tidak ditemukan");
         }
       } catch (error) {
-        console.error('Error fetching announcement content:', error);
-        setAnnouncementContent("Pesan tidak ditemukan");
+        if (error instanceof SyntaxError) {
+          console.error('Error parsing JSON:', error.message);
+        } else {
+          console.error('Error fetching announcement content:', error);
+        }
+        //setAnnouncementContent("Pesan tidak ditemukan");
       } finally {
         setIsLoading(false);
       }
