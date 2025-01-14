@@ -62,49 +62,52 @@ const Karir = () => {
         }
     }, [router]);
 
-    // Fetch job data from API
-    useEffect(() => {
-        const fetchJobs = async () => {
-            setIsLoading(true); // Show loading animation
-            if (typeof window !== "undefined") {
-                const token = localStorage.getItem("token"); // Get token from localStorage
+    const fetchJobs = async (endpoint: string) => {
+        setIsLoading(true); // Show loading animation
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token"); // Get token from localStorage
 
-                if (!token) {
-                    console.error("No token found in localStorage");
-                    return; // Exit if no token is found
-                }
-
-                try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/paginated?page=${currentPage}`, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                            Accept: "application/json",
-                        },
-                    });
-                    const data = await response.json();
-                    if (data.responseCode === "000") {
-                        const allJobs: Job[] = data.data.content; // Explicitly define type
-                        setJobs(allJobs); // Update jobs with current page content
-                        setFilteredJobs(allJobs); // Update filtered jobs with current page content
-                        setRekrutmenJobs(allJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
-                        setJobDescJobs(allJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
-                        setTotalPagesRekrutmen(Math.ceil(allJobs.filter((job: Job) => job.status === "1").length / ITEMS_PER_PAGE)); // Set total pages for Rekrutmen
-                        setTotalPagesJobDesc(Math.ceil(allJobs.filter((job: Job) => job.status === "4").length / ITEMS_PER_PAGE)); // Set total pages for Job Desc
-                    }
-                } catch (error) {
-                    console.error("Error fetching job data:", error);
-                } finally {
-                    setIsLoading(false); // Hide loading animation
-                }
+            if (!token) {
+                console.error("No token found in localStorage");
+                return; // Exit if no token is found
             }
-        };
 
-        if (isAuthenticated) {
-            fetchJobs();
+            try {
+                const response = await fetch(endpoint, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+                const data = await response.json();
+                if (data.responseCode === "000") {
+                    const allJobs: Job[] = data.data.content; // Explicitly define type
+                    setJobs(allJobs); // Update jobs with current page content
+                    setFilteredJobs(allJobs); // Update filtered jobs with current page content
+                    setRekrutmenJobs(allJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
+                    setJobDescJobs(allJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
+                    setTotalPagesRekrutmen(Math.ceil(allJobs.filter((job: Job) => job.status === "1").length / ITEMS_PER_PAGE)); // Set total pages for Rekrutmen
+                    setTotalPagesJobDesc(Math.ceil(allJobs.filter((job: Job) => job.status === "4").length / ITEMS_PER_PAGE)); // Set total pages for Job Desc
+                }
+            } catch (error) {
+                console.error("Error fetching job data:", error);
+            } finally {
+                setIsLoading(false); // Hide loading animation
+            }
         }
-    }, [currentPage, isAuthenticated]); // Re-fetch jobs when currentPage or isAuthenticated changes
+    };
+
+    // Fetch job data based on active tab
+    useEffect(() => {
+        if (isAuthenticated) {
+            const endpoint = activeTab === "Rekrutmen"
+                ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/rekrutmen/paginated?page=${currentPageRekrutmen}`
+                : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/paginated?page=${currentPageJobDesc}`;
+            fetchJobs(endpoint);
+        }
+    }, [currentPageRekrutmen, currentPageJobDesc, isAuthenticated, activeTab]); // Re-fetch jobs when currentPage, isAuthenticated, or activeTab changes
 
     useEffect(() => {
         const handleScroll = () => {
