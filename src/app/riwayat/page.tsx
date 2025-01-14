@@ -110,7 +110,7 @@ const Riwayat = () => {
                 }
 
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/peserta/id/${idPeserta}`, {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/filter?isRekrutmen=true&idPeserta=${idPeserta}`, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -120,7 +120,7 @@ const Riwayat = () => {
                     });
                     const data = await response.json();
                     if (data.responseCode === "000") {
-                        const allHistories: History[] = [data.data]; // Wrap the single object in an array
+                        const allHistories: History[] = data.data; // Assume data.data is an array
                         setHistories(allHistories); // Update histories with fetched data
                         setFilteredHistories(allHistories); // Update filtered histories with fetched data
                         setRekrutmenJobs(allHistories.filter(history => history.status === "1" && history.isRekrutmen)); // Filter for "Aktif" tab
