@@ -584,28 +584,6 @@ const DetailKarir = () => {
         const token = localStorage.getItem('token');
         if (!token || !idPeserta) return;
     
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/peserta/id/${idPeserta}`, {
-                method: 'GET',
-                headers: getHeaders(token),
-            });
-    
-            const responseData = await response.json();
-            if (responseData.responseCode === '000') {
-                if (!responseData.data.isRekrutmen) {
-                    setIsCvSubmitWarningDialogOpen(true);
-                    return;
-                }
-            } else {
-                toast.error("Failed to fetch application history: " + responseData.responseMessage, { style: { backgroundColor: 'white', color: 'red' } });
-                return;
-            }
-        } catch (error) {
-            console.error('Error fetching application history:', error);
-            alert('An error occurred. Please try again.');
-            return;
-        }
-    
         const payload = {
             id_peserta: idPeserta,
         };
@@ -623,7 +601,7 @@ const DetailKarir = () => {
     
             const responseData = await response.json();
             if (responseData.responseCode === '000') {
-                toast.success("Application submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
+                toast.success("CV submitted successfully", { style: { backgroundColor: 'white', color: 'green' } });
                 setTimeout(() => {
                     router.push('/karir');
                 }, 3000);
