@@ -179,32 +179,18 @@ const DetailRiwayat = () => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ id_lowongan: applicantData.idLowongan }) // Use dynamic idLowongan
+          body: JSON.stringify({ id_lowongan: applicantData.idLowongan })
         });
 
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : {};
+        const data = await response.json();
 
-        if (data.responseCode === '000') {
-          const flgTahapan = data.data.flg_tahapan;
-          if (flgTahapan === null) {
-            setAnnouncementContent("Belum ada pengumuman");
-          } else if (flgTahapan === false) {
-            setAnnouncementContent("Terima kasih atas partisipasi Anda,<br/>Mohon Maaf, Anda TIDAK LOLOS Seleksi Administrasi,<br/><br/>Semoga sukses di kesempatan berikutnya.<br/><br/>Tim Rekrutmen Bank BPD DIY");
-          } else {
-            setAnnouncementContent(data.data.content);
-          }
+        if (data.responseCode === '000' && data.data) {
+          setAnnouncementContent(data.data.content);
         } else {
           console.error('Error fetching announcement content:', data.responseMessage);
-          //setAnnouncementContent("Pesan tidak ditemukan");
         }
       } catch (error) {
-        if (error instanceof SyntaxError) {
-          console.error('Error parsing JSON:', error.message);
-        } else {
-          console.error('Error fetching announcement content:', error);
-        }
-        //setAnnouncementContent("Pesan tidak ditemukan");
+        console.error('Error fetching announcement content:', error);
       } finally {
         setIsLoading(false);
       }
@@ -416,16 +402,17 @@ const DetailRiwayat = () => {
                   {/* Heading */}
                   <p className="font-semibold text-darkBlue text-lg mb-4">Informasi Test</p>
 
-                  {/* Details */}
-                  <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent }} />
-                  {steps.map((step) => (
-                    step.isActive && step.announcementTitle && (
+                    {/* Details */}
+                    <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent }} />
+                    {steps
+                    .filter((step) => step.isActive && step.announcementTitle)
+                    .slice(-1) // Only take the newest (last) active step with an announcement
+                    .map((step) => (
                       <div className="mt-2" key={step.idTahapan}>
-                        <h5 className="font-semibold">{step.announcementTitle}</h5>
-                        <div dangerouslySetInnerHTML={{ __html: step.announcementContent || "" }} />
+                      <h5 className="font-semibold">{step.announcementTitle}</h5>
+                      <div dangerouslySetInnerHTML={{ __html: step.announcementContent || "" }} />
                       </div>
-                    )
-                  ))}
+                    ))}
                 </div>
               </div>
               
