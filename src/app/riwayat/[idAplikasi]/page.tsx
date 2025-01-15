@@ -57,6 +57,7 @@ const DetailRiwayat = () => {
     idLowongan: null,
   });
   const [announcementContent, setAnnouncementContent] = useState("");
+  const [announcementTitle, setAnnouncementTitle] = useState("");
   const [currentSortOrder, setCurrentSortOrder] = useState(0);
   const [showRegistrationCard, setShowRegistrationCard] = useState(false);
   const [participantId, setParticipantId] = useState<number | null>(null);
@@ -140,13 +141,26 @@ const DetailRiwayat = () => {
         });
         const data = await response.json();
         if (data.responseCode === '000') {
-          const stepsData = data.data.map((step: any) => ({
-            idTahapan: step[2],
-            namaTahapan: step[4],
-            deskripsi: step[5],
-            isActive: step[6] === null ? null : step[6] === true,
-            announcementTitle: step[7],
-            announcementContent: step[8]
+          const stepsData = await Promise.all(data.data.map(async (step: any) => {
+            const announcementResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/announcements/content`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ id_lowongan: applicantData.idLowongan, id_tahapan: step[2] })
+            });
+            const announcementData = await announcementResponse.json();
+            console.log('Announcement Data:', announcementData); // Add this line to log the announcement data
+            return {
+              idTahapan: step[2],
+              namaTahapan: step[4],
+              deskripsi: step[5],
+              isActive: step[6] === null ? null : step[6] === true,
+              announcementTitle: announcementData.title, // Hardcoded title
+              announcementContent: announcementData.content // Hardcoded content
+            };
           }));
           setSteps(stepsData);
         }
@@ -186,6 +200,7 @@ const DetailRiwayat = () => {
 
         if (data.responseCode === '000' && data.data) {
           setAnnouncementContent(data.data.content);
+          setAnnouncementTitle(data.data.title);
         } else {
           console.error('Error fetching announcement content:', data.responseMessage);
         }
