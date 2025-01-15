@@ -164,18 +164,28 @@ const isProfileDataComplete = (profileData: any) => {
     return requiredFields.every(field => profileData[field] !== null && profileData[field] !== '');
 };
 
-const checkCvSubmission = async (idLowongan: number, idPeserta: string) => {
+const checkCvSubmission = async (idPeserta: string) => {
     const token = localStorage.getItem('token');
     if (!token) return false;
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/jobdesc/query?idLowongan=${idLowongan}&idPeserta=${idPeserta}&isRekrutmen=false`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/jobdesc`, {
             method: 'GET',
             headers: getHeaders(token),
         });
 
         const data = await response.json();
-        return data.responseCode === '000' && data.data.length > 0;
+        if (data.responseCode === '000' && data.data.length > 0) {
+            const idLowongan = data.data[0][1];
+            const cvResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/jobdesc/query?idLowongan=${idLowongan}&idPeserta=${idPeserta}&isRekrutmen=false`, {
+                method: 'GET',
+                headers: getHeaders(token),
+            });
+
+            const cvData = await cvResponse.json();
+            return cvData.responseCode === '000' && cvData.data.length > 0;
+        }
+        return false;
     } catch (error) {
         console.error('Error checking CV submission:', error);
         return false;
@@ -364,14 +374,14 @@ const DetailKarir = () => {
 
     useEffect(() => {
         const fetchCvSubmissionStatus = async () => {
-            if (status === '4' && idPeserta && article) {
-                const isCvSubmitted = await checkCvSubmission(Number(article.kodeLowongan), idPeserta);
+            if (status === '4' && idPeserta) {
+                const isCvSubmitted = await checkCvSubmission(idPeserta);
                 setIsLocked(isCvSubmitted);
             }
         };
 
         fetchCvSubmissionStatus();
-    }, [status, idPeserta, article]);
+    }, [status, idPeserta]);
 
     const handleApply = async () => {
         const token = localStorage.getItem('token');
