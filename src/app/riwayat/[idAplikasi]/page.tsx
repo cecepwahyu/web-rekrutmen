@@ -152,7 +152,7 @@ const DetailRiwayat = () => {
               body: JSON.stringify({ id_lowongan: applicantData.idLowongan, id_tahapan: step[2] })
             });
             const announcementData = await announcementResponse.json();
-            console.log('Announcement Data:', announcementData); // Add this line to log the announcement data
+            //console.log('Announcement Data:', announcementData);
             return {
               idTahapan: step[2],
               namaTahapan: step[4],
@@ -418,14 +418,14 @@ const DetailRiwayat = () => {
                   <p className="font-semibold text-darkBlue text-lg mb-4">Informasi Test</p>
 
                     {/* Details */}
-                    <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent }} />
+                    <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent || "" }} />
                     {steps
-                    .filter((step) => step.isActive && step.announcementTitle)
+                    .filter((step) => step.isActive !== null)
                     .slice(-1) // Only take the newest (last) active step with an announcement
                     .map((step) => (
                       <div className="mt-2" key={step.idTahapan}>
-                      <h5 className="font-semibold">{step.announcementTitle}</h5>
-                      <div dangerouslySetInnerHTML={{ __html: step.announcementContent || "" }} />
+                      <h5 className="font-semibold">{step.isActive ? step.announcementTitle : "Maaf"}</h5>
+                      <div dangerouslySetInnerHTML={{ __html: step.isActive ? step.announcementContent || "" : "Coba lagi tahun depan!" }} />
                       </div>
                     ))}
                 </div>
