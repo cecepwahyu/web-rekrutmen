@@ -15,8 +15,8 @@ import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import Swal from 'sweetalert2';
+import { Dialog as MuiDialog, DialogTitle as MuiDialogTitle, DialogContent as MuiDialogContent, DialogActions } from "@mui/material";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -35,6 +35,8 @@ const Otp = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [invalidOtpDialogOpen, setInvalidOtpDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -241,13 +243,9 @@ const Otp = () => {
       }
     } catch (error) {
       console.error("Error during OTP Verification:", error);
-      Swal.fire({
-        title: "Error",
-        text: "Kode OTP invalid.",
-        icon: "error",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+      setDialogMessage("Kode OTP invalid.");
+      setInvalidOtpDialogOpen(true);
+      setTimeout(() => setInvalidOtpDialogOpen(false), 3000);
     } finally {
       setLoading(false);
     }
@@ -335,9 +333,9 @@ const Otp = () => {
           </div>
         </div>
 
-        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-          <DialogTitle>Change Password</DialogTitle>
-          <DialogContent>
+        <MuiDialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <MuiDialogTitle>Change Password</MuiDialogTitle>
+          <MuiDialogContent>
             <input
               type="password"
               placeholder="New Password"
@@ -352,12 +350,25 @@ const Otp = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md mt-4"
             />
-          </DialogContent>
+          </MuiDialogContent>
           <DialogActions>
             <Button onClick={handlePasswordChange} className="bg-darkBlue text-white">
               Update Password
             </Button>
           </DialogActions>
+        </MuiDialog>
+
+        <Dialog open={invalidOtpDialogOpen} onOpenChange={setInvalidOtpDialogOpen}>
+          <DialogContent className="font-normal">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">Info</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 flex items-center">
+              {dialogMessage && (
+                <span>{dialogMessage}</span>
+              )}
+            </div>
+          </DialogContent>
         </Dialog>
 
         <FooterCopyright />
