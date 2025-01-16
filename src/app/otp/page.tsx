@@ -16,6 +16,7 @@ import FooterCopyright from "../../components/FooterCopyright";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import Swal from 'sweetalert2';
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -240,7 +241,13 @@ const Otp = () => {
       }
     } catch (error) {
       console.error("Error during OTP Verification:", error);
-      toast.error("An error occurred. Please try again later.");
+      Swal.fire({
+        title: "Error",
+        text: "Kode OTP invalid.",
+        icon: "error",
+        timer: 3000,
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }
