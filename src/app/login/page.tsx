@@ -275,7 +275,8 @@ const Login = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
+        const errorJson = JSON.parse(errorText);
+        throw new Error(errorJson.data || "Invalid email or No Identitas");
       }
 
       showDialog("Password reset link sent! Please check your email.");
@@ -291,7 +292,11 @@ const Login = () => {
       }, 2000);
     } catch (error) {
       console.error("Error during password reset:", error);
-      showDialog("An error occurred. Please try again later.", true);
+      if (error instanceof Error) {
+        showDialog(error.message || "An error occurred. Please try again later.", true);
+      } else {
+        showDialog("An error occurred. Please try again later.", true);
+      }
       regenerateForgotPasswordCaptcha(); // Regenerate CAPTCHA on error
     } finally {
       setForgotPasswordLoading(false);
