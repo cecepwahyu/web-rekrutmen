@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-import Swal from 'sweetalert2';
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -16,6 +15,7 @@ import {
 import MenuBar from "../../../components/MenuBar";
 import FooterCopyright from "../../components/FooterCopyright";
 import { ScrollToTopButton } from "../../components/ScrollToTopButton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -29,6 +29,8 @@ const AccountVerification = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState<string | null>(null);
+  const [invalidOtpDialogOpen, setInvalidOtpDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
 
   // Get no_identitas and email from local storage
   const no_identitas = typeof window !== "undefined" ? localStorage.getItem("no_identitas") : null;
@@ -152,13 +154,10 @@ const AccountVerification = () => {
       );
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error",
-        text: "Kode OTP invalid.",
-        icon: "error",
-        timer: 3000,
-        showConfirmButton: false,
-      });
+      console.error("Error during OTP Verification:", error);
+      setDialogMessage("Kode OTP invalid.");
+      setInvalidOtpDialogOpen(true);
+      setTimeout(() => setInvalidOtpDialogOpen(false), 3000);
     } finally {
       setLoading(false);
     }
@@ -243,6 +242,19 @@ const AccountVerification = () => {
             </div>
           </div>
         </div>
+
+        <Dialog open={invalidOtpDialogOpen} onOpenChange={setInvalidOtpDialogOpen}>
+          <DialogContent className="font-normal">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">Info</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 flex items-center">
+              {dialogMessage && (
+                <span>{dialogMessage}</span>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <FooterCopyright />
         <ScrollToTopButton />
