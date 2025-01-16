@@ -309,6 +309,10 @@ const Profile = () => {
         });
     };
 
+    const isPasswordStrong = () => {
+        return Object.values(passwordStrength).every(Boolean);
+    };
+
     const handleSaveNewPassword = async () => {
         if (newPassword !== confirmNewPassword) {
             showDialog("New password and confirm password do not match");
@@ -350,7 +354,12 @@ const Profile = () => {
 
             const data = await response.json();
             if (data.responseCode === "000") {
-                toast.success("Password changed successfully");
+                toast.success("Password changed successfully", {
+                    style: {
+                        background: 'white',
+                        color: 'green',
+                    },
+                });
                 setIsChangePasswordDialogOpen(false); // Close dialog after saving
             } else {
                 showDialog(data.responseMessage || "An error occurred while changing the password.");
@@ -803,7 +812,8 @@ const Profile = () => {
                         </button>
                         <button
                             onClick={handleSaveNewPassword} // Save new password
-                            className="bg-darkBlue text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
+                            className={`bg-darkBlue text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400 ${!isPasswordStrong() ? 'cursor-not-allowed opacity-50' : ''}`}
+                            disabled={!isPasswordStrong()}
                         >
                             Simpan
                         </button>
