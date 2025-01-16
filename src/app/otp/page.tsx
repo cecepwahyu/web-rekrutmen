@@ -298,6 +298,9 @@ const Otp = () => {
                   maxLength={6}
                   className="w-48 h-12 text-center text-darkBlue border border-gray-300 rounded-md focus:ring-2 focus:ring-darkBlue focus:border-darkBlue"
                   {...form.register("otp")}
+                  onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '');
+                  }}
                 />
               </div>
               {error && <p className="text-red-500 text-center">{error}</p>}
