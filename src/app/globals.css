@@ -17,9 +17,9 @@
 }
 
 @font-face {
-  font-family: 'Roboto';
-  src: url('/public/fonts/OpenSans/OpenSans-Regular.ttf') format('truetype'),
-  url('//public/fonts/OpenSans/OpenSans-Bold.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("/public/fonts/OpenSans/OpenSans-Regular.ttf") format("truetype"),
+    url("//public/fonts/OpenSans/OpenSans-Bold.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -92,5 +92,108 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .summernote-content {
+    @apply text-base leading-relaxed text-gray-700 max-w-[90ch] mx-auto px-4 md:px-6 lg:px-8;
+  }
+
+  .summernote-content h1 {
+    @apply text-3xl font-bold mb-6 mt-8 text-gray-900 tracking-tight;
+  }
+
+  .summernote-content h2 {
+    @apply text-2xl font-semibold mb-4 mt-6 text-gray-800 tracking-tight;
+  }
+
+  .summernote-content h3 {
+    @apply text-xl font-semibold mb-3 mt-5 text-gray-800;
+  }
+
+  .summernote-content p {
+    @apply mb-6 leading-7;
+  }
+
+  .summernote-content ul,
+  .summernote-content ol {
+    @apply mb-6 ml-6 space-y-2 w-full;
+  }
+
+  .summernote-content ul {
+    @apply list-disc;
+  }
+
+  .summernote-content ol {
+    @apply list-decimal;
+  }
+
+  .summernote-content li {
+    @apply pl-2 leading-7;
+  }
+
+  .summernote-content a {
+    @apply text-darkBlue hover:text-blue-700 underline decoration-2 underline-offset-2 transition-colors duration-200;
+  }
+
+  .summernote-content blockquote {
+    @apply pl-6 border-l-4 border-darkBlue/30 italic my-6 text-gray-700 bg-gray-50 py-4 pr-4 rounded-r-lg;
+  }
+
+  .summernote-content img {
+    @apply max-w-[100%] w-full my-6;
+  }
+
+  .summernote-content pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg my-6 overflow-x-auto font-mono text-sm leading-6;
+  }
+
+  .summernote-content code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-gray-800 font-mono text-sm;
+  }
+
+  .summernote-content table {
+    @apply w-full border-collapse my-6 bg-white shadow-sm rounded-lg overflow-x-auto block;
+    min-width: 100%;
+  }
+
+  .summernote-content th {
+    @apply bg-gray-50 text-left px-4 py-3 font-semibold text-gray-900 border-b border-gray-200;
+  }
+
+  .summernote-content td {
+    @apply px-4 py-3 border-b border-gray-100;
+  }
+
+  .summernote-content tr:hover {
+    @apply bg-gray-50/50;
+  }
+
+  /* Add styling for horizontal rules */
+  .summernote-content hr {
+    @apply my-8 border-t-2 border-gray-100;
+  }
+
+  /* Add styling for inline elements */
+  .summernote-content strong {
+    @apply font-semibold text-gray-900;
+  }
+
+  .summernote-content em {
+    @apply italic text-gray-800;
+  }
+
+  /* Add styling for definition lists if used */
+  .summernote-content dl {
+    @apply mb-6;
+  }
+
+  .summernote-content dt {
+    @apply font-semibold text-gray-900 mb-1;
+  }
+
+  .summernote-content dd {
+    @apply ml-4 mb-4;
   }
 }
