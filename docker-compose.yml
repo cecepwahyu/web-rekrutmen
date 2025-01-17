@@ -19,3 +19,7 @@ services:
       - "/etc/timezone:/etc/timezone:ro"
     environment:
       - TZ=Asia/Jakarta
+
+networks:
+  network-rekrutmen-bpd-new:
+    driver: bridge
