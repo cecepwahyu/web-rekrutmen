@@ -178,7 +178,7 @@ const InfoArtikel = () => {
                                 >
                                     <div className="relative w-full h-48">
                                         <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/artikel/image/${article.gambar}`}
+                                            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/api/artikel/image/${article.gambar}`}
                                             alt={article.judul}
                                             fill
                                             style={{ objectFit: 'cover' }}
