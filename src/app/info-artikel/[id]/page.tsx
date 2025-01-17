@@ -159,7 +159,7 @@ const DetailArtikel = () => {
               <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                 <div className="relative w-full h-64 md:h-96">
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/artikel/image/${article.gambar}`}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/api/artikel/image/${article.gambar}`}
                     alt={article.judul}
                     layout="fill"
                     objectFit="cover"
