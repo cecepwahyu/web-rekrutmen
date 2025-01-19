@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Metadata } from "next";
 import Image from "next/image";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faTag } from "@fortawesome/free-solid-svg-icons";
@@ -113,28 +114,6 @@ const InfoArtikel = () => {
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
             <main className="pt-28 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
-                {/* <div className="container w-full mx-auto px-4 py-8 h-auto">
-                    <div className="flex flex-wrap">
-                        <div className="w-full md:w-1/2 md:pl-20 flex items-center justify-center text-white">
-                            <div className="p-8 rounded-lg text-center md:text-left">
-                                <h1 className="text-4xl font-bold mb-4">Info & Artikel</h1>
-                                <p>Dapatkan informasi dan artikel terbaru dari <br /> <b>Bank BPD DIY</b></p>
-                                <br />
-                            </div>
-                        </div>
-                        <div className="w-full md:w-1/2 px-4">
-                            <div className="rounded-lg relative z-0">
-                                <Image
-                                    src="/images/magang.png"
-                                    alt="Info & Artikel"
-                                    width={800}
-                                    height={600}
-                                    className="w-[460px] h-auto rounded-lg object-contain pb-10"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
                 <div className="bg-white relative z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
                         <defs>
@@ -194,12 +173,6 @@ const InfoArtikel = () => {
                                                 : <span dangerouslySetInnerHTML={{ __html: article.isi }} />
                                             }
                                         </p>
-                                        {/* <div className="flex items-center text-sm text-gray-600 space-x-4">
-                                            <div className="flex items-center">
-                                                <FontAwesomeIcon icon={faTag} className="mr-1" />
-                                                <span>Keuangan</span>
-                                            </div>
-                                        </div> */}
                                     </div>
                                 </button>
                             ))}
