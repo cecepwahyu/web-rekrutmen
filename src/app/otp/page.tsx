@@ -17,6 +17,8 @@ import { ScrollToTopButton } from "../../components/ScrollToTopButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dialog as MuiDialog, DialogTitle as MuiDialogTitle, DialogContent as MuiDialogContent, DialogActions } from "@mui/material";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon } from "@fortawesome/free-solid-svg-icons";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -37,6 +39,15 @@ const Otp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [invalidOtpDialogOpen, setInvalidOtpDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialChar: false,
+  });
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -197,6 +208,24 @@ const Otp = () => {
     }
   };
 
+  const checkPasswordStrength = (password: string) => {
+    setPasswordStrength({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    });
+  };
+
+  const isPasswordStrong = () => {
+    return Object.values(passwordStrength).every(Boolean);
+  };
+
+  const isConfirmPasswordMatch = () => {
+    return newPassword === confirmPassword;
+  };
+
   const handleOtp = async (data: OtpFormValues) => {
     if (!email) {
       toast.error("Email cannot be blank.");
@@ -334,25 +363,92 @@ const Otp = () => {
         </div>
 
         <MuiDialog open={openDialog} onClose={() => setOpenDialog(false)}>
-          <MuiDialogTitle>Change Password</MuiDialogTitle>
+          <MuiDialogTitle>Ubah Password</MuiDialogTitle>
           <MuiDialogContent>
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md mt-4"
-            />
+            <div className="relative">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                placeholder="Password Baru"
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  checkPasswordStrength(e.target.value);
+                }}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+              >
+                <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
+              </button>
+            </div>
+            <div className="mt-2 space-y-2 rounded-md bg-blue-50/50 p-3 text-sm">
+              <div className="flex items-center gap-2">
+                {passwordStrength.length ? (
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                ) : (
+                  <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                )}
+                <p>Minimal 8 karakter</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {passwordStrength.uppercase ? (
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                ) : (
+                  <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                )}
+                <p>Minimal 1 huruf kapital</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {passwordStrength.lowercase ? (
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                ) : (
+                  <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                )}
+                <p>Minimal 1 huruf kecil</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {passwordStrength.number ? (
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                ) : (
+                  <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                )}
+                <p>Minimal 1 angka</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {passwordStrength.specialChar ? (
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                ) : (
+                  <FontAwesomeIcon icon={faTimesIcon} className="text-red-500" />
+                )}
+                <p>Minimal 1 karakter khusus</p>
+              </div>
+            </div>
+            <div className="relative mt-4">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Konfirmasi Password Baru"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+              >
+                <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+              </button>
+            </div>
           </MuiDialogContent>
           <DialogActions>
-            <Button onClick={handlePasswordChange} className="bg-darkBlue text-white">
+            <Button
+              onClick={handlePasswordChange}
+              className={`bg-darkBlue text-white ${!isPasswordStrong() || !isConfirmPasswordMatch() ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!isPasswordStrong() || !isConfirmPasswordMatch()}
+            >
               Update Password
             </Button>
           </DialogActions>
