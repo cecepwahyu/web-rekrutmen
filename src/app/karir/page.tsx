@@ -113,7 +113,7 @@ const Karir = () => {
                 : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/paginated?page=${currentPageJobDesc}`;
             fetchJobs(endpoint);
         }
-    }, [currentPageRekrutmen, currentPageJobDesc, isAuthenticated, activeTab]); // Re-fetch jobs when currentPage, isAuthenticated, or activeTab changes
+    }, [currentPageRekrutmen, currentPageJobDesc, isAuthenticated, activeTab]);
 
     useEffect(() => {
         const handleScroll = () => {
