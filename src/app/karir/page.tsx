@@ -84,12 +84,18 @@ const Karir = () => {
                 const data = await response.json();
                 if (data.responseCode === "000") {
                     const allJobs: Job[] = data.data.content; // Explicitly define type
-                    setJobs(allJobs); // Update jobs with current page content
-                    setFilteredJobs(allJobs); // Update filtered jobs with current page content
-                    setRekrutmenJobs(allJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
-                    setJobDescJobs(allJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
-                    setTotalPagesRekrutmen(Math.ceil(allJobs.filter((job: Job) => job.status === "1").length / ITEMS_PER_PAGE)); // Set total pages for Rekrutmen
-                    setTotalPagesJobDesc(Math.ceil(allJobs.filter((job: Job) => job.status === "4").length / ITEMS_PER_PAGE)); // Set total pages for Job Desc
+                    const now = new Date();
+                    const validJobs = allJobs.filter(job => {
+                        const startDate = new Date(job.periodeAwal);
+                        const endDate = new Date(job.periodeAkhir);
+                        return now >= startDate && now <= endDate;
+                    });
+                    setJobs(validJobs); // Update jobs with valid jobs
+                    setFilteredJobs(validJobs); // Update filtered jobs with valid jobs
+                    setRekrutmenJobs(validJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
+                    setJobDescJobs(validJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
+                    setTotalPagesRekrutmen(Math.ceil(validJobs.filter((job: Job) => job.status === "1").length / ITEMS_PER_PAGE)); // Set total pages for Rekrutmen
+                    setTotalPagesJobDesc(Math.ceil(validJobs.filter((job: Job) => job.status === "4").length / ITEMS_PER_PAGE)); // Set total pages for Job Desc
                 }
             } catch (error) {
                 console.error("Error fetching job data:", error);
