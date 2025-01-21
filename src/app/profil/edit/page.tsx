@@ -905,7 +905,7 @@ const EditProfil = () => {
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="kotaIdentitas">
-                                                Kota Identitas <span className="text-red-500">*</span>
+                                                Kabupaten/Kota Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
