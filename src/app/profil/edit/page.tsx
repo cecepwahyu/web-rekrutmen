@@ -749,6 +749,8 @@ const EditProfil = () => {
                             <TabPanel>
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* Data Identitas Section */}
+                                        <h2 className="text-xl font-semibold mb-4 col-span-2">Data Identitas</h2>
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="nama">
                                                 Nama <span className="text-red-500">*</span>
@@ -884,21 +886,6 @@ const EditProfil = () => {
 
                                         </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatIdentitas">
-                                                Alamat Identitas <span className="text-red-500">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="alamatIdentitas"
-                                                name="alamatIdentitas"
-                                                value={profileData.alamatIdentitas || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
-                                                placeholder="Masukkan Alamat Identitas"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                maxLength={50}
-                                            />
-                                        </div>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiIdentitas">
@@ -964,21 +951,24 @@ const EditProfil = () => {
                                             />
                                         </div>
 
-                                        <div className="mb-4">
-                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatDomisili">
-                                                Alamat Domisili <span className="text-red-500">*</span>
+                                        <div className="mb-4 col-span-2">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatIdentitas">
+                                                Alamat Identitas <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
-                                                id="alamatDomisili"
-                                                name="alamatDomisili"
-                                                value={profileData.alamatDomisili || ""}
+                                                id="alamatIdentitas"
+                                                name="alamatIdentitas"
+                                                value={profileData.alamatIdentitas || ""}
                                                 onChange={(e) => handleChange(e, 0, "profile")}
-                                                placeholder="Masukkan Alamat Domisili"
+                                                placeholder="Masukkan Alamat Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
                                         </div>
+
+                                        {/* Data Domisili Section */}
+                                        <h2 className="text-xl font-semibold mb-4 col-span-2">Data Domisili</h2>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="provinsiDomisili">
@@ -1043,6 +1033,25 @@ const EditProfil = () => {
                                                 maxLength={50}
                                             />
                                         </div>
+
+                                        <div className="mb-4 col-span-2">
+                                            <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatDomisili">
+                                                Alamat Domisili <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="alamatDomisili"
+                                                name="alamatDomisili"
+                                                value={profileData.alamatDomisili || ""}
+                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                placeholder="Masukkan Alamat Domisili"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                maxLength={50}
+                                            />
+                                        </div>
+
+                                        {/* Data Domisili Section */}
+                                        <h2 className="text-xl font-semibold mb-4 col-span-2">Data Diri</h2>
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-bold mb-2" htmlFor="tinggi">
