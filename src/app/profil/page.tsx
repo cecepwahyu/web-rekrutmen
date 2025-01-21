@@ -16,7 +16,7 @@ import type { StaticImageData } from 'next/image';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon, faUser as faUserIcon, faBriefcase as faBriefcaseIcon, faUsers as faUsersIcon, faGraduationCap as faGraduationCapIcon, faAddressBook as faAddressBookIcon } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faCheck, faTimes as faTimesIcon, faUser as faUserIcon, faBriefcase as faBriefcaseIcon, faUsers as faUsersIcon, faGraduationCap as faGraduationCapIcon, faAddressBook as faAddressBookIcon, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2'; // Import Swal
 import { toast } from 'sonner'; // Import toast from Sonner
 
@@ -176,7 +176,7 @@ const Profile = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false); // State for redirecting
     const [isFileErrorDialogOpen, setIsFileErrorDialogOpen] = useState(false); // State for file error dialog
-    const [fileErrorMessage, setFileErrorMessage] = useState(""); // State for file error message
+    const [fileErrorMessage, setFileErrorMessage] = useState("");
 
     const showDialog = (message: string) => {
         setDialogMessage(message);
@@ -907,8 +907,8 @@ const Profile = () => {
                         <div className="mt-6 w-11/12 lg:w-4/5 flex flex-col space-y-6">
                             <div className="flex flex-col lg:flex-row items-center lg:items-start">
                                 {/* Section Profile Picture */}
-                                <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4 rounded-lg">
-                                    <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center rounded-lg overflow-hidden">
+                                <div className="w-full lg:w-1/4 bg-white shadow-lg flex flex-col justify-center items-center mb-6 lg:mb-0 p-4 rounded-lg relative">
+                                    <div className="w-3/4 lg:w/full h-48 bg-gray-300 flex justify-center items-center rounded-lg overflow-hidden relative">
                                         {profilePicture ? (
                                             <Image
                                                 src={profilePicture}
@@ -920,12 +920,13 @@ const Profile = () => {
                                         ) : (
                                             <span className="text-gray-500">3x4 Foto</span>
                                         )}
+                                        <button 
+                                            onClick={handleChangeProfilePicture} 
+                                            className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition duration-300 ease-in-out transform hover:scale-105 group"
+                                        >
+                                            <FontAwesomeIcon icon={faPencilAlt} className="text-darkBlue" />
+                                        </button>
                                     </div>
-                                    <button 
-                                        onClick={handleChangeProfilePicture} 
-                                        className="mt-4 w-full bg-darkBlue text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400">
-                                        Update Foto Profil
-                                    </button>
                                     <input 
                                         type="file" 
                                         id="profilePictureInput" 
