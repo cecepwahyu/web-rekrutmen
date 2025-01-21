@@ -52,6 +52,8 @@ const Register = () => {
     specialChar: false,
   });
 
+  const [isChecked, setIsChecked] = useState(false); // Add state for checkbox
+
   // Add a state to manage the scroll state
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -368,11 +370,25 @@ const Register = () => {
                     )}
                   />
 
+                  {/* Checkbox */}
+                  <div className="flex items-start">
+                    <input
+                      type="checkbox"
+                      id="confirmation"
+                      checked={isChecked}
+                      onChange={(e) => setIsChecked(e.target.checked)}
+                      className="mr-2 mt-1"
+                    />
+                    <label htmlFor="confirmation" className="text-gray-500 text-sm leading-tight">
+                      Pastikan Email dan NIK Anda sudah benar, karena Anda tidak dapat melakukan perubahan dan pendaftaran ketika terjadi kesalahan pada penulisan Email dan NIK.
+                    </label>
+                  </div>
+
                   {/* Submit Button */}
                   <Button
                     type="submit"
                     className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
-                    disabled={loading}
+                    disabled={loading || !isChecked} // Disable button if not checked
                   >
                     {loading ? "Register in progress..." : "Register"}
                   </Button>
