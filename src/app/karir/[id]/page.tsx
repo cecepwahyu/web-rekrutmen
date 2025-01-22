@@ -236,7 +236,6 @@ const DetailKarir = () => {
   const [idPeserta, setIdPeserta] = useState<string | null>(null);
   const [idUserDocuments, setIdUserDocuments] = useState<number[]>([]);
   const [requiredDocuments, setRequiredDocuments] = useState<any[]>([]);
-  const [isAgreementDialogOpen, setIsAgreementDialogOpen] = useState(false);
   const [agreements, setAgreements] = useState({
     recruitment: false,
     dataUsage: false,
@@ -603,7 +602,45 @@ const DetailKarir = () => {
       return;
     }
 
-    setIsAgreementDialogOpen(true);
+    const payload = {
+      id_peserta: idPeserta,
+      id_user_documents: idUserDocuments,
+      tinggi_badan: tinggiBadan,
+      berat_badan: beratBadan,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/${slug}/apply`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const responseData = await response.json();
+      if (responseData.responseCode === "000") {
+        toast.success("Application submitted successfully", {
+          style: { backgroundColor: "white", color: "green" },
+        });
+        setTimeout(() => {
+          router.push("/karir");
+        }, 3000);
+      } else {
+        toast.error(
+          "Failed to submit application: " + responseData.responseMessage,
+          { style: { backgroundColor: "white", color: "red" } }
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert("An error occurred. Please try again.");
+    }
   };
 
   const isApplyButtonDisabled = () => {
@@ -887,7 +924,7 @@ const DetailKarir = () => {
                             >
                               {status === "4"
                                 ? isLocked
-                                  ? "Anda sudah submit CV untuk job desc ini"
+                                  ? "Submit"
                                   : "Submit"
                                 : isLocked
                                 ? "Anda sudah mendaftar pada periode ini"
@@ -1247,7 +1284,7 @@ const DetailKarir = () => {
                 </div>
               </motion.div>
 
-              {/* Tahapan Seleksi Section */}
+              {/* Tahapan Seleksi Section
                 {status !== "4" && (
                 <motion.div
                   className="w-11/12 lg:w-4/5 mt-6 mb-10"
@@ -1286,7 +1323,7 @@ const DetailKarir = () => {
                   </div>
                   </div>
                 </motion.div>
-                )}
+                )} */}
             </>
           )}
         </div>
@@ -1297,78 +1334,6 @@ const DetailKarir = () => {
 
       <ScrollToTopButton />
       <CariKarirButton />
-      <Dialog
-        open={isAgreementDialogOpen}
-        onOpenChange={setIsAgreementDialogOpen}
-      >
-        <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
-          <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
-            Persetujuan
-          </DialogTitle>
-          <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
-            Silakan menyetujui syarat dan ketentuan berikut untuk melanjutkan
-            aplikasi Anda.
-          </DialogDescription>
-          <FormGroup className="mt-4 space-y-4">
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agreements.recruitment}
-                  onChange={(e) =>
-                    setAgreements({
-                      ...agreements,
-                      recruitment: e.target.checked,
-                    })
-                  }
-                />
-              }
-              label="Saya bersedia memberikan/menyerahkan/mengisi data pribadi saya kepada PT Bank BPD DIY untuk memproses dan/atau menggunakan dan/atau memanfaatkan data pribadi tersebut sebatas keperluan rekrutmen Bank."
-              className="text-gray-700"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agreements.dataUsage}
-                  onChange={(e) =>
-                    setAgreements({
-                      ...agreements,
-                      dataUsage: e.target.checked,
-                    })
-                  }
-                />
-              }
-              label="Data dan dokumen yang saya input melalui web rekrutmen Bank BPD DIY adalah benar dan sesuai dengan data diri saya."
-              className="text-gray-700"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agreements.holdDiploma}
-                  onChange={(e) =>
-                    setAgreements({
-                      ...agreements,
-                      holdDiploma: e.target.checked,
-                    })
-                  }
-                />
-              }
-              label="Apabila terdapat ketidakbenaran atas data dan dokumen tersebut, saya bertanggung jawab penuh atas segala akibatnya."
-              className="text-gray-700"
-            />
-          </FormGroup>
-          {agreementError && (
-            <p className="text-red-500 text-sm mt-2">{agreementError}</p>
-          )}
-          <DialogFooter className="mt-6 flex justify-end">
-            <button
-              onClick={handleAgreementSubmit}
-              className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-            >
-              Apply
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       <Dialog open={isProfileIncompleteDialogOpen} onOpenChange={() => {}}>
         <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
           <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
