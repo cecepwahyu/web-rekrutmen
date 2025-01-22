@@ -385,29 +385,28 @@ const DetailRiwayat = () => {
               {/* Progress Bar Container */}
               <div className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl px-4">
                 <ol className="border-s border-neutral-300 dark:border-neutral-500 md:flex md:gap-6 md:border-s-0 md:border-t-2">
-                  {steps.map((step, index) => (
-                    <li key={step.idTahapan} className="flex-1">
-                      <div className="flex-start flex items-center pt-2 md:block md:pt-0">
-                        <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${step.isActive === null ? 'bg-gray-300 border-gray-100' : step.isActive ? 'bg-green-600 border-green-500' : 'bg-red-600 border-red-500'} md:-mt-[22px] md:me-0 md:ms-0`}>
-                          <span className="text-white">{index + 1}</span>
-                        </div>
-                        <div>
-                          <h4 className={`md:mt-2 mb-1.5 ${step.isActive === null ? 'text-gray-700' : step.isActive ? 'text-green-600' : 'text-red-600'} font-medium`}>{step.namaTahapan}</h4>
-                          {step.isActive !== null && (
-                            <span className={`py-1 px-2 inline-block ${step.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} font-semibold text-xs rounded-lg`}>
-                              {step.isActive ? 'Lolos' : 'Tidak Lolos'}
-                            </span>
-                          )}
-                          {/* {step.isActive && step.announcementTitle && (
-                            <div className="mt-2">
-                              <h5 className="font-semibold">{step.announcementTitle}</h5>
-                              <div dangerouslySetInnerHTML={{ __html: step.announcementContent || "" }} />
+                  {steps.map((step, index) => {
+                    if (step.isActive === true || step.isActive === null || (step.isActive === null && index === currentSortOrder + 1)) {
+                      return (
+                        <li key={step.idTahapan} className="flex-1">
+                          <div className="flex-start flex items-center pt-2 md:block md:pt-0">
+                            <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${step.isActive === null ? 'bg-gray-300 border-gray-100' : step.isActive ? 'bg-green-600 border-green-500' : 'bg-red-600 border-red-500'} md:-mt-[22px] md:me-0 md:ms-0`}>
+                              <span className="text-white">{index + 1}</span>
                             </div>
-                          )} */}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
+                            <div>
+                              <h4 className={`md:mt-2 mb-1.5 ${step.isActive === null ? 'text-gray-700' : step.isActive ? 'text-green-600' : 'text-red-600'} font-medium`}>{step.namaTahapan}</h4>
+                              {step.isActive !== null && (
+                                <span className={`py-1 px-2 inline-block ${step.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} font-semibold text-xs rounded-lg`}>
+                                  {step.isActive ? 'Lolos' : 'Tidak Lolos'}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    }
+                    return null;
+                  })}
                 </ol>
               </div>
 
@@ -415,7 +414,7 @@ const DetailRiwayat = () => {
               <div className="bg-blue-50 rounded-lg p-6 w-full max-w-4xl mt-28 border-2 border-darkBlue border-dashed mb-10">
                 <div className="text-sm sm:text-base">
                   {/* Heading */}
-                  <p className="font-semibold text-darkBlue text-lg mb-4">Informasi Test</p>
+                  <p className="font-semibold text-darkBlue text-lg mb-4 summernote-content">Informasi Test</p>
 
                     {/* Details */}
                     <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent || "" }} />
@@ -431,7 +430,6 @@ const DetailRiwayat = () => {
                 </div>
               </div>
               
-
               {/* Download PDF Section */}
               <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mb-10 flex flex-col items-center">
                 <button
