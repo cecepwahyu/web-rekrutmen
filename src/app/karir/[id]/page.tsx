@@ -1064,50 +1064,48 @@ const DetailKarir = () => {
                                   <>
                                     <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                       <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                          Tinggi Badan (cm)
-                                        </label>
-                                        <div className="relative mt-1">
-                                          <input
-                                            type="number"
-                                            value={tinggiBadan || ""}
-                                            onChange={(e) =>
-                                              setTinggiBadan(
-                                                parseInt(e.target.value)
-                                              )
-                                            }
-                                            className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                          />
-                                          {tinggiBadanError && (
-                                            <p className="absolute text-red-500 text-sm mt-1">
-                                              {tinggiBadanError}
-                                            </p>
-                                          )}
-                                        </div>
+                                      <label className="block text-sm font-medium text-gray-700">
+                                        Tinggi Badan (cm)
+                                      </label>
+                                      <div className="relative mt-1">
+                                        <input
+                                        type="number"
+                                        value={tinggiBadan || ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value.slice(0, 3);
+                                          setTinggiBadan(parseInt(value));
+                                        }}
+                                        className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                        />
+                                        {tinggiBadanError && (
+                                        <p className="absolute text-red-500 text-sm mt-1">
+                                          {tinggiBadanError}
+                                        </p>
+                                        )}
+                                      </div>
                                       </div>
                                     </div>
                                     <div className="flex flex-col md:flex-row items-center bg-gray-50 p-4 rounded-lg shadow-sm">
                                       <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                          Berat Badan (kg)
-                                        </label>
-                                        <div className="relative mt-1">
-                                          <input
-                                            type="number"
-                                            value={beratBadan || ""}
-                                            onChange={(e) =>
-                                              setBeratBadan(
-                                                parseInt(e.target.value)
-                                              )
-                                            }
-                                            className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                          />
-                                          {beratBadanError && (
-                                            <p className="absolute text-red-500 text-sm mt-1">
-                                              {beratBadanError}
-                                            </p>
-                                          )}
-                                        </div>
+                                      <label className="block text-sm font-medium text-gray-700">
+                                        Berat Badan (kg)
+                                      </label>
+                                      <div className="relative mt-1">
+                                        <input
+                                        type="number"
+                                        value={beratBadan || ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value.slice(0, 3);
+                                          setBeratBadan(parseInt(value));
+                                        }}
+                                        className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                        />
+                                        {beratBadanError && (
+                                        <p className="absolute text-red-500 text-sm mt-1">
+                                          {beratBadanError}
+                                        </p>
+                                        )}
+                                      </div>
                                       </div>
                                     </div>
                                   </>
