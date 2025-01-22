@@ -1219,6 +1219,28 @@ const DetailKarir = () => {
                           Lokasi Tes
                         </h2>
                         <p>{status === "4" ? "-" : "Yogyakarta"}</p>
+                        {status !== "4" && (
+                          <>
+                          <h2 className="font-semibold text-lg mt-4">
+                            Status Rekrutmen
+                          </h2>
+                          <p
+                            className={`inline-block ${
+                            status === "3"
+                              ? "bg-red-100 text-red-500 border border-red-500"
+                              : status === "1"
+                              ? "bg-green-100 text-green-500 border border-green-500"
+                              : "bg-gray-100 text-gray-500 border border-gray-500"
+                            } py-1 px-2 rounded-lg`}
+                          >
+                            {status === "3"
+                            ? "Ditutup"
+                            : status === "1"
+                            ? "Dibuka"
+                            : "Status tidak diketahui"}
+                          </p>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1226,43 +1248,45 @@ const DetailKarir = () => {
               </motion.div>
 
               {/* Tahapan Seleksi Section */}
-              <motion.div
-                className="w-11/12 lg:w-4/5 mt-6 mb-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4">
+                {status !== "4" && (
+                <motion.div
+                  className="w-11/12 lg:w-4/5 mt-6 mb-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4">
                   <h2 className="text-darkBlue font-bold text-xl mb-4">
                     Tahapan Seleksi
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {tahapan.map((step) => (
-                      <motion.div
-                        key={step.idTahapan}
-                        className="flex flex-col items-center bg-blue-100 p-4 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105"
-                        whileHover={{ scale: 1.1 }}
+                    <motion.div
+                      key={step.idTahapan}
+                      className="flex flex-col items-center bg-blue-100 p-4 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105"
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <div
+                      className={`bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full mb-2 ${
+                        step.isActive ? "animate-bounce" : ""
+                      }`}
                       >
-                        <div
-                          className={`bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full mb-2 ${
-                            step.isActive ? "animate-bounce" : ""
-                          }`}
-                        >
-                          {tahapan.findIndex(
-                            (t) => t.idTahapan === step.idTahapan
-                          ) + 1}
-                        </div>
-                        <p className="text-center text-sm font-medium text-darkBlue">
-                          {step.namaTahapan}
-                        </p>
-                        <p className="text-center text-xs text-gray-600 mt-2">
-                          {step.deskripsi}
-                        </p>
-                      </motion.div>
+                      {tahapan.findIndex(
+                        (t) => t.idTahapan === step.idTahapan
+                      ) + 1}
+                      </div>
+                      <p className="text-center text-sm font-medium text-darkBlue">
+                      {step.namaTahapan}
+                      </p>
+                      <p className="text-center text-xs text-gray-600 mt-2">
+                      {step.deskripsi}
+                      </p>
+                    </motion.div>
                     ))}
                   </div>
-                </div>
-              </motion.div>
+                  </div>
+                </motion.div>
+                )}
             </>
           )}
         </div>
