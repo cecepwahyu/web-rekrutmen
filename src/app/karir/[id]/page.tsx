@@ -91,10 +91,10 @@ const checkProfileCompletion = async (idPeserta: string) => {
 
   const endpoints = [
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}`,
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pengalaman/${idPeserta}`,
+    //`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pengalaman/${idPeserta}`,
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/pendidikan/${idPeserta}`,
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${idPeserta}`,
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/organisasi/${idPeserta}`,
+    //`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/organisasi/${idPeserta}`,
   ];
 
   for (const endpoint of endpoints) {
@@ -165,31 +165,20 @@ const fetchProfileDetails = async (idPeserta: string) => {
 
 const isProfileDataComplete = (profileData: any) => {
   const requiredFields = [
-    "organisasi_periode",
-    "achievements",
     "kontak_id",
     "thn_masuk",
     "nilai",
-    "nama_instansi",
-    "posisi_kerja",
     "telp_kontak",
-    "periode_kerja",
     "pendidikan_jenjang",
-    "organisasi_id",
-    "organisasi_deskripsi",
     "gelar",
-    "pengalaman_id",
     "email_kontak",
     "nama_kontak",
     "jurusan",
     "nama_institusi",
-    "pengalaman_deskripsi",
     "pendidikan_id",
     "thn_lulus",
     "peserta_id",
-    "nama_organisasi",
     "hub_kontak",
-    "posisi_organisasi",
     "alamat_kontak",
     "profile_picture",
   ];
@@ -275,6 +264,8 @@ const DetailKarir = () => {
   const [showPreviewButtons, setShowPreviewButtons] = useState<{
     [key: string]: boolean;
   }>({});
+  const [isInvalidFileDialogOpen, setIsInvalidFileDialogOpen] = useState(false);
+  const [invalidFileMessage, setInvalidFileMessage] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -503,6 +494,13 @@ const DetailKarir = () => {
 
     if (!(file instanceof File)) {
       console.error("File is not of type File", file);
+      return;
+    }
+
+    const validFormats = ["application/pdf", "image/jpeg", "image/jpg"];
+    if (!validFormats.includes(file.type)) {
+      setInvalidFileMessage("Hanya dapat submit file dengan format PDF, JPG, and JPEG.");
+      setIsInvalidFileDialogOpen(true);
       return;
     }
 
@@ -1385,6 +1383,27 @@ const DetailKarir = () => {
           <DialogFooter className="mt-6 flex justify-end">
             <button
               onClick={() => setIsCvSubmitWarningDialogOpen(false)}
+              className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            >
+              OK
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isInvalidFileDialogOpen}
+        onOpenChange={setIsInvalidFileDialogOpen}
+      >
+        <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+          <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
+            Format file tidak valid. 
+          </DialogTitle>
+          <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
+            {invalidFileMessage}
+          </DialogDescription>
+          <DialogFooter className="mt-6 flex justify-end">
+            <button
+              onClick={() => setIsInvalidFileDialogOpen(false)}
               className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
             >
               OK
