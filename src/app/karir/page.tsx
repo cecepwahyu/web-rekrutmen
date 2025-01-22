@@ -243,6 +243,25 @@ const Karir = () => {
                         </button>
                     </div>
 
+                    {activeTab === "Job Desc" && (
+                        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4 flex justify-between items-center" role="alert">
+                            <div>
+                                <p className="font-bold">Perhatian</p>
+                                <p>Anda hanya diperbolehkan mendaftar pada salah satu Job Desc.</p>
+                            </div>
+                            <button onClick={() => {
+                                const alertBox = document.querySelector('.bg-yellow-100');
+                                if (alertBox) {
+                                    (alertBox as HTMLElement).style.display = 'none';
+                                }
+                            }} className="text-yellow-700 font-bold ml-4">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    )}
+
                     {isLoading ? (
                         <div className="flex justify-center items-center mt-10">
                             <LottieAnimation animationData={loadingAnimation} />
