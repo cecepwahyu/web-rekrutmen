@@ -29,11 +29,11 @@ export function middleware(req: NextRequest) {
   }
 
   // Check if the user is navigating to the Account Verif page
-  if (pathname === '/account-verification') {
-    if (!referrer || !referrer.includes('/login')) {
-      return redirectToReferrer();
-    }
-  }
+  // if (pathname === '/account-verification') {
+  //   if (!referrer || !referrer.includes('/login')) {
+  //     return redirectToReferrer();
+  //   }
+  // }
 
   // Check if the user is navigating to OTP page
   if (pathname === '/otp') {
