@@ -23,6 +23,16 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icons
 import Swal from "sweetalert2";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
 
 // Define the form schema using zod
 const formSchema = z.object({
@@ -53,6 +63,14 @@ const Register = () => {
   });
 
   const [isChecked, setIsChecked] = useState(false); // Add state for checkbox
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [agreements, setAgreements] = useState({
+    recruitment: false,
+    dataUsage: false,
+    holdDiploma: false,
+    understand: false, // Add new state for the final checkbox
+  });
+  const [agreementError, setAgreementError] = useState("");
 
   // Add a state to manage the scroll state
   const [isScrolled, setIsScrolled] = useState(false);
@@ -167,21 +185,6 @@ const Register = () => {
           localStorage.setItem("no_identitas", data.no_identitas);
           localStorage.setItem("email", data.email);
         }
-
-        // Show success toast
-        toast.success("Register successful! Redirecting...", {
-          style: {
-            backgroundColor: "white", // White background
-            color: "#4CAF50", // Green text color
-            borderRadius: "8px", // Rounded corners
-            padding: "10px 20px", // Padding
-          },
-        });
-
-        // Redirect to account verification page after a short delay
-        setTimeout(() => {
-          window.location.href = "/account-verification";
-        }, 2000);
       } else {
         // Show error toast for server validation error
         setFieldErrors({ general: result.responseMessage || "Register failed. Please try again." });
@@ -192,6 +195,31 @@ const Register = () => {
     } finally {
       setLoading(false);
     }
+    setIsDialogOpen(true);
+  };
+
+  const handleAgreementSubmit = async () => {
+    if (!agreements.understand) {
+      setAgreementError("Please check the box to proceed.");
+      return;
+    }
+
+    setIsDialogOpen(false);
+
+    // Show success toast
+    toast.success("Register successful! Redirecting...", {
+      style: {
+        backgroundColor: "white", // White background
+        color: "#4CAF50", // Green text color
+        borderRadius: "8px", // Rounded corners
+        padding: "10px 20px", // Padding
+      },
+    });
+
+    // Redirect to account verification page after a short delay
+    setTimeout(() => {
+      window.location.href = "/account-verification";
+    }, 2000);
   };
 
   return (
@@ -409,6 +437,47 @@ const Register = () => {
         <FooterCopyright />
         <ScrollToTopButton />
       </main>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+          <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
+            Kebijakan Privasi
+          </DialogTitle>
+          <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
+            Silakan menyetujui syarat dan ketentuan berikut untuk melanjutkan aplikasi Anda.
+          </DialogDescription>
+          <FormGroup className="mt-4 space-y-4">
+            <p className="text-gray-700">1. Saya bersedia memberikan/menyerahkan/mengisi data pribadi saya kepada PT Bank BPD DIY untuk memproses dan/atau menggunakan dan/atau memanfaatkan data pribadi tersebut sebatas keperluan rekrutmen Bank.</p>
+            <p className="text-gray-700">2. Data dan dokumen yang saya input melalui web rekrutmen Bank BPD DIY adalah benar dan sesuai dengan data diri saya.</p>
+            <p className="text-gray-700">3. Apabila terdapat ketidakbenaran atas data dan dokumen tersebut, saya bertanggung jawab penuh atas segala akibatnya.</p>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={agreements.understand}
+                  onChange={(e) =>
+                    setAgreements({
+                      ...agreements,
+                      understand: e.target.checked,
+                    })
+                  }
+                />
+              }
+              label="Saya sepenuhnya paham dan setuju dengan kebijakan di atas."
+              className="text-gray-700"
+            />
+          </FormGroup>
+          {agreementError && (
+            <p className="text-red-500 text-sm mt-2">{agreementError}</p>
+          )}
+          <DialogFooter className="mt-6 flex justify-end">
+            <button
+              onClick={handleAgreementSubmit}
+              className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            >
+              Register
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
