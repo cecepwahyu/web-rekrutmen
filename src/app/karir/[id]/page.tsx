@@ -265,6 +265,7 @@ const DetailKarir = () => {
   }>({});
   const [isInvalidFileDialogOpen, setIsInvalidFileDialogOpen] = useState(false);
   const [invalidFileMessage, setInvalidFileMessage] = useState("");
+  const [isApplyDisabled, setIsApplyDisabled] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -434,6 +435,16 @@ const DetailKarir = () => {
 
     fetchCvSubmissionStatus();
   }, [status, idPeserta]);
+
+  useEffect(() => {
+    if (article) {
+      const now = new Date();
+      const periodeAkhir = new Date(article.periodeAkhir);
+      if (now > periodeAkhir) {
+        setIsApplyDisabled(true);
+      }
+    }
+  }, [article]);
 
   const handleApply = async () => {
     const token = localStorage.getItem("token");
@@ -736,8 +747,8 @@ const DetailKarir = () => {
     } else {
       setIsSubmitCvDialogOpen(false);
       setAgreementError("");
-      setAgreements({ ...agreements, submitCv: true }); // Check the checkbox
-      handleApply(); // Call handleApply to hit the apply endpoint
+      setAgreements({ ...agreements, submitCv: true });
+      handleApply();
     }
   };
 
@@ -910,18 +921,18 @@ const DetailKarir = () => {
                           <DialogTrigger asChild>
                             <button
                               className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                                isLocked
+                                isLocked || isApplyDisabled
                                   ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                                   : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
                               }`}
                               onClick={
-                                isLocked
+                                isLocked || isApplyDisabled
                                   ? undefined
                                   : status === "4"
                                   ? handleSubmitCv
                                   : handleApply
                               }
-                              disabled={isLocked}
+                              disabled={isLocked || isApplyDisabled}
                             >
                               {status === "4"
                                 ? isLocked
@@ -929,6 +940,8 @@ const DetailKarir = () => {
                                   : "Submit"
                                 : isLocked
                                 ? "Anda sudah mendaftar pada periode ini"
+                                : isApplyDisabled
+                                ? "Apply"
                                 : "Apply"}
                             </button>
                           </DialogTrigger>
@@ -1260,18 +1273,22 @@ const DetailKarir = () => {
                           </h2>
                           <p
                             className={`inline-block ${
-                            status === "3"
-                              ? "bg-red-100 text-red-500 border border-red-500"
-                              : status === "1"
-                              ? "bg-green-100 text-green-500 border border-green-500"
-                              : "bg-gray-100 text-gray-500 border border-gray-500"
+                              isApplyDisabled
+                                ? "bg-red-100 text-red-500 border border-red-500"
+                                : status === "3"
+                                ? "bg-red-100 text-red-500 border border-red-500"
+                                : status === "1"
+                                ? "bg-green-100 text-green-500 border border-green-500"
+                                : "bg-gray-100 text-gray-500 border border-gray-500"
                             } py-1 px-2 rounded-lg`}
                           >
-                            {status === "3"
-                            ? "Ditutup"
-                            : status === "1"
-                            ? "Dibuka"
-                            : "Status tidak diketahui"}
+                            {isApplyDisabled
+                              ? "Lowongan Berakhir"
+                              : status === "3"
+                              ? "Ditutup"
+                              : status === "1"
+                              ? "Dibuka"
+                              : "Status tidak diketahui"}
                           </p>
                           </>
                         )}
