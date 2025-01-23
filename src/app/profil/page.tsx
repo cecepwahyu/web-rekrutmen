@@ -1171,19 +1171,19 @@ const Profile = () => {
                                         <div className="bg-blue-100 p-2 rounded-lg mr-2">
                                             <FontAwesomeIcon icon={faAddressBookIcon} className="text-darkBlue" />
                                         </div>
-                                        <h2 className="text-2xl font-bold text-darkBlue text-center">Kontak Kerabat</h2>
+                                        <h2 className="text-2xl font-bold text-darkBlue text-center">Data Keluarga</h2>
                                     </div>
                                     {kontakData.length > 0 ? (
                                         kontakData.map((kontak, index) => (
                                             <div key={index} className="mb-4 border-b border-gray-300 pb-4">
-                                                <h3 className="text-xl font-semibold mb-2 text-blue-400">Kontak {index + 1}</h3>
+                                                <h3 className="text-xl font-semibold mb-2 text-blue-400">Anggota Keluarga {index + 1}</h3>
                                                 <div className="flex items-center mb-2">
                                                     <FaAddressBook className="mr-2 text-darkBlue" />
-                                                    <p><strong>Nama Kontak:</strong> {kontak.namaKontak}</p>
+                                                    <p><strong>Nama:</strong> {kontak.namaKontak}</p>
                                                 </div>
                                                 <div className="flex items-center mb-2">
                                                     <FaUser className="mr-2 text-darkBlue" />
-                                                    <p><strong>Hubungan Kerabat:</strong> {kontak.hubKontak || '-'}</p>
+                                                    <p><strong>Hubungan Keluarga:</strong> {kontak.hubKontak || '-'}</p>
                                                 </div>
                                                 <div className="flex items-center mb-2">
                                                     <FaPhone className="mr-2 text-darkBlue" />
