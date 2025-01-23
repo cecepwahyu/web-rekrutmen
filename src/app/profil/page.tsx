@@ -142,6 +142,42 @@ const updateProfilePicture = async (base64Image: string) => {
     }
 };
 
+const fetchMaxAvatarSize = async (): Promise<number | null> => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        console.error("No token found in localStorage");
+        return null;
+    }
+
+    const id = await getIdFromToken(token);
+    if (!id) {
+        console.error("Invalid token");
+        return null;
+    }
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/referensi/value?refGroup1=MAX_AVATAR_SIZE`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+  
+      const data = await response.json();
+      if (data.responseCode === "000" && data.data.length > 0) {
+        return parseInt(data.data[0].refCode, 10);
+      } else {
+        console.error("Error fetching max avatar size:", data.responseMessage);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching max avatar size:", error);
+      return null;
+    }
+  };
+
 const Profile = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -177,6 +213,7 @@ const Profile = () => {
     const [isRedirecting, setIsRedirecting] = useState(false); // State for redirecting
     const [isFileErrorDialogOpen, setIsFileErrorDialogOpen] = useState(false); // State for file error dialog
     const [fileErrorMessage, setFileErrorMessage] = useState("");
+    const [maxAvatarSize, setMaxAvatarSize] = useState<number | null>(null);
 
     const showDialog = (message: string) => {
         setDialogMessage(message);
@@ -189,13 +226,22 @@ const Profile = () => {
         setIsDialogOpen(true); // Open dialog directly
     };
 
+    useEffect(() => {
+        const getMaxAvatarSize = async () => {
+          const size = await fetchMaxAvatarSize();
+          setMaxAvatarSize(size ?? null); // Ensure null is set explicitly
+        };
+    
+        getMaxAvatarSize();
+      }, []);
+
     const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             const fileType = file.type;
             const fileSize = file.size / 1024; // Convert size to KB
-            if (fileSize > 500) {
-                setFileErrorMessage('Ukuran file maksimal adalah 500KB. Silakan pilih file yang lebih kecil.');
+            if (maxAvatarSize && fileSize > maxAvatarSize) {
+                setFileErrorMessage(`Ukuran file maksimal adalah ${maxAvatarSize >= 1024 ? (maxAvatarSize / 1024).toFixed(1) + 'MB' : maxAvatarSize + 'KB'}. Silakan pilih file yang lebih kecil.`);
                 setIsFileErrorDialogOpen(true);
                 return;
             }
@@ -659,7 +705,9 @@ const Profile = () => {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Ubah Foto Profil</DialogTitle>
-                        <DialogDescription>Pilih foto yang akan Anda jadikan foto profil (PNG atau JPG, maksimal 500KB).</DialogDescription>
+                        <DialogDescription>
+                            Pilih foto yang akan Anda jadikan foto profil (PNG atau JPG, maksimal {maxAvatarSize ? (maxAvatarSize >= 1024 ? (maxAvatarSize / 1024).toFixed(1) + 'MB' : maxAvatarSize + 'KB') : '...'}).
+                        </DialogDescription>
                     </DialogHeader>
                     <input 
                         type="file" 
