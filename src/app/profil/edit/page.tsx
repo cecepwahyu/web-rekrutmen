@@ -827,6 +827,7 @@ const EditProfil = () => {
             id_session: "29348293923",
             flg_status: "2",
             kontak: kontakList.map(kontak => ({
+                id_kontak_peserta: kontak.idKontakPeserta, // Include ID for update/delete
                 nama_kontak: kontak.namaKontak,
                 hub_kontak: kontak.hubKontak,
                 telp_kontak: kontak.telpKontak,
@@ -885,32 +886,33 @@ const EditProfil = () => {
             setIsLoading(false);
         }
 
-        // Send kontak data to the new endpoint
-        try {
-            const kontakResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}/insert`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(kontakList.map(kontak => ({
-                    nama_kontak: kontak.namaKontak,
-                    hub_kontak: kontak.hubKontak,
-                    telp_kontak: kontak.telpKontak,
-                    email_kontak: kontak.emailKontak,
-                    alamat_kontak: kontak.alamatKontak,
-                    is_bpddiy_related: isBpddiyRelated,
-                }))),
-            });
+        // // Send kontak data to the new endpoint
+        // try {
+        //     const kontakResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}/insert`, {
+        //         method: "PUT",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             Accept: "application/json",
+        //             Authorization: `Bearer ${token}`,
+        //         },
+        //         body: JSON.stringify(kontakList.map(kontak => ({
+        //             id_kontak_peserta: kontak.idKontakPeserta, // Include ID for update/delete
+        //             nama_kontak: kontak.namaKontak,
+        //             hub_kontak: kontak.hubKontak,
+        //             telp_kontak: kontak.telpKontak,
+        //             email_kontak: kontak.emailKontak,
+        //             alamat_kontak: kontak.alamatKontak,
+        //             is_bpddiy_related: isBpddiyRelated,
+        //         }))),
+        //     });
 
-            const kontakData = await kontakResponse.json();
-            if (kontakData.responseCode !== "000") {
-                console.error("Error saving kontak data:", kontakData.message);
-            }
-        } catch (error) {
-            console.error("Error saving kontak data:", error);
-        }
+        //     const kontakData = await kontakResponse.json();
+        //     if (kontakData.responseCode !== "000") {
+        //         console.error("Error saving kontak data:", kontakData.message);
+        //     }
+        // } catch (error) {
+        //     console.error("Error saving kontak data:", error);
+        // }
     };
 
     return (
@@ -1817,27 +1819,17 @@ const EditProfil = () => {
                                                     Hubungan Kerabat <span className="text-red-500">*</span>
                                                 </label>
                                                 <select
-                                                    id="agama"
-                                                    name="agama"
-                                                    value={profileData.agama || ""}
-                                                    onChange={(e) => handleChange(e, 0, "profile")}
-                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                >
-                                                    <option value="">Pilih Hubungan Kerabat</option>
-                                                    <option value="1">Ayah</option>
-                                                    <option value="2">Ibu</option>
-                                                    <option value="3">Saudara Kandung</option>
-                                                </select>
-                                                {/* <input
-                                                    type="text"
                                                     id="hubKontak"
                                                     name="hubKontak"
                                                     value={kontak.hubKontak || ""}
                                                     onChange={(e) => handleChange(e, index, "kontak")}
-                                                    placeholder="Masukkan Hubungan Kerabat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    maxLength={50}
-                                                /> */}
+                                                >
+                                                    <option value="">Pilih Hubungan Kerabat</option>
+                                                    <option value="Ayah">Ayah</option>
+                                                    <option value="Ibu">Ibu</option>
+                                                    <option value="Saudara Kandung">Saudara Kandung</option>
+                                                </select>
                                             </div>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
