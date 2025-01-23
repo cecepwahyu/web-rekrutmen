@@ -339,7 +339,7 @@ const DetailRiwayat = () => {
   };
     
 
-  const passedSteps = Array.from({ length: currentSortOrder }, (_, i) => i + 1);
+  const passedSteps = Array.from({ length: currentSortOrder + 1 }, (_, i) => i + 1);
 
   if (!isAuthenticated) {
     return null;
@@ -386,7 +386,7 @@ const DetailRiwayat = () => {
               <div className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl px-4">
                 <ol className="border-s border-neutral-300 dark:border-neutral-500 md:flex md:gap-6 md:border-s-0 md:border-t-2">
                   {steps.map((step, index) => {
-                    if (step.isActive === true || step.isActive === null || (step.isActive === null && index === currentSortOrder + 1)) {
+                    if (step.isActive === true || step.isActive === null || (step.isActive === null && index <= currentSortOrder + 1)) {
                       return (
                         <li key={step.idTahapan} className="flex-1">
                           <div className="flex-start flex items-center pt-2 md:block md:pt-0">
