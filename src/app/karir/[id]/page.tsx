@@ -475,34 +475,34 @@ const DetailKarir = () => {
 
   const handleFileSubmit = async (
     data: any,
-    endpoint: string,
+    idDokumen: number,
     fieldName: string,
     maxSizeMB: number
   ) => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
+  
     const idPeserta = await getIdFromToken(token);
     if (!idPeserta) return;
-
+  
     const file = data[fieldName]?.[0];
     if (!file) {
       console.error("No file selected");
       return;
     }
-
+  
     if (!(file instanceof File)) {
       console.error("File is not of type File", file);
       return;
     }
-
+  
     const validFormats = ["application/pdf", "image/jpeg", "image/jpg"];
     if (!validFormats.includes(file.type)) {
       setInvalidFileMessage("Hanya dapat submit file dengan format PDF, JPG, and JPEG.");
       setIsInvalidFileDialogOpen(true);
       return;
     }
-
+  
     if (file.size > maxSizeMB * 1024 * 1024) {
       const errorMessage = document.querySelector(`#error-${fieldName}`);
       if (errorMessage) {
@@ -510,23 +510,23 @@ const DetailKarir = () => {
       }
       return;
     }
-
+  
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = async () => {
       const base64data = reader.result as string;
       const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove file extension
       const fileType = `.${file.name.split(".").pop()}`; // Add dot to file type
-
+  
       const payload = {
         document_data: base64data,
         file_name: fileName,
         file_type: fileType,
       };
-
+  
       try {
         const response = await fetch(
-          endpoint.replace("{idPeserta}", idPeserta),
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/submit-document?idDokumen=${idDokumen}`,
           {
             method: "PUT",
             headers: {
@@ -537,7 +537,7 @@ const DetailKarir = () => {
             body: JSON.stringify(payload),
           }
         );
-
+  
         const responseData = await response.json();
         if (responseData.responseCode === "000") {
           toast.success("Document submitted successfully", {
@@ -557,6 +557,7 @@ const DetailKarir = () => {
       }
     };
   };
+  
 
   const handleApplyNow = async () => {
     const token = localStorage.getItem("token");
@@ -991,11 +992,7 @@ const DetailKarir = () => {
                                     onSubmit={handleSubmit((data) =>
                                       handleFileSubmit(
                                         data,
-                                        `${
-                                          process.env.NEXT_PUBLIC_API_BASE_URL
-                                        }/api/profile/${idPeserta}/submit-${doc[3]
-                                          .toLowerCase()
-                                          .replace(/\s+/g, "-")}`,
+                                        doc[1],
                                         doc[3]
                                           .toLowerCase()
                                           .replace(/\s+/g, "-"),
