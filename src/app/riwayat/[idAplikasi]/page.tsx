@@ -341,6 +341,16 @@ const DetailRiwayat = () => {
       doc.rect(x, tableStartY + 5, columnWidth, 15); // Draw the cell
     });
   
+    // Add a vertical dashed line in the middle of the page with a scissor icon
+    const middleX = doc.internal.pageSize.getWidth() / 2;
+    doc.setLineDashPattern([5, 5], 0); // Set dashed line
+    doc.line(middleX, 10, middleX, pageHeight - 10); // Draw dashed line
+
+    // Add scissor icon
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("✂", middleX - 2, pageHeight / 2 - 2); // Position the scissor icon
+
     // Save the PDF with dynamic file name
     const fileName = `Kartu_Peserta_Test_${applicantData.nama.replace(/\s+/g, '_')}.pdf`;
     doc.save(fileName);
