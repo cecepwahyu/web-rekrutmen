@@ -87,8 +87,7 @@ const Karir = () => {
                     const now = new Date();
                     const validJobs = allJobs.filter(job => {
                         const startDate = new Date(job.periodeAwal);
-                        const endDate = new Date(job.periodeAkhir);
-                        return now >= startDate && now <= endDate;
+                        return now >= startDate;
                     });
                     setJobs(validJobs); // Update jobs with valid jobs
                     setFilteredJobs(validJobs); // Update filtered jobs with valid jobs
