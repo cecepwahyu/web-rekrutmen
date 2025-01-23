@@ -54,6 +54,7 @@ const DetailRiwayat = () => {
     nama: "",
     nomorPeserta: "",
     posisi: "",
+    noIdentitas: "",
     idLowongan: null,
   });
   const [announcementContent, setAnnouncementContent] = useState("");
@@ -106,6 +107,7 @@ const DetailRiwayat = () => {
             nama: result.data.nama || "Tidak ada lamaran",
             nomorPeserta: result.data.kodeLowongan || "Tidak ada lamaran",
             posisi: result.data.judulLowongan || "Tidak ada lamaran",
+            noIdentitas: result.data.noIdentitas || "Tidak ada lamaran",
             idLowongan: result.data.idLowongan || null,
           });
         }
@@ -262,35 +264,35 @@ const DetailRiwayat = () => {
   };
 
   const handleDownloadPDF = async () => {
-    const doc = new jsPDF("portrait", "mm", "a4");
+    const doc = new jsPDF("landscape", "mm", "a4");
   
     // Load and add the logo image
     const logoPath = "/images/Logo_Color.png"; // Path to your logo
-    const logoWidth = 40; // Adjust logo width
-    const logoHeight = 20; // Adjust logo height
+    const logoWidth = 30; // Adjust logo width
+    const logoHeight = 15; // Adjust logo height
   
     // Add header
-    doc.addImage(logoPath, "PNG", 10, 10, logoWidth, logoHeight); // Position the logo at the top-left corner
+    doc.addImage(logoPath, "PNG", 150, 10, logoWidth, logoHeight); // Position the logo at the top-right corner
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Kartu Peserta Tes", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" }); // Title centered
     doc.setFontSize(14);
-    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", doc.internal.pageSize.getWidth() / 2, 30, { align: "center" }); // Subtitle centered
+    doc.text("Kartu Peserta Tes", 220, 20, { align: "center" }); // Title centered on the right half
+    doc.setFontSize(12);
+    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", 220, 28, { align: "center" }); // Subtitle centered on the right half
     doc.setLineWidth(0.5);
-    doc.line(10, 40, 200, 40);
+    doc.line(150, 35, 290, 35); // Line on the right half
   
     // Add footer
     const pageHeight = doc.internal.pageSize.getHeight();
-    doc.setFontSize(10);
-    doc.text("PT Bank BPD DIY", 10, pageHeight - 10);
+    doc.setFontSize(8);
+    doc.text("PT Bank BPD DIY", 160, pageHeight - 10);
   
     // Add the applicant's information with consistent spacing
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    const textX = 20;
-    const textYStart = 50;
-    const textYIncrement = 10;
-    const labelWidth = 30; // Adjust label width for alignment
+    doc.setFontSize(10);
+    const textX = 160;
+    const textYStart = 40;
+    const textYIncrement = 8;
+    const labelWidth = 25; // Adjust label width for alignment
     doc.text(`Nama       `, textX, textYStart);
     doc.text(`: ${applicantData.nama || "....................."}`, textX + labelWidth, textYStart);
     doc.text(`Posisi     `, textX, textYStart + textYIncrement);
@@ -298,12 +300,17 @@ const DetailRiwayat = () => {
     doc.text(`Nomer Test `, textX, textYStart + 2 * textYIncrement);
     doc.text(`: ${applicantData.nomorPeserta || "....................."}`, textX + labelWidth, textYStart + 2 * textYIncrement);
   
-    // Generate QR code
-    const qrCodeData = await QRCode.toDataURL(applicantData.nomorPeserta || ".....................");
-    doc.addImage(qrCodeData, "PNG", textX, textYStart + 3 * textYIncrement, 30, 30); // Adjust position and size as needed
+    // Generate QR code with additional information
+    const qrCodeData = await QRCode.toDataURL(
+      `Nama: ${applicantData.nama || "....................."}\n` +
+      `Nomor Peserta: ${applicantData.nomorPeserta || "....................."}\n` +
+      `No Identitas: ${applicantData.noIdentitas || "....................."}\n` +
+      `Posisi: ${applicantData.posisi || "....................."}`
+    );
+    doc.addImage(qrCodeData, "PNG", textX, textYStart + 3 * textYIncrement, 25, 25); // Adjust position and size as needed
   
     // Add a rectangle for the picture with size 4x6 and text "4 x 6" in the middle
-    const rectX = 140;
+    const rectX = 245;
     const rectY = textYStart;
     const rectWidth = 40; // 4 cm
     const rectHeight = 60; // 6 cm
@@ -312,25 +319,26 @@ const DetailRiwayat = () => {
     doc.text("4 x 6", rectX + rectWidth / 2, rectY + rectHeight / 2, { align: "center" });
   
     // Add the signature section
-    const signatureYStart = 140; // Adjusted position to avoid conflict with the profile 4x6
+    const signatureYStart = 120; // Adjusted position to avoid conflict with the profile 4x6
     doc.setFont("helvetica", "bold");
-    doc.text("Tanda Tangan Peserta", 40, signatureYStart);
-    doc.text("Panitia", 140, signatureYStart);
+    doc.setFontSize(10);
+    doc.text("Tanda Tangan Peserta", 170, signatureYStart);
+    doc.text("Panitia", 245, signatureYStart);
   
     // Draw signature boxes
     doc.setLineWidth(0.3);
-    doc.rect(30, signatureYStart + 5, 60, 30); // Box for participant signature
-    doc.rect(120, signatureYStart + 5, 60, 30); // Box for committee signature
+    doc.rect(160, signatureYStart + 5, 60, 25); // Box for participant signature
+    doc.rect(225, signatureYStart + 5, 60, 25); // Box for committee signature
   
     // Add a table with dynamic columns based on steps in Roman numeral format
-    const tableStartY = 190;
-    const columnWidth = 25;
+    const tableStartY = 160;
+    const columnWidth = 20;
     const tableWidth = columnWidth * steps.length;
-    const tableStartX = (doc.internal.pageSize.getWidth() - tableWidth) / 2; // Center the table
+    const tableStartX = 160 + (130 - tableWidth) / 2; // Center the table on the right half
     steps.forEach((step, index) => {
       const x = tableStartX + index * columnWidth;
       doc.text(toRoman(index + 1), x + columnWidth / 2, tableStartY, { align: "center" });
-      doc.rect(x, tableStartY + 5, columnWidth, 20); // Draw the cell
+      doc.rect(x, tableStartY + 5, columnWidth, 15); // Draw the cell
     });
   
     // Save the PDF with dynamic file name
