@@ -133,7 +133,7 @@ const DetailRiwayat = () => {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/id/${applicantData.idLowongan}/tahapan`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/id/${applicantData.idLowongan}/tahapan?id_peserta=${idPeserta}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const DetailRiwayat = () => {
     if (applicantData.idLowongan) {
       fetchSteps();
     }
-  }, [applicantData.idLowongan]);
+  }, [applicantData.idLowongan, idPeserta]);
 
   useEffect(() => {
     const fetchAnnouncementContent = async () => {
@@ -404,9 +404,12 @@ const DetailRiwayat = () => {
               <div className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl px-4">
                 <ol className="border-s border-neutral-300 dark:border-neutral-500 md:flex md:gap-6 md:border-s-0 md:border-t-2">
                   {steps.map((step, index) => {
-                    if (step.isActive === true || step.isActive === null || (step.isActive === null && index <= currentSortOrder + 1)) {
+                    const isLastGreenStep = steps.findIndex(s => s.isActive === true) === index;
+                    const isNextStep = steps.findIndex(s => s.isActive === true) + 1 === index;
+                    const isAfterGreenStep = steps.findIndex(s => s.isActive === true) < index && steps[index - 1]?.isActive === true;
+                    if (step.isActive === true || isLastGreenStep || (isNextStep && steps[index - 1]?.isActive === true) || isAfterGreenStep) {
                       return (
-                        <li key={step.idTahapan} className="flex-1">
+                        <li key={`${step.idTahapan}-${index}`} className="flex-1">
                           <div className="flex-start flex items-center pt-2 md:block md:pt-0">
                             <div className={`-ms-[22px] me-3 w-10 h-10 flex items-center justify-center rounded-full ${step.isActive === null ? 'bg-gray-300 border-gray-100' : step.isActive ? 'bg-green-600 border-green-500' : 'bg-red-600 border-red-500'} md:-mt-[22px] md:me-0 md:ms-0`}>
                               <span className="text-white">{index + 1}</span>
