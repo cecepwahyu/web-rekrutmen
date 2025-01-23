@@ -17,6 +17,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import './custom-tabs.css'; // Import custom CSS for tabs
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import Select from 'react-select';
 
 const getIdFromToken = async (token: string): Promise<string | null> => {
     try {
@@ -39,6 +40,94 @@ const getIdFromToken = async (token: string): Promise<string | null> => {
     } catch (error) {
         console.error("Error fetching ID:", error);
         return null;
+    }
+};
+
+const fetchKotaIdentitasOptions = async (provinsiKode: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/kabupaten/by-provinsi/${provinsiKode}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+
+        const data = await response.json();
+        const options = data.map((kota: { kodeKabupaten: string; namaKabupaten: string }) => ({
+            value: kota.kodeKabupaten,
+            label: kota.namaKabupaten,
+        }));
+        return options;
+    } catch (error) {
+        console.error("Error fetching kota list:", error);
+        return [];
+    }
+};
+
+const fetchKotaDomisiliOptions = async (provinsiKode: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/kabupaten/by-provinsi/${provinsiKode}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+
+        const data = await response.json();
+        const options = data.map((kota: { kodeKabupaten: string; namaKabupaten: string }) => ({
+            value: kota.kodeKabupaten,
+            label: kota.namaKabupaten,
+        }));
+        return options;
+    } catch (error) {
+        console.error("Error fetching kota list:", error);
+        return [];
+    }
+};
+
+const fetchKecamatanOptions = async (kabupatenKode: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/kecamatan/by-kabupaten/${kabupatenKode}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+
+        const data = await response.json();
+        const options = data.map((kecamatan: { kodeKecamatan: string; namaKecamatan: string }) => ({
+            value: kecamatan.kodeKecamatan,
+            label: kecamatan.namaKecamatan,
+        }));
+        return options;
+    } catch (error) {
+        console.error("Error fetching kecamatan list:", error);
+        return [];
+    }
+};
+
+const fetchDesaOptions = async (kecamatanKode: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/desa/by-kecamatan/${kecamatanKode}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+
+        const data = await response.json();
+        const options = data.map((desa: { kodeDesa: string; namaDesa: string }) => ({
+            value: desa.kodeDesa,
+            label: desa.namaDesa,
+        }));
+        return options;
+    } catch (error) {
+        console.error("Error fetching desa list:", error);
+        return [];
     }
 };
 
@@ -126,6 +215,15 @@ const EditProfil = () => {
     const [activeTab, setActiveTab] = useState(0); // State to track active tab
     const [dialogMessage, setDialogMessage] = useState<string | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [provinsiIdentitasOptions, setProvinsiIdentitasOptions] = useState<{ value: string; label: string }[]>([]);
+    const [provinsiDomisiliOptions, setProvinsiDomisiliOptions] = useState<{ value: string; label: string }[]>([]);
+    const [kotaIdentitasOptions, setKotaIdentitasOptions] = useState<{ value: string; label: string }[]>([]);
+    const [kotaDomisiliOptions, setKotaDomisiliOptions] = useState<{ value: string; label: string }[]>([]);
+    const [kecamatanIdentitasOptions, setKecamatanIdentitasOptions] = useState<{ value: string; label: string }[]>([]);
+    const [desaIdentitasOptions, setDesaIdentitasOptions] = useState<{ value: string; label: string }[]>([]);
+    const [kecamatanDomisiliOptions, setKecamatanDomisiliOptions] = useState<{ value: string; label: string }[]>([]);
+    const [desaDomisiliOptions, setDesaDomisiliOptions] = useState<{ value: string; label: string }[]>([]);
+    const [isBpddiyRelated, setIsBpddiyRelated] = useState<boolean | null>(null);
 
     const showDialog = (message: string) => {
         setDialogMessage(message);
@@ -165,7 +263,7 @@ const EditProfil = () => {
         }
 
         for (const [index, kontak] of kontakList.entries()) {
-            if (!kontak.namaKontak || !kontak.hubKontak || !kontak.telpKontak || !kontak.emailKontak || !kontak.alamatKontak) {
+            if (!kontak.namaKontak || !kontak.hubKontak || !kontak.alamatKontak) {
                 showDialog(`Field Kontak Kerabat ke-${index + 1} wajib diisi.`);
                 return false;
             }
@@ -487,6 +585,7 @@ const EditProfil = () => {
                 if (data.responseCode === "000") {
                     const kontak = Array.isArray(data.data) ? data.data : [data.data];
                     setKontakList(kontak);
+                    setIsBpddiyRelated(kontak.some((k: { isBpddiyRelated: boolean }) => k.isBpddiyRelated));
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -518,6 +617,92 @@ const EditProfil = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    useEffect(() => {
+        const fetchProvinsiIdentitasList = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/provinsi/list`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                });
+
+                const data = await response.json();
+                const options = data.map((provinsi: { kodeProvinsi: string; namaProvinsi: string }) => ({
+                    value: provinsi.kodeProvinsi,
+                    label: provinsi.namaProvinsi,
+                }));
+                setProvinsiIdentitasOptions(options);
+            } catch (error) {
+                console.error("Error fetching provinsi list:", error);
+            }
+        };
+
+        fetchProvinsiIdentitasList();
+    }, []);
+
+    useEffect(() => {
+        if (profileData.provinsiIdentitas) {
+            fetchKotaIdentitasOptions(profileData.provinsiIdentitas).then(setKotaIdentitasOptions);
+        }
+    }, [profileData.provinsiIdentitas]);
+
+    useEffect(() => {
+        if (profileData.provinsiDomisili) {
+            fetchKotaDomisiliOptions(profileData.provinsiDomisili).then(setKotaDomisiliOptions);
+        }
+    }, [profileData.provinsiDomisili]);
+
+    useEffect(() => {
+        const fetchProvinsiDomisiliList = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/provinsi/list`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                });
+
+                const data = await response.json();
+                const options = data.map((provinsi: { kodeProvinsi: string; namaProvinsi: string }) => ({
+                    value: provinsi.kodeProvinsi,
+                    label: provinsi.namaProvinsi,
+                }));
+                setProvinsiDomisiliOptions(options);
+            } catch (error) {
+                console.error("Error fetching provinsi list:", error);
+            }
+        };
+
+        fetchProvinsiDomisiliList();
+    }, []);
+
+    useEffect(() => {
+        if (profileData.kotaIdentitas) {
+            fetchKecamatanOptions(profileData.kotaIdentitas).then(setKecamatanIdentitasOptions);
+        }
+    }, [profileData.kotaIdentitas]);
+
+    useEffect(() => {
+        if (profileData.kecamatanIdentitas) {
+            fetchDesaOptions(profileData.kecamatanIdentitas).then(setDesaIdentitasOptions);
+        }
+    }, [profileData.kecamatanIdentitas]);
+
+    useEffect(() => {
+        if (profileData.kotaDomisili) {
+            fetchKecamatanOptions(profileData.kotaDomisili).then(setKecamatanDomisiliOptions);
+        }
+    }, [profileData.kotaDomisili]);
+
+    useEffect(() => {
+        if (profileData.kecamatanDomisili) {
+            fetchDesaOptions(profileData.kecamatanDomisili).then(setDesaDomisiliOptions);
+        }
+    }, [profileData.kecamatanDomisili]);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -578,6 +763,11 @@ const EditProfil = () => {
             return;
         }
 
+        if (isBpddiyRelated === null) {
+            showDialog("Field Hubungan dengan BPD wajib diisi.");
+            return;
+        }
+
         const token = localStorage.getItem("token");
         if (!token) {
             console.error("No token found in localStorage");
@@ -595,7 +785,7 @@ const EditProfil = () => {
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         for (const kontak of kontakList) {
-            if (!emailRegex.test(kontak.emailKontak)) {
+            if (kontak.emailKontak && !emailRegex.test(kontak.emailKontak)) {
                 showDialog(`Format email tidak valid! Silahkan periksa email Anda.`);
                 setIsLoading(false);
                 return;
@@ -620,6 +810,15 @@ const EditProfil = () => {
             kota_domisili: profileData.kotaDomisili,
             kecamatan_domisili: profileData.kecamatanDomisili,
             desa_domisili: profileData.desaDomisili,
+            // provinsi_identitas: provinsiIdentitasOptions.find(option => option.value === profileData.provinsiIdentitas)?.label || "",
+            // kota_identitas: kotaIdentitasOptions.find(option => option.value === profileData.kotaIdentitas)?.label || "",
+            // kecamatan_identitas: kecamatanIdentitasOptions.find(option => option.value === profileData.kecamatanIdentitas)?.label || "",
+            // desa_identitas: desaIdentitasOptions.find(option => option.value === profileData.desaIdentitas)?.label || "",
+            // alamat_domisili: profileData.alamatDomisili,
+            // provinsi_domisili: provinsiDomisiliOptions.find(option => option.value === profileData.provinsiDomisili)?.label || "",
+            // kota_domisili: kotaDomisiliOptions.find(option => option.value === profileData.kotaDomisili)?.label || "",
+            // kecamatan_domisili: kecamatanDomisiliOptions.find(option => option.value === profileData.kecamatanDomisili)?.label || "",
+            // desa_domisili: desaDomisiliOptions.find(option => option.value === profileData.desaDomisili)?.label || "",
             telp: profileData.telp,
             pendidikan_terakhir: profileData.pendidikanTerakhir,
             status_kawin: profileData.statusKawin,
@@ -633,6 +832,7 @@ const EditProfil = () => {
                 telp_kontak: kontak.telpKontak,
                 email_kontak: kontak.emailKontak,
                 alamat_kontak: kontak.alamatKontak,
+                is_bpddiy_related: isBpddiyRelated,
             })),
             pesertaPendidikan: pendidikanList.map(pendidikan => ({
                 id_jenjang: pendidikan.idJenjang,
@@ -683,6 +883,33 @@ const EditProfil = () => {
             toast.error("Terjadi kesalahan saat menyimpan data.", { style: { backgroundColor: 'white', color: 'red' } });
         } finally {
             setIsLoading(false);
+        }
+
+        // Send kontak data to the new endpoint
+        try {
+            const kontakResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}/insert`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(kontakList.map(kontak => ({
+                    nama_kontak: kontak.namaKontak,
+                    hub_kontak: kontak.hubKontak,
+                    telp_kontak: kontak.telpKontak,
+                    email_kontak: kontak.emailKontak,
+                    alamat_kontak: kontak.alamatKontak,
+                    is_bpddiy_related: isBpddiyRelated,
+                }))),
+            });
+
+            const kontakData = await kontakResponse.json();
+            if (kontakData.responseCode !== "000") {
+                console.error("Error saving kontak data:", kontakData.message);
+            }
+        } catch (error) {
+            console.error("Error saving kontak data:", error);
         }
     };
 
@@ -736,13 +963,13 @@ const EditProfil = () => {
                                     <FontAwesomeIcon icon={faGraduationCap} className="mr-2" /> Pendidikan
                                 </Tab>
                                 <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 2 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
-                                    <FontAwesomeIcon icon={faBriefcase} className="mr-2" /> Pengalaman
+                                    <FontAwesomeIcon icon={faBriefcase} className="mr-2" /> Pengalaman Kerja
                                 </Tab>
                                 <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 3 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
                                     <FontAwesomeIcon icon={faUsers} className="mr-2" /> Organisasi
                                 </Tab>
                                 <Tab className={`px-4 py-2 mx-2 rounded-lg cursor-pointer custom-tab ${activeTab === 4 ? 'bg-darkBlue text-white' : 'bg-gray-200 text-darkBlue'}`} selectedClassName="custom-tab-selected">
-                                    <FontAwesomeIcon icon={faAddressBook} className="mr-2" /> Kontak
+                                    <FontAwesomeIcon icon={faAddressBook} className="mr-2" /> Data Keluarga
                                 </Tab>
                             </TabList>
 
@@ -901,6 +1128,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="provinsiIdentitas"
+                                                name="provinsiIdentitas"
+                                                options={provinsiIdentitasOptions}
+                                                value={provinsiIdentitasOptions.find(option => option.value === profileData.provinsiIdentitas)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'provinsiIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Provinsi Identitas"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -917,6 +1154,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="kotaIdentitas"
+                                                name="kotaIdentitas"
+                                                options={kotaIdentitasOptions}
+                                                value={kotaIdentitasOptions.find(option => option.value === profileData.kotaIdentitas)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kotaIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Kabupaten/Kota Identitas"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -933,6 +1180,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="kecamatanIdentitas"
+                                                name="kecamatanIdentitas"
+                                                options={kecamatanIdentitasOptions}
+                                                value={kecamatanIdentitasOptions.find(option => option.value === profileData.kecamatanIdentitas)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kecamatanIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Kecamatan Identitas"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -949,6 +1206,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="desaIdentitas"
+                                                name="desaIdentitas"
+                                                options={desaIdentitasOptions}
+                                                value={desaIdentitasOptions.find(option => option.value === profileData.desaIdentitas)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'desaIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Desa Identitas"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4 col-span-2">
@@ -984,6 +1251,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="provinsiDomisili"
+                                                name="provinsiDomisili"
+                                                options={provinsiDomisiliOptions}
+                                                value={provinsiDomisiliOptions.find(option => option.value === profileData.provinsiDomisili)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'provinsiDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Provinsi Domisili"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1000,6 +1277,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="kotaDomisili"
+                                                name="kotaDomisili"
+                                                options={kotaDomisiliOptions}
+                                                value={kotaDomisiliOptions.find(option => option.value === profileData.kotaDomisili)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kotaDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Kabupaten/Kota Domisili"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1016,6 +1303,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="kecamatanDomisili"
+                                                name="kecamatanDomisili"
+                                                options={kecamatanDomisiliOptions}
+                                                value={kecamatanDomisiliOptions.find(option => option.value === profileData.kecamatanDomisili)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kecamatanDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Kecamatan Domisili"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1032,6 +1329,16 @@ const EditProfil = () => {
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
+                                            {/* <Select
+                                                id="desaDomisili"
+                                                name="desaDomisili"
+                                                options={desaDomisiliOptions}
+                                                value={desaDomisiliOptions.find(option => option.value === profileData.desaDomisili)}
+                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'desaDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
+                                                placeholder="Pilih Desa Domisili"
+                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                isSearchable
+                                            /> */}
                                         </div>
 
                                         <div className="mb-4 col-span-2">
@@ -1448,11 +1755,42 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="kontakKerabat">
-                                            KONTAK KERABAT <span className="text-red-500">*</span>
+                                            DATA KELUARGA <span className="text-red-500">*</span>
                                         </label>
                                         <button onClick={() => handleAddEntry("kontak")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
                                         </button>
+                                    </div>
+                                    <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
+                                        <p className="font-bold">Informasi</p>
+                                        <p>Isikan data Ayah, Ibu, dan Saudara kandung Anda.</p>
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 font-bold mb-2">
+                                            Apakah anda mempunyai hubungan keluarga atau kerabat di BPD? <span className="text-red-500">*</span>
+                                        </label>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                id="hubunganYes"
+                                                name="hubunganBPD"
+                                                value="yes"
+                                                className="mr-2"
+                                                checked={isBpddiyRelated === true}
+                                                onChange={() => setIsBpddiyRelated(true)}
+                                            />
+                                            <label htmlFor="hubunganYes" className="mr-4">Yes</label>
+                                            <input
+                                                type="radio"
+                                                id="hubunganNo"
+                                                name="hubunganBPD"
+                                                value="no"
+                                                className="mr-2"
+                                                checked={isBpddiyRelated === false}
+                                                onChange={() => setIsBpddiyRelated(false)}
+                                            />
+                                            <label htmlFor="hubunganNo">No</label>
+                                        </div>
                                     </div>
                                     {kontakList.map((kontak, index) => (
                                         <div key={index} className="mb-4 border-b pb-4">
@@ -1478,7 +1816,19 @@ const EditProfil = () => {
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="hubKontak">
                                                     Hubungan Kerabat <span className="text-red-500">*</span>
                                                 </label>
-                                                <input
+                                                <select
+                                                    id="agama"
+                                                    name="agama"
+                                                    value={profileData.agama || ""}
+                                                    onChange={(e) => handleChange(e, 0, "profile")}
+                                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+                                                >
+                                                    <option value="">Pilih Hubungan Kerabat</option>
+                                                    <option value="1">Ayah</option>
+                                                    <option value="2">Ibu</option>
+                                                    <option value="3">Saudara Kandung</option>
+                                                </select>
+                                                {/* <input
                                                     type="text"
                                                     id="hubKontak"
                                                     name="hubKontak"
@@ -1487,12 +1837,11 @@ const EditProfil = () => {
                                                     placeholder="Masukkan Hubungan Kerabat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={50}
-                                                />
+                                                /> */}
                                             </div>
-
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="telpKontak">
-                                                    No Telepon <span className="text-red-500">*</span>
+                                                    No Telepon
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1512,7 +1861,7 @@ const EditProfil = () => {
                                             </div>
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="emailKontak">
-                                                    Email <span className="text-red-500">*</span>
+                                                    Email
                                                 </label>
                                                 <input
                                                     type="email"
@@ -1522,11 +1871,9 @@ const EditProfil = () => {
                                                     onChange={(e) => handleChange(e, index, "kontak")}
                                                     placeholder="Masukkan Email"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                    pattern="\d{4}"
                                                     maxLength={30}
                                                 />
                                             </div>
-
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="alamatKontak">
                                                     Alamat <span className="text-red-500">*</span>
