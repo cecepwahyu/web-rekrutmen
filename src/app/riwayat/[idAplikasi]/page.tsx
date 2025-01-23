@@ -440,10 +440,10 @@ const DetailRiwayat = () => {
                     .filter((step) => step.isActive !== null)
                     .slice(-1) // Only take the newest (last) active step with an announcement
                     .map((step) => (
-                      <div className="mt-2" key={step.idTahapan}>
-                      <h5 className="font-semibold">{step.isActive ? step.announcementTitle : "Maaf"}</h5>
-                      <div dangerouslySetInnerHTML={{ __html: step.isActive ? step.announcementContent || "" : "Coba lagi tahun depan!" }} />
-                      </div>
+                        <div className="mt-2" key={step.idTahapan}>
+                        <h5 className="font-semibold summernote-content">{step.isActive ? step.announcementTitle : "Maaf"}</h5>
+                        <div className="summernote-content" dangerouslySetInnerHTML={{ __html: step.isActive ? step.announcementContent || "" : "Coba lagi tahun depan!" }} />
+                        </div>
                     ))}
                 </div>
               </div>
