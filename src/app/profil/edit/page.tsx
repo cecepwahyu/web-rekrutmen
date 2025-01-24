@@ -933,7 +933,7 @@ const EditProfil = () => {
                 </div> */}
 
                 <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 px-4 pt-16 md:px-8 lg:px-16 xl:px-32">
-                    <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Edit Profile</h1>
+                    <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Edit Profil</h1>
                     <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4 flex justify-between items-center" role="alert">
                         <div>
                             <p className="font-bold">Perhatian</p>
@@ -1567,7 +1567,7 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="pengalamanKerja">
-                                            PENGALAMAN KERJA <span className="text-red-500">*</span>
+                                            PENGALAMAN KERJA
                                         </label>
                                         <button onClick={() => handleAddEntry("pengalaman")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
@@ -1577,7 +1577,7 @@ const EditProfil = () => {
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaInstansi">
-                                                    Nama Perusahaan / Instansi <span className="text-red-500">*</span>
+                                                    Nama Perusahaan / Instansi
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("pengalaman", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -1595,7 +1595,7 @@ const EditProfil = () => {
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiKerja">
-                                                    Posisi / Jabatan <span className="text-red-500">*</span>
+                                                    Posisi / Jabatan
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1611,7 +1611,7 @@ const EditProfil = () => {
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerjaStart">
-                                                    Tanggal Mulai Bekerja <span className="text-red-500">*</span>
+                                                    Tanggal Mulai Bekerja
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1623,7 +1623,7 @@ const EditProfil = () => {
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeKerjaEnd">
-                                                    Tanggal Akhir Bekerja <span className="text-red-500">*</span>
+                                                    Tanggal Akhir Bekerja
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1638,7 +1638,7 @@ const EditProfil = () => {
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                    Deskripsi Pekerjaan <span className="text-red-500">*</span>
+                                                    Deskripsi Pekerjaan
                                                 </label>
                                                 <textarea
                                                     id="deskripsiKerja"
@@ -1662,7 +1662,7 @@ const EditProfil = () => {
                                 <div className="bg-white p-6 rounded-lg shadow-lg w-full">
                                     <div className="mb-4 flex justify-between items-center">
                                         <label className="block text-darkBlue font-bold mb-2" htmlFor="organisasi">
-                                            ORGANISASI <span className="text-red-500">*</span>
+                                            ORGANISASI
                                         </label>
                                         <button onClick={() => handleAddEntry("organisasi")} className="text-blue-500">
                                             <FontAwesomeIcon icon={faPlus} />
@@ -1672,7 +1672,7 @@ const EditProfil = () => {
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaOrganisasi">
-                                                    Nama Organisasi <span className="text-red-500">*</span>
+                                                    Nama Organisasi
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("organisasi", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
@@ -1690,7 +1690,7 @@ const EditProfil = () => {
                                             />
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="posisiOrganisasi">
-                                                    Posisi <span className="text-red-500">*</span>
+                                                    Posisi
                                                 </label>
                                                 <input
                                                     type="text"
@@ -1706,7 +1706,7 @@ const EditProfil = () => {
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeStart">
-                                                    Tanggal Mulai <span className="text-red-500">*</span>
+                                                    Tanggal Mulai
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1718,7 +1718,7 @@ const EditProfil = () => {
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="periodeEnd">
-                                                    Tanggal Akhir <span className="text-red-500">*</span>
+                                                    Tanggal Akhir
                                                 </label>
                                                 <input
                                                     type="date"
@@ -1733,7 +1733,7 @@ const EditProfil = () => {
 
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="deskripsiKerja">
-                                                    Deskripsi <span className="text-red-500">*</span>
+                                                    Deskripsi
                                                 </label>
                                                 <textarea
                                                     id="deskripsiKerja"
@@ -1769,7 +1769,7 @@ const EditProfil = () => {
                                     </div>
                                     <div className="mb-4">
                                         <label className="block text-gray-700 font-bold mb-2">
-                                            Apakah anda mempunyai hubungan keluarga atau kerabat di BPD? <span className="text-red-500">*</span>
+                                            Apakah anda mempunyai hubungan keluarga atau kerabat yang bekerja di Bank BPD DIY? <span className="text-red-500">*</span>
                                         </label>
                                         <div className="flex items-center">
                                             <input
@@ -1781,7 +1781,7 @@ const EditProfil = () => {
                                                 checked={isBpddiyRelated === true}
                                                 onChange={() => setIsBpddiyRelated(true)}
                                             />
-                                            <label htmlFor="hubunganYes" className="mr-4">Yes</label>
+                                            <label htmlFor="hubunganYes" className="mr-4">Ya</label>
                                             <input
                                                 type="radio"
                                                 id="hubunganNo"
@@ -1791,14 +1791,14 @@ const EditProfil = () => {
                                                 checked={isBpddiyRelated === false}
                                                 onChange={() => setIsBpddiyRelated(false)}
                                             />
-                                            <label htmlFor="hubunganNo">No</label>
+                                            <label htmlFor="hubunganNo">Tidak</label>
                                         </div>
                                     </div>
                                     {kontakList.map((kontak, index) => (
                                         <div key={index} className="mb-4 border-b pb-4">
                                             <div className="flex justify-between items-center">
                                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="namaKontak">
-                                                    Nama Kontak <span className="text-red-500">*</span>
+                                                    Nama <span className="text-red-500">*</span>
                                                 </label>
                                                 <button onClick={() => handleRemoveEntry("kontak", index)} className="text-red-500">
                                                     <FontAwesomeIcon icon={faTrash} />
