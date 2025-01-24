@@ -222,6 +222,38 @@ const checkCvSubmission = async (idPeserta: string) => {
   }
 };
 
+const updateHeightWeight = async (idPeserta: string, tinggi: number | null, berat: number | null) => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const payload = {
+    tinggi: tinggi,
+    berat: berat,
+  };
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/update-tinggi-berat`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await response.json();
+    if (data.responseCode !== "000") {
+      console.error("Failed to update height and weight:", data.responseMessage);
+    }
+  } catch (error) {
+    console.error("Error updating height and weight:", error);
+  }
+};
+
 const DetailKarir = () => {
   const params = useParams();
   const slug = params?.id as string;
@@ -446,6 +478,34 @@ const DetailKarir = () => {
     }
   }, [article]);
 
+  useEffect(() => {
+    const fetchHeightWeight = async () => {
+      const token = localStorage.getItem("token");
+      if (!token || !idPeserta) return;
+  
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/tinggi-berat`,
+          {
+            method: "GET",
+            headers: getHeaders(token),
+          }
+        );
+  
+        const data = await response.json();
+        if (data.responseCode === "000" && data.data) {
+          setTinggiBadan(data.data.tinggi);
+          setBeratBadan(data.data.berat);
+        }
+      } catch (error) {
+        console.error("Error fetching height and weight:", error);
+      }
+    };
+  
+    fetchHeightWeight();
+  }, [idPeserta]);
+  
+
   const handleApply = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -613,6 +673,9 @@ const DetailKarir = () => {
       setBeratBadanError("Anda harus mengisikan field ini");
       return;
     }
+
+    // Update height and weight
+    await updateHeightWeight(idPeserta, tinggiBadan, beratBadan);
 
     const payload = {
       id_peserta: idPeserta,
