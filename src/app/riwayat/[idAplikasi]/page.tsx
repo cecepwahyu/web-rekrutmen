@@ -133,7 +133,7 @@ const DetailRiwayat = () => {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/id/${applicantData.idLowongan}/tahapan?id_peserta=${idPeserta}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tahapan/lowongan/${applicantData.idLowongan}/peserta/${applicantData.nomorPeserta}/progress`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -143,26 +143,13 @@ const DetailRiwayat = () => {
         });
         const data = await response.json();
         if (data.responseCode === '000') {
-          const stepsData = await Promise.all(data.data.map(async (step: any) => {
-            const announcementResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/announcements/content`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({ id_lowongan: applicantData.idLowongan, id_tahapan: step[2] })
-            });
-            const announcementData = await announcementResponse.json();
-            //console.log('Announcement Data:', announcementData);
-            return {
-              idTahapan: step[2],
-              namaTahapan: step[4],
-              deskripsi: step[5],
-              isActive: step[6] === null ? null : step[6] === true,
-              announcementTitle: announcementData.title, // Hardcoded title
-              announcementContent: announcementData.content // Hardcoded content
-            };
+          const stepsData = data.data.map((step: any) => ({
+            idTahapan: step[4],
+            namaTahapan: step[5],
+            deskripsi: step[6],
+            isActive: step[10] === null ? null : step[10] === true,
+            announcementTitle: step[7], // Assuming this is the title
+            announcementContent: step[8] // Assuming this is the content
           }));
           setSteps(stepsData);
         }
@@ -171,10 +158,10 @@ const DetailRiwayat = () => {
       }
     };
 
-    if (applicantData.idLowongan) {
+    if (applicantData.idLowongan && applicantData.nomorPeserta) {
       fetchSteps();
     }
-  }, [applicantData.idLowongan, idPeserta]);
+  }, [applicantData.idLowongan, applicantData.nomorPeserta]);
 
   useEffect(() => {
     const fetchAnnouncementContent = async () => {
