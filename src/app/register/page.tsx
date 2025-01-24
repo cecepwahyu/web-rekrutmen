@@ -105,8 +105,9 @@ const Register = () => {
 
   // Custom input handler for No Identitas field
   const handleNoIdentitasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length <= 16) {
-      form.setValue("no_identitas", e.target.value);
+    const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    if (value.length <= 16) {
+      form.setValue("no_identitas", value);
     }
   };
 
@@ -282,7 +283,7 @@ const Register = () => {
                         <FormControl>
                           <Input
                             placeholder="Enter your No Identitas"
-                            type="number"
+                            type="text" // Change to text to prevent scientific notation
                             value={field.value}
                             onChange={handleNoIdentitasChange}
                             className="transition-transform duration-300 focus:scale-105 border-2 border-gray-300 rounded-lg p-2"
