@@ -15,6 +15,7 @@ import animation404 from "../../../public/animations/404.json";
 import loadingAnimation from "../../../public/animations/loading.json";
 import htmlReactParser from 'html-react-parser';
 import Head from "next/head";
+import CariJobdescButton from "@/components/CariJobdescButton";
 
 const ITEMS_PER_PAGE = 6; // Items per page
 
@@ -390,7 +391,8 @@ const Karir = () => {
             <ScrollToTopButton />
 
             {/* Search Button */}
-            <CariKarirButton />
+            <CariJobdescButton />
+            {/* <CariKarirButton /> */}
         </div>
     );
 };
