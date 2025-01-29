@@ -298,6 +298,9 @@ const DetailKarir = () => {
   const [isInvalidFileDialogOpen, setIsInvalidFileDialogOpen] = useState(false);
   const [invalidFileMessage, setInvalidFileMessage] = useState("");
   const [isApplyDisabled, setIsApplyDisabled] = useState(false);
+  const [userAge, setUserAge] = useState<number | null>(null);
+  const [isFinal, setIsFinal] = useState<boolean>(false);
+  const [isAgeDialogOpen, setIsAgeDialogOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -505,26 +508,69 @@ const DetailKarir = () => {
     fetchHeightWeight();
   }, [idPeserta]);
   
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+      if (!token || !idPeserta) return;
+  
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}`,
+          {
+            method: "GET",
+            headers: getHeaders(token),
+          }
+        );
+  
+        const data = await response.json();
+        if (data.responseCode === "000") {
+          const birthDate = new Date(data.data.tglLahir);
+          console.log("Birth Date:", birthDate);
+          const age = calculateAge(birthDate);
+          setUserAge(age);
+          setIsFinal(data.data.isFinal);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+  
+    fetchProfile();
+  }, [idPeserta]);
+  
+
+  const calculateAge = (birthDate: Date) => {
+    console.log("Birth Date:", birthDate);
+    const difference = Date.now() - birthDate.getTime();
+    const ageDate = new Date(difference);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  };
 
   const handleApply = async () => {
+    console.log("User Age:", userAge);
+    if (userAge !== null && userAge > 25) {
+      setIsAgeDialogOpen(true);
+      return;
+    }
+  
     const token = localStorage.getItem("token");
     if (!token) return;
-
+  
     const idPeserta = await getIdFromToken(token);
     if (!idPeserta) return;
-
+  
     const profileData = await fetchProfileDetails(idPeserta);
     if (!profileData || !isProfileDataComplete(profileData)) {
       setIsProfileIncompleteDialogOpen(true);
       return;
     }
-
+  
     const isProfileComplete = await checkProfileCompletion(idPeserta);
     if (!isProfileComplete) {
       setIsProfileIncompleteDialogOpen(true);
       return;
     }
-
+  
     setIsDialogOpen(true);
     try {
       const response = await fetch(
@@ -534,7 +580,7 @@ const DetailKarir = () => {
           headers: getHeaders(token),
         }
       );
-
+  
       const data = await response.json();
       if (data.responseCode === "000") {
         setRequiredDocuments(data.data);
@@ -543,6 +589,7 @@ const DetailKarir = () => {
       console.error("Error fetching required documents:", error);
     }
   };
+  
 
   const handleFileSubmit = async (
     data: any,
@@ -631,16 +678,21 @@ const DetailKarir = () => {
   
 
   const handleApplyNow = async () => {
+    if (userAge !== null && userAge > 25) {
+      setIsAgeDialogOpen(true);
+      return;
+    }
+  
     const token = localStorage.getItem("token");
     if (!token || !idPeserta) return;
-
+  
     let allDocumentsUploaded = true;
-
+  
     requiredDocuments.forEach((doc) => {
       const docName = doc[3].toLowerCase().replace(/\s+/g, "-");
       const inputField = document.querySelector(`input[name="${docName}"]`);
       const errorMessage = document.querySelector(`#error-${docName}`);
-
+  
       if (!uploadedFiles[docName]) {
         allDocumentsUploaded = false;
         if (inputField !== null) {
@@ -659,31 +711,31 @@ const DetailKarir = () => {
         }
       }
     });
-
+  
     if (!allDocumentsUploaded) {
       return;
     }
-
+  
     if (isHeightMandatory && tinggiBadan === null) {
       setTinggiBadanError("Anda harus mengisikan field ini");
       return;
     }
-
+  
     if (isHeightMandatory && beratBadan === null) {
       setBeratBadanError("Anda harus mengisikan field ini");
       return;
     }
-
+  
     // Update height and weight
     await updateHeightWeight(idPeserta, tinggiBadan, beratBadan);
-
+  
     const payload = {
       id_peserta: idPeserta,
       id_user_documents: idUserDocuments,
       tinggi_badan: tinggiBadan,
       berat_badan: beratBadan,
     };
-
+  
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/${slug}/apply`,
@@ -697,7 +749,7 @@ const DetailKarir = () => {
           body: JSON.stringify(payload),
         }
       );
-
+  
       const responseData = await response.json();
       if (responseData.responseCode === "000") {
         toast.success("Application submitted successfully", {
@@ -717,6 +769,7 @@ const DetailKarir = () => {
       alert("An error occurred. Please try again.");
     }
   };
+  
 
   const isApplyButtonDisabled = () => {
     if (isHeightMandatory && (tinggiBadan === null || beratBadan === null)) {
@@ -984,18 +1037,18 @@ const DetailKarir = () => {
                           <DialogTrigger asChild>
                             <button
                               className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                                isLocked || isApplyDisabled
+                                isLocked || isApplyDisabled || isFinal
                                   ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                                   : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
                               }`}
                               onClick={
-                                isLocked || isApplyDisabled
+                                isLocked || isApplyDisabled || isFinal
                                   ? undefined
                                   : status === "4"
                                   ? handleSubmitCv
                                   : handleApply
                               }
-                              disabled={isLocked || isApplyDisabled}
+                              disabled={isLocked || isApplyDisabled || isFinal}
                             >
                               {status === "4"
                                 ? isLocked
@@ -1468,6 +1521,25 @@ const DetailKarir = () => {
           <DialogFooter className="mt-6 flex justify-end">
             <button
               onClick={() => setIsInvalidFileDialogOpen(false)}
+              className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            >
+              OK
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isAgeDialogOpen} onOpenChange={setIsAgeDialogOpen}>
+        <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
+          <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
+            Age Restriction
+          </DialogTitle>
+          <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
+            You are not eligible to apply for this position as your age exceeds
+            the limit.
+          </DialogDescription>
+          <DialogFooter className="mt-6 flex justify-end">
+            <button
+              onClick={() => setIsAgeDialogOpen(false)}
               className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
             >
               OK
