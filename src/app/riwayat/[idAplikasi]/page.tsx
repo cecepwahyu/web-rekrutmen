@@ -442,7 +442,7 @@ const DetailRiwayat = () => {
               <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mb-10 flex flex-col items-center">
                 <button
                   onClick={handleDownloadPDF}
-                  className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 mt-4"
+                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-blue-900 transition duration-300 ease-in-out transform hover:scale-105 mt-4"
                 >
                   Download Kartu Peserta
                 </button>
