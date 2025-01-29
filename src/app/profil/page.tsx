@@ -178,6 +178,16 @@ const fetchMaxAvatarSize = async (): Promise<number | null> => {
     }
   };
 
+const calculateAge = (birthDate: string) => {
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const diff = now.getTime() - birth.getTime();
+    const ageDate = new Date(diff);
+    const years = ageDate.getUTCFullYear() - 1970;
+    const months = ageDate.getUTCMonth();
+    return `${years} tahun, ${months} bulan`;
+};
+
 const Profile = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -450,7 +460,7 @@ const Profile = () => {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${id}`, {
                     method: "GET",
                     headers: {
-                        "Content-Type": "application/json", // Ensure Content-Type is set
+                        "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
                         Accept: "application/json",
                     },
@@ -1031,7 +1041,9 @@ const Profile = () => {
                                     {profileData.tglLahir && (
                                         <div className="flex items-center mb-2">
                                             <FaMapMarkerAlt className="mr-2 text-darkBlue" />
-                                            <p><strong>Tanggal Lahir:</strong> {new Date(profileData.tglLahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                                            <p>
+                                                <strong>Tanggal Lahir:</strong> {new Date(profileData.tglLahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} ({calculateAge(profileData.tglLahir)})
+                                            </p>
                                         </div>
                                     )}
                                     {profileData.jnsKelamin && (
