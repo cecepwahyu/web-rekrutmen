@@ -322,25 +322,25 @@ const Login = () => {
         </div>
 
         <div className="flex flex-col justify-center items-center w-full bg-white flex-grow relative z-10 -mt-32 pb-10">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-bold text-center text-darkBlue mb-6">
+          <div className="bg-white rounded-lg shadow-lg p-12 w-full max-w-lg mx-4">
+            <h2 className="text-3xl font-bold text-center text-darkBlue mb-8">
               Masuk ke akun Anda
             </h2>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-8">
                 {/* Email Field */}
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold">Email</FormLabel>
+                      <FormLabel className="font-bold text-lg">Email</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Masukkan email"
                           type="email"
                           {...field}
-                          className="transition-transform duration-300 focus:scale-105"
+                          className="transition-transform duration-300 focus:scale-105 p-4 text-lg"
                           onKeyDown={(e) => handleKeyDown(e, "password")}
                         />
                       </FormControl>
@@ -355,14 +355,14 @@ const Login = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold">Kata Sandi</FormLabel>
+                      <FormLabel className="font-bold text-lg">Kata Sandi</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
                             placeholder="Masukkan kata sandi"
                             type={showPassword ? "text" : "password"}
                             {...field}
-                            className="transition-transform duration-300 focus:scale-105"
+                            className="transition-transform duration-300 focus:scale-105 p-4 text-lg"
                             id="password"
                             onKeyDown={(e) => handleKeyDown(e, "captchaInput")}
                           />
@@ -390,7 +390,7 @@ const Login = () => {
                   </button>
                 </div>
 
-                <div className="flex flex-col items-center space-y-2">
+                <div className="flex flex-col items-center space-y-4">
                   {captchaImage && (
                     <Image src={captchaImage} alt="CAPTCHA" width={200} height={70} className="rounded-md" />
                   )}
@@ -401,7 +401,7 @@ const Login = () => {
                     placeholder="Captcha (Jawab soal di atas)"
                     value={captchaInput}
                     onChange={(e) => setCaptchaInput(e.target.value)}
-                    className="mt-4 form-input w-full"
+                    className="mt-4 form-input w-full p-4 text-lg"
                     id="captchaInput"
                     onKeyDown={(e) => handleKeyDown(e, "loginButton")}
                   />
@@ -410,7 +410,7 @@ const Login = () => {
                 {/* Submit Button */}
                 <Button
                   type="submit"
-                  className="w-full bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105"
+                  className="w-full bg-darkBlue text-white font-semibold py-4 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105 text-lg"
                   disabled={loading}
                   id="loginButton"
                 >
@@ -419,7 +419,7 @@ const Login = () => {
               </form>
             </Form>
 
-            <div className="text-center text-gray-700 mt-4">
+            <div className="text-center text-gray-700 mt-6">
               Anda belum memiliki akun?{" "}
               <a href="/register" className="text-blue-500 hover:underline">
                 Daftar
@@ -442,7 +442,7 @@ const Login = () => {
               type="email"
               value={forgotPasswordEmail}
               onChange={(e) => setForgotPasswordEmail(e.target.value)}
-              className="transition-transform duration-300 focus:scale-105"
+              className="transition-transform duration-300 focus:scale-105 p-4 text-lg"
             />
             <Input
               placeholder="Masukkan No KTP"
@@ -454,9 +454,9 @@ const Login = () => {
                   setForgotPasswordIdentitas(value);
                 }
               }}
-              className="transition-transform duration-300 focus:scale-105"
+              className="transition-transform duration-300 focus:scale-105 p-4 text-lg"
             />
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-4">
               {forgotPasswordCaptchaImage && (
                 <Image src={forgotPasswordCaptchaImage} alt="CAPTCHA" width={200} height={70} className="rounded-md" />
               )}
@@ -467,14 +467,14 @@ const Login = () => {
                 placeholder="Enter CAPTCHA"
                 value={forgotPasswordCaptchaInput}
                 onChange={(e) => setForgotPasswordCaptchaInput(e.target.value)}
-                className="mt-4 form-input w-full"
+                className="mt-4 form-input w-full p-4 text-lg"
               />
             </div>
           </div>
           <DialogFooter>
             <Button
               onClick={handleForgotPassword}
-              className={`bg-darkBlue text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105 ${forgotPasswordLoading ? "animate-pulse" : ""}`}
+              className={`bg-darkBlue text-white font-semibold py-4 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105 text-lg ${forgotPasswordLoading ? "animate-pulse" : ""}`}
               disabled={forgotPasswordLoading}
             >
               {forgotPasswordLoading ? "Sending..." : "Send Reset Link"}
@@ -495,7 +495,7 @@ const Login = () => {
           <DialogFooter>
             <Button
               onClick={() => setDialogOpen(false)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200 text-lg"
             >
               OK
             </Button>
