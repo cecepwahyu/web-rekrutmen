@@ -301,6 +301,7 @@ const DetailKarir = () => {
   const [userAge, setUserAge] = useState<number | null>(null);
   const [isFinal, setIsFinal] = useState<boolean>(false);
   const [isAgeDialogOpen, setIsAgeDialogOpen] = useState(false);
+  const [maxAge, setMaxAge] = useState<number | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -338,6 +339,7 @@ const DetailKarir = () => {
           setMinHeight(data.data.minHeight);
           setIsHeightMandatory(data.data.isHeightMandatory);
           setStatus(data.data.status); // Set status
+          setMaxAge(data.data.maxAge ? parseInt(data.data.maxAge) : null);
         }
       } catch (error) {
         console.error(error);
@@ -547,11 +549,6 @@ const DetailKarir = () => {
   };
 
   const handleApply = async () => {
-    console.log("User Age:", userAge);
-    if (userAge !== null && userAge > 25) {
-      setIsAgeDialogOpen(true);
-      return;
-    }
   
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -1531,11 +1528,10 @@ const DetailKarir = () => {
       <Dialog open={isAgeDialogOpen} onOpenChange={setIsAgeDialogOpen}>
         <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
           <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
-            Age Restriction
+            Info
           </DialogTitle>
           <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
-            You are not eligible to apply for this position as your age exceeds
-            the limit.
+            Anda tidak memenuhi syarat untuk melamar posisi ini karena usia Anda melebihi batas yang ditentukan.
           </DialogDescription>
           <DialogFooter className="mt-6 flex justify-end">
             <button
