@@ -26,8 +26,8 @@ interface Job {
     periodeAwal: string;
     periodeAkhir: string;
     slug: string;
-    tentangPekerjaan?: string; // Add tentangPekerjaan property
-    status: string; // Add status property
+    tentangPekerjaan?: string;
+    status: string;
     flgApprove: boolean
 }
 
@@ -70,7 +70,7 @@ const Karir = () => {
 
             if (!token) {
                 console.error("No token found in localStorage");
-                return; // Exit if no token is found
+                return;
             }
 
             try {
