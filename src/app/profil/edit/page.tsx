@@ -233,6 +233,61 @@ const EditProfil = () => {
         }, 3000); // Auto close after 3 seconds
     };
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number, type: string) => {
+        const { name, value } = e.target;
+        if (type === "profile") {
+            setProfileData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        } else if (type === "pendidikan") {
+            const updatedList = [...pendidikanList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setPendidikanList(updatedList);
+        } else if (type === "pengalaman") {
+            const updatedList = [...pengalamanList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setPengalamanList(updatedList);
+        } else if (type === "organisasi") {
+            const updatedList = [...organisasiList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setOrganisasiList(updatedList);
+        } else if (type === "kontak") {
+            const updatedList = [...kontakList];
+            updatedList[index] = { ...updatedList[index], [name]: value };
+            setKontakList(updatedList);
+        }
+    };
+
+    const handleDateChange = (e: ChangeEvent<HTMLInputElement>, index: number, type: string) => {
+        const { name, value } = e.target;
+        const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+        if (type === "pengalaman") {
+            const pengalaman = pengalamanList[index];
+            if (name === "periodeKerjaEnd" && value < pengalaman.periodeKerjaStart) {
+                showDialog("Tanggal Akhir Bekerja tidak boleh kurang dari Tanggal Mulai Bekerja.");
+                return;
+            }
+            if (name === "periodeKerjaStart" && value > pengalaman.periodeKerjaEnd) {
+                showDialog("Tanggal Mulai Bekerja tidak boleh lebih dari Tanggal Akhir Bekerja.");
+                return;
+            }
+        } else if (type === "organisasi") {
+            const organisasi = organisasiList[index];
+            if (name === "periodeEnd" && value < organisasi.periodeStart) {
+                showDialog("Tanggal Akhir tidak boleh kurang dari Tanggal Mulai.");
+                return;
+            }
+            if (name === "periodeStart" && value > organisasi.periodeEnd) {
+                showDialog("Tanggal Mulai tidak boleh lebih dari Tanggal Akhir.");
+                return;
+            }
+        }
+
+        handleChange(e, index, type);
+    };
+
     const validateFields = () => {
         const requiredFields = [
             { name: "Nama", value: profileData.nama },
@@ -729,32 +784,6 @@ const EditProfil = () => {
             setOrganisasiList(organisasiList.filter((_, i) => i !== index));
         } else if (type === "kontak") {
             setKontakList(kontakList.filter((_, i) => i !== index));
-        }
-    };
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number, type: string) => {
-        const { name, value } = e.target;
-        if (type === "profile") {
-            setProfileData((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        } else if (type === "pendidikan") {
-            const updatedList = [...pendidikanList];
-            updatedList[index] = { ...updatedList[index], [name]: value };
-            setPendidikanList(updatedList);
-        } else if (type === "pengalaman") {
-            const updatedList = [...pengalamanList];
-            updatedList[index] = { ...updatedList[index], [name]: value };
-            setPengalamanList(updatedList);
-        } else if (type === "organisasi") {
-            const updatedList = [...organisasiList];
-            updatedList[index] = { ...updatedList[index], [name]: value };
-            setOrganisasiList(updatedList);
-        } else if (type === "kontak") {
-            const updatedList = [...kontakList];
-            updatedList[index] = { ...updatedList[index], [name]: value };
-            setKontakList(updatedList);
         }
     };
 
@@ -1618,7 +1647,7 @@ const EditProfil = () => {
                                                     id="periodeKerjaStart"
                                                     name="periodeKerjaStart"
                                                     value={pengalaman.periodeKerjaStart || ""}
-                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    onChange={(e) => handleDateChange(e, index, "pengalaman")}
                                                     placeholder="Masukkan Tanggal Mulai Bekerja"
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
@@ -1630,7 +1659,7 @@ const EditProfil = () => {
                                                     id="periodeKerjaEnd"
                                                     name="periodeKerjaEnd"
                                                     value={pengalaman.periodeKerjaEnd || ""}
-                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    onChange={(e) => handleDateChange(e, index, "pengalaman")}
                                                     placeholder="Masukkan Tanggal Akhir Bekerja"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
                                                 />
@@ -1713,7 +1742,7 @@ const EditProfil = () => {
                                                     id="periodeStart"
                                                     name="periodeStart"
                                                     value={organisasi.periodeStart || ""}
-                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    onChange={(e) => handleDateChange(e, index, "organisasi")}
                                                     placeholder="Masukkan Tanggal Mulai"
                                                     className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 />
@@ -1725,7 +1754,7 @@ const EditProfil = () => {
                                                     id="periodeEnd"
                                                     name="periodeEnd"
                                                     value={organisasi.periodeEnd || ""}
-                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    onChange={(e) => handleDateChange(e, index, "organisasi")}
                                                     placeholder="Masukkan Tanggal Akhir"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring mt-2"
                                                 />
