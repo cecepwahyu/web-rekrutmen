@@ -254,6 +254,54 @@ const updateHeightWeight = async (idPeserta: string, tinggi: number | null, bera
   }
 };
 
+const checkAgeLimit = async (idPeserta: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/check-age-limit`,
+      {
+        method: "GET",
+        headers: getHeaders(token),
+      }
+    );
+
+    const data = await response.json();
+    if (data.responseCode === "000") {
+      return data.data.age_limit;
+    } else {
+      console.error("Error checking age limit:", data.responseMessage);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error checking age limit:", error);
+    return false;
+  }
+};
+
+const setAgeLimitAndFinalizeProfile = async (idPeserta: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/set-age-limit`,
+      {
+        method: "PUT",
+        headers: getHeaders(token),
+      }
+    );
+
+    const data = await response.json();
+    if (data.responseCode !== "000") {
+      console.error("Failed to set age limit:", data.responseMessage);
+    }
+  } catch (error) {
+    console.error("Error setting age limit:", error);
+  }
+};
+
 const DetailKarir = () => {
   const params = useParams();
   const slug = params?.id as string;
@@ -402,7 +450,7 @@ const DetailKarir = () => {
 
         const data = await response.json();
         if (data.responseCode === "000") {
-          setIsLocked(data.data === "true" && status === "1"); // Only lock if status is '1'
+          setIsLocked(data.data === "true" && status === "1");
         }
       } catch (error) {
         console.error("Error fetching lock status:", error);
@@ -477,6 +525,7 @@ const DetailKarir = () => {
     if (article) {
       const now = new Date();
       const periodeAkhir = new Date(article.periodeAkhir);
+      periodeAkhir.setDate(periodeAkhir.getDate() + 1);
       if (now > periodeAkhir) {
         setIsApplyDisabled(true);
       }
@@ -540,6 +589,18 @@ const DetailKarir = () => {
     fetchProfile();
   }, [idPeserta]);
   
+  useEffect(() => {
+    const fetchAgeLimit = async () => {
+      if (!idPeserta) return;
+  
+      const ageLimit = await checkAgeLimit(idPeserta);
+      if (ageLimit) {
+        setIsApplyDisabled(true);
+      }
+    };
+  
+    fetchAgeLimit();
+  }, [idPeserta]);
 
   const calculateAge = (birthDate: Date) => {
     console.log("Birth Date:", birthDate);
@@ -675,11 +736,15 @@ const DetailKarir = () => {
   
 
   const handleApplyNow = async () => {
-    if (userAge !== null && userAge > 25) {
+    if (userAge !== null && maxAge !== null && userAge > maxAge) {
       setIsAgeDialogOpen(true);
       return;
     }
   
+    await submitApplication();
+  };
+  
+  const submitApplication = async () => {
     const token = localStorage.getItem("token");
     if (!token || !idPeserta) return;
   
@@ -912,6 +977,15 @@ const DetailKarir = () => {
     }
   };
 
+  const handleAgeDialogOk = async () => {
+    if (idPeserta) {
+      await setAgeLimitAndFinalizeProfile(idPeserta);
+      setIsApplyDisabled(true);
+      await submitApplication();
+    }
+    setIsAgeDialogOpen(false);
+  };
+
   if (!isAuthenticated) {
     return null; // Return null during SSR to avoid hydration mismatch
   }
@@ -1047,14 +1121,14 @@ const DetailKarir = () => {
                               }
                               disabled={isLocked || isApplyDisabled || isFinal}
                             >
-                              {status === "4"
+                              {isApplyDisabled
+                                ? "Maaf usia Anda sudah melebihi syarat pendaftaran"
+                                : status === "4"
                                 ? isLocked
                                   ? "Submit"
                                   : "Submit"
                                 : isLocked
                                 ? "Anda sudah mendaftar pada periode ini"
-                                : isApplyDisabled
-                                ? "Apply"
                                 : "Apply"}
                             </button>
                           </DialogTrigger>
@@ -1525,7 +1599,7 @@ const DetailKarir = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Dialog open={isAgeDialogOpen} onOpenChange={setIsAgeDialogOpen}>
+      <Dialog open={isAgeDialogOpen} onOpenChange={() => {}}>
         <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
           <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
             Info
@@ -1535,7 +1609,7 @@ const DetailKarir = () => {
           </DialogDescription>
           <DialogFooter className="mt-6 flex justify-end">
             <button
-              onClick={() => setIsAgeDialogOpen(false)}
+              onClick={handleAgeDialogOk}
               className="bg-darkBlue text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
             >
               OK
