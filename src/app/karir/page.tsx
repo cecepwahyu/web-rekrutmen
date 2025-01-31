@@ -391,7 +391,7 @@ const Karir = () => {
             <ScrollToTopButton />
 
             {/* Search Button */}
-            <CariJobdescButton />
+            <CariKarirButton />
             {/* <CariKarirButton /> */}
         </div>
     );
