@@ -148,8 +148,8 @@ const DetailRiwayat = () => {
             namaTahapan: step[5],
             deskripsi: step[6],
             isActive: step[10] === null ? null : step[10] === true,
-            announcementTitle: step[7], // Assuming this is the title
-            announcementContent: step[8] // Assuming this is the content
+            announcementTitle: step[13],
+            announcementContent: step[14]
           }));
           setSteps(stepsData);
         }
@@ -194,7 +194,7 @@ const DetailRiwayat = () => {
           console.error('Error fetching announcement content:', data.responseMessage);
         }
       } catch (error) {
-        console.error('Error fetching announcement content:', error);
+        //console.error('Error fetching announcement content:', error);
       } finally {
         setIsLoading(false);
       }
@@ -394,7 +394,7 @@ const DetailRiwayat = () => {
                     const isLastGreenStep = steps.findIndex(s => s.isActive === true) === index;
                     const isNextStep = steps.findIndex(s => s.isActive === true) + 1 === index;
                     const isAfterGreenStep = steps.findIndex(s => s.isActive === true) < index && steps[index - 1]?.isActive === true;
-                    if (step.isActive === true || isLastGreenStep || (isNextStep && steps[index - 1]?.isActive === true) || isAfterGreenStep) {
+                    if (step.isActive === true || step.isActive === false || isLastGreenStep || (isNextStep && steps[index - 1]?.isActive === true) || isAfterGreenStep) {
                       return (
                         <li key={`${step.idTahapan}-${index}`} className="flex-1">
                           <div className="flex-start flex items-center pt-2 md:block md:pt-0">
@@ -431,8 +431,16 @@ const DetailRiwayat = () => {
                     .slice(-1) // Only take the newest (last) active step with an announcement
                     .map((step) => (
                         <div className="mt-2" key={step.idTahapan}>
-                        <h5 className="font-semibold summernote-content">{step.isActive ? step.announcementTitle : "Maaf"}</h5>
-                        <div className="summernote-content" dangerouslySetInnerHTML={{ __html: step.isActive ? step.announcementContent || "" : "Coba lagi tahun depan!" }} />
+                        <h5 className="font-normal summernote-content">
+                          {step.isActive ? (
+                          step.announcementTitle
+                          ) : (
+                          <>
+                            Mohon Maaf Anda <span className="font-bold">TIDAK LOLOS</span> ke tahap berikutnya
+                          </>
+                          )}
+                        </h5>
+                        <div className="summernote-content" dangerouslySetInnerHTML={{ __html: step.isActive ? step.announcementContent || "" : "Terima kasih atas partisipasi Anda dalam proses seleksi di Bank BPD DIY. Kami mengapresiasi usaha Anda dan berharap dapat bertemu di kesempatan rekrutmen mendatang." }} />
                         </div>
                     ))}
                 </div>
