@@ -261,21 +261,21 @@ const Riwayat = () => {
                                                     </h2>
                                                     <div className="flex flex-col sm:flex-row items-start sm:items-center text-xs text-gray-500 space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
                                                         <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                            <span className="font-semibold">Nomor Pendaftaran:</span>
+                                                            <span className="font-semibold">ID Peserta:</span>
                                                             <span className="ml-1">{history.idAplikasi}</span>
                                                         </div>
                                                         <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                            <span className="font-semibold">Tanggal Aplikasi:</span>
+                                                            <span className="font-semibold">Tanggal Melamar:</span>
                                                             <span className="ml-1">
                                                                 {new Date(history.tanggalAplikasi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
                                                             </span>
                                                         </div>
-                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                                                        {/* <div className="flex flex-col sm:flex-row items-start sm:items-center">
                                                             <span className="font-semibold">Update Terakhir:</span>
                                                             <span className="ml-1">
                                                                 {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
                                                             </span>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </button>
