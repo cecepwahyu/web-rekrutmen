@@ -168,10 +168,10 @@ const isProfileDataComplete = (profileData: any) => {
     "kontak_id",
     "thn_masuk",
     "nilai",
-    "telp_kontak",
+    //"telp_kontak",
     "pendidikan_jenjang",
     "gelar",
-    "email_kontak",
+    //"email_kontak",
     "nama_kontak",
     "jurusan",
     "nama_institusi",
@@ -1485,46 +1485,6 @@ const DetailKarir = () => {
                 </div>
               </motion.div>
 
-              {/* Tahapan Seleksi Section
-                {status !== "4" && (
-                <motion.div
-                  className="w-11/12 lg:w-4/5 mt-6 mb-10"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4">
-                  <h2 className="text-darkBlue font-bold text-xl mb-4">
-                    Tahapan Seleksi
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {tahapan.map((step) => (
-                    <motion.div
-                      key={step.idTahapan}
-                      className="flex flex-col items-center bg-blue-100 p-4 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105"
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <div
-                      className={`bg-blue-500 text-white w-12 h-12 flex items-center justify-center rounded-full mb-2 ${
-                        step.isActive ? "animate-bounce" : ""
-                      }`}
-                      >
-                      {tahapan.findIndex(
-                        (t) => t.idTahapan === step.idTahapan
-                      ) + 1}
-                      </div>
-                      <p className="text-center text-sm font-medium text-darkBlue">
-                      {step.namaTahapan}
-                      </p>
-                      <p className="text-center text-xs text-gray-600 mt-2">
-                      {step.deskripsi}
-                      </p>
-                    </motion.div>
-                    ))}
-                  </div>
-                  </div>
-                </motion.div>
-                )} */}
             </>
           )}
         </div>
