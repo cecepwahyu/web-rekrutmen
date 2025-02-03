@@ -14,7 +14,7 @@ import {
 
 const CariJobdescButton = () => {
     const [showOptions, setShowOptions] = useState(false);
-    const [jobdescs, setJobdescs] = useState<string[]>([]);
+    const [jobdescs, setJobdescs] = useState<{ posisi: string, slug: string }[]>([]);
 
     useEffect(() => {
         const fetchJobdescs = async () => {
@@ -37,7 +37,10 @@ const CariJobdescButton = () => {
                 }
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    const jobdescList = data.data.content.map((job: any) => job.posisi);
+                    const jobdescList = data.data.content.map((job: any) => ({
+                        posisi: job.posisi,
+                        slug: job.slug
+                    }));
                     setJobdescs(jobdescList);
                 }
             } catch (error) {
@@ -68,8 +71,8 @@ const CariJobdescButton = () => {
                 {showOptions && (
                     <DropdownMenuContent className="mb-2 flex flex-col items-center space-y-2">
                         {jobdescs.map((jobdesc, index) => (
-                            <DropdownMenuItem key={index} onClick={() => window.location.href = `/karir/${jobdesc.toLowerCase().replace(/\s+/g, '-')}`}>
-                                {jobdesc}
+                            <DropdownMenuItem key={index} onClick={() => window.location.href = `/karir/${jobdesc.slug}`}>
+                                {jobdesc.posisi}
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
