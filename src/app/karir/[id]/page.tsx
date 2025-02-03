@@ -736,6 +736,7 @@ const DetailKarir = () => {
   
 
   const handleApplyNow = async () => {
+  
     if (userAge !== null && maxAge !== null && userAge > maxAge) {
       setIsAgeDialogOpen(true);
       return;
@@ -1122,7 +1123,7 @@ const DetailKarir = () => {
                               disabled={isLocked || isApplyDisabled || isFinal}
                             >
                               {isApplyDisabled
-                                ? "Maaf usia Anda sudah melebihi syarat pendaftaran"
+                                ? "Apply"
                                 : status === "4"
                                 ? isLocked
                                   ? "Submit"
