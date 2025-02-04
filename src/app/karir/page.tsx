@@ -90,12 +90,15 @@ const Karir = () => {
                         const startDate = new Date(job.periodeAwal);
                         return now >= startDate;
                     });
-                    setJobs(validJobs); // Update jobs with valid jobs
-                    setFilteredJobs(validJobs); // Update filtered jobs with valid jobs
-                    setRekrutmenJobs(validJobs.filter((job: Job) => job.status === "1")); // Filter Rekrutmen jobs
-                    setJobDescJobs(validJobs.filter((job: Job) => job.status === "4")); // Filter Job Desc jobs
-                    setTotalPagesRekrutmen(Math.ceil(validJobs.filter((job: Job) => job.status === "1").length / ITEMS_PER_PAGE)); // Set total pages for Rekrutmen
-                    setTotalPagesJobDesc(Math.ceil(validJobs.filter((job: Job) => job.status === "4").length / ITEMS_PER_PAGE)); // Set total pages for Job Desc
+                    setJobs(validJobs);
+                    setFilteredJobs(validJobs);
+                    const rekrutmenJobs = validJobs.filter((job: Job) => job.status === "1" || job.status === "3");
+                    const jobDescJobs = validJobs.filter((job: Job) => job.status === "4");
+                    setRekrutmenJobs(rekrutmenJobs.slice(currentPageRekrutmen * ITEMS_PER_PAGE, (currentPageRekrutmen + 1) * ITEMS_PER_PAGE));
+                    setJobDescJobs(jobDescJobs.slice(currentPageJobDesc * ITEMS_PER_PAGE, (currentPageJobDesc + 1) * ITEMS_PER_PAGE));
+                    setTotalPagesRekrutmen(Math.ceil(rekrutmenJobs.length / ITEMS_PER_PAGE));
+                    setTotalPagesJobDesc(Math.ceil(jobDescJobs.length / ITEMS_PER_PAGE));
+                    setTotalPages(Math.ceil(data.data.totalItems / ITEMS_PER_PAGE));
                 }
             } catch (error) {
                 console.error("Error fetching job data:", error);
@@ -132,7 +135,7 @@ const Karir = () => {
         );
 
         if (activeTab === "Rekrutmen") {
-            setFilteredJobs(filtered.filter(job => job.status === "1" && job.flgApprove === true));
+            setFilteredJobs(filtered.filter(job => (job.status === "1" || job.status === "3") && job.flgApprove === true));
         } else if (activeTab === "Job Desc") {
             setFilteredJobs(filtered.filter(job => job.status === "4" && job.flgApprove === true));
         }
