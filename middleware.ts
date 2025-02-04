@@ -5,6 +5,11 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const referrer = req.headers.get('referer');
 
+  // Prevent Clickjacking
+  const response = NextResponse.next();
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Content-Security-Policy", "frame-ancestors 'none'");
+
   // Redirect helper
   const redirectToReferrer = () => {
     if (referrer) {
