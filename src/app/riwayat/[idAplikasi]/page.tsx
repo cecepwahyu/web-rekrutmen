@@ -422,7 +422,7 @@ const DetailRiwayat = () => {
               <div className="bg-blue-50 rounded-lg p-6 w-full max-w-4xl mt-28 border-2 border-darkBlue border-dashed mb-10">
                 <div className="text-sm sm:text-base">
                   {/* Heading */}
-                  <p className="font-semibold text-darkBlue text-lg mb-4 summernote-content">Informasi Test</p>
+                  {/* <p className="font-semibold text-darkBlue text-lg mb-4 summernote-content">Informasi Test</p> */}
 
                     {/* Details */}
                     <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent || "" }} />
@@ -431,7 +431,7 @@ const DetailRiwayat = () => {
                     .slice(-1) // Only take the newest (last) active step with an announcement
                     .map((step) => (
                         <div className="mt-2" key={step.idTahapan}>
-                        <h5 className="font-normal summernote-content">
+                        <h5 className="font-semibold text-darkBlue mb-4 summernote-content">
                           {step.isActive ? (
                           step.announcementTitle
                           ) : (
