@@ -174,8 +174,8 @@ const Riwayat = () => {
         if (currentPage > 0) setCurrentPage(currentPage - 1);
     };
 
-    const handleJobClick = (idAplikasi: string) => {
-        router.push(`/riwayat/${idAplikasi}`);
+    const handleJobClick = (slug: string) => {
+        router.push(`/riwayat/${slug}`);
     };
 
     if (!isAuthenticated) {
@@ -253,7 +253,7 @@ const Riwayat = () => {
                                             <button
                                                 key={history.idAplikasi}
                                                 className="bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
-                                                onClick={() => handleJobClick(history.idAplikasi)}
+                                                onClick={() => handleJobClick(history.slug)}
                                             >
                                                 <div className="w-full text-left">
                                                     <h2 className="text-xl font-bold mb-2 text-darkBlue">
@@ -270,12 +270,6 @@ const Riwayat = () => {
                                                                 {new Date(history.tanggalAplikasi).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
                                                             </span>
                                                         </div>
-                                                        {/* <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                                                            <span className="font-semibold">Update Terakhir:</span>
-                                                            <span className="ml-1">
-                                                                {new Date(history.lastStatusUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
-                                                            </span>
-                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </button>
@@ -316,7 +310,7 @@ const Riwayat = () => {
                                         <div key={history.idAplikasi} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
                                             <button
                                                 className="w-full bg-white shadow-lg rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                                onClick={() => handleJobClick(history.idAplikasi)}
+                                                onClick={() => handleJobClick(history.slug)}
                                             >
                                                 <div className="w-full text-left">
                                                     <h2 className="text-xl font-bold mb-2 text-darkBlue">{history.judulLowongan}</h2>

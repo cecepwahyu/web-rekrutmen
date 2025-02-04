@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import FooterCopyright from "../../../components/FooterCopyright";
 import MenuBar from "../../../components/MenuBar";
@@ -49,6 +49,8 @@ const DetailRiwayat = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [steps, setSteps] = useState<Tahapan[]>([]);
   const router = useRouter();
+  const params = useParams();
+  const idAplikasi = params?.idAplikasi as string; // Ensure idAplikasi is a string
   const [currentStep, setCurrentStep] = useState(2); // Current step: "Tes Psikologi dan TPA"
   const [applicantData, setApplicantData] = useState({
     nama: "",
@@ -80,44 +82,44 @@ const DetailRiwayat = () => {
     }
   }, [router]);
 
-  useEffect(() => {
-    const fetchApplicantData = async () => {
-      setIsLoading(true);
-
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        console.error("No token found in localStorage");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/peserta-info/${idPeserta}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const result = await response.json();
-        if (result.responseCode === '000') {
+  const fetchApplicantData = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error("No token found in localStorage");
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/history/filter?isRekrutmen=true&idPeserta=${idPeserta}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const result = await response.json();
+      if (result.responseCode === '000') {
+        const application = result.data.find((app: any) => app.slug === idAplikasi);
+        if (application) {
           setApplicantData({
-            nama: result.data.nama || "Tidak ada lamaran",
-            nomorPeserta: result.data.kodeLowongan || "Tidak ada lamaran",
-            posisi: result.data.judulLowongan || "Tidak ada lamaran",
-            noIdentitas: result.data.noIdentitas || "Tidak ada lamaran",
-            idLowongan: result.data.idLowongan || null,
+            nama: application.namaPeserta || "Tidak ada lamaran",
+            nomorPeserta: application.idAplikasi || "Tidak ada lamaran",
+            posisi: application.posisiLowongan || "Tidak ada lamaran",
+            noIdentitas: application.noIdentitasPeserta || "Tidak ada lamaran",
+            idLowongan: application.idLowongan || null,
           });
         }
-      } catch (error) {
-        console.error("Error fetching applicant data:", error);
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching applicant data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (isAuthenticated && idPeserta) {
       fetchApplicantData();
     }
@@ -421,14 +423,12 @@ const DetailRiwayat = () => {
               {/* Rectangle Container */}
               <div className="bg-blue-50 rounded-lg p-6 w-full max-w-4xl mt-28 border-2 border-darkBlue border-dashed mb-10">
                 <div className="text-sm sm:text-base">
-                  {/* Heading */}
-                  {/* <p className="font-semibold text-darkBlue text-lg mb-4 summernote-content">Informasi Test</p> */}
 
                     {/* Details */}
                     <div dangerouslySetInnerHTML={{ __html: isLoading ? "" : announcementContent || "" }} />
                     {steps
                     .filter((step) => step.isActive !== null)
-                    .slice(-1) // Only take the newest (last) active step with an announcement
+                    .slice(-1)
                     .map((step) => (
                         <div className="mt-2" key={step.idTahapan}>
                         <h5 className="font-semibold text-darkBlue mb-4 summernote-content">
