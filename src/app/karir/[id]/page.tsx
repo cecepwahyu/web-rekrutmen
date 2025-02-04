@@ -736,7 +736,6 @@ const DetailKarir = () => {
   
 
   const handleApplyNow = async () => {
-  
     if (userAge !== null && maxAge !== null && userAge > maxAge) {
       setIsAgeDialogOpen(true);
       return;
@@ -988,7 +987,7 @@ const DetailKarir = () => {
   };
 
   if (!isAuthenticated) {
-    return null; // Return null during SSR to avoid hydration mismatch
+    return null;
   }
 
   return (
@@ -1106,33 +1105,31 @@ const DetailKarir = () => {
                           open={isDialogOpen}
                           onOpenChange={setIsDialogOpen}
                         >
-                          <DialogTrigger asChild>
+                            <DialogTrigger asChild>
                             <button
                               className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                                isLocked || isApplyDisabled || isFinal
-                                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                  : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
+                              isLocked || isApplyDisabled || isFinal
+                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
                               }`}
                               onClick={
-                                isLocked || isApplyDisabled || isFinal
-                                  ? undefined
-                                  : status === "4"
-                                  ? handleSubmitCv
-                                  : handleApply
+                              isLocked || isApplyDisabled || isFinal
+                                ? undefined
+                                : status === "4"
+                                ? handleSubmitCv
+                                : handleApply
                               }
                               disabled={isLocked || isApplyDisabled || isFinal}
                             >
-                              {isApplyDisabled
-                                ? "Apply"
-                                : status === "4"
-                                ? isLocked
-                                  ? "Submit"
-                                  : "Submit"
-                                : isLocked
-                                ? "Anda sudah mendaftar pada periode ini"
-                                : "Apply"}
+                              {status === "4"
+                              ? isLocked
+                                ? "Submit"
+                                : "Submit"
+                              : isLocked
+                              ? "Anda sudah mendaftar pada periode ini"
+                              : "Apply"}
                             </button>
-                          </DialogTrigger>
+                            </DialogTrigger>
                           <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
                             <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
                               {status === "4"
@@ -1459,25 +1456,21 @@ const DetailKarir = () => {
                           <h2 className="font-semibold text-lg mt-4">
                             Status Rekrutmen
                           </h2>
-                          <p
+                            <p
                             className={`inline-block ${
-                              isApplyDisabled
-                                ? "bg-red-100 text-red-500 border border-red-500"
-                                : status === "3"
-                                ? "bg-red-100 text-red-500 border border-red-500"
-                                : status === "1"
-                                ? "bg-green-100 text-green-500 border border-green-500"
-                                : "bg-gray-100 text-gray-500 border border-gray-500"
+                              status === "3"
+                              ? "bg-red-100 text-red-500 border border-red-500"
+                              : status === "1"
+                              ? "bg-green-100 text-green-500 border border-green-500"
+                              : "bg-gray-100 text-gray-500 border border-gray-500"
                             } py-1 px-2 rounded-lg`}
-                          >
-                            {isApplyDisabled
-                              ? "Lowongan Berakhir"
-                              : status === "3"
+                            >
+                            {status === "3"
                               ? "Ditutup"
                               : status === "1"
                               ? "Dibuka"
                               : "Status tidak diketahui"}
-                          </p>
+                            </p>
                           </>
                         )}
                       </div>
