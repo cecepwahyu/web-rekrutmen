@@ -350,6 +350,15 @@ const DetailKarir = () => {
   const [isFinal, setIsFinal] = useState<boolean>(false);
   const [isAgeDialogOpen, setIsAgeDialogOpen] = useState(false);
   const [maxAge, setMaxAge] = useState<number | null>(null);
+  const [isAgeExceeded, setIsAgeExceeded] = useState(false);
+
+  const checkAndSetAgeLimit = async (idPeserta: string) => {
+    const ageLimit = await checkAgeLimit(idPeserta);
+    if (ageLimit) {
+      setIsApplyDisabled(true);
+      setIsAgeExceeded(true);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -602,6 +611,12 @@ const DetailKarir = () => {
     fetchAgeLimit();
   }, [idPeserta]);
 
+  useEffect(() => {
+    if (idPeserta) {
+      checkAndSetAgeLimit(idPeserta);
+    }
+  }, [idPeserta]);
+
   const calculateAge = (birthDate: Date) => {
     console.log("Birth Date:", birthDate);
     const difference = Date.now() - birthDate.getTime();
@@ -748,6 +763,11 @@ const DetailKarir = () => {
     const token = localStorage.getItem("token");
     if (!token || !idPeserta) return;
   
+    if (userAge !== null && maxAge !== null && userAge > maxAge) {
+      setIsAgeDialogOpen(true);
+      return;
+    }
+  
     let allDocumentsUploaded = true;
   
     requiredDocuments.forEach((doc) => {
@@ -844,7 +864,7 @@ const DetailKarir = () => {
 
     return requiredDocuments.some(
       (doc) => !uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, "-")]
-    );
+    ) || isAgeExceeded;
   };
 
   const handleAgreementSubmit = async () => {
@@ -982,12 +1002,12 @@ const DetailKarir = () => {
   };
 
   const handleAgeDialogOk = async () => {
-    if (idPeserta) {
-      await setAgeLimitAndFinalizeProfile(idPeserta);
-      setIsApplyDisabled(true);
-      await submitApplication();
-    }
+    if (!idPeserta) return;
+
+    await setAgeLimitAndFinalizeProfile(idPeserta);
+    setIsAgeExceeded(true);
     setIsAgeDialogOpen(false);
+    router.push("/karir");
   };
 
   if (!isAuthenticated) {
@@ -1125,11 +1145,13 @@ const DetailKarir = () => {
                               }
                               disabled={isLocked || isApplyDisabled || isFinal}
                             >
-                              {status === "4"
-                              ? "Submit"
-                              : isLocked
-                              ? "Anda sudah mendaftar pada periode ini"
-                              : "Apply"}
+                              {isAgeExceeded
+                                ? "Maaf anda telah mencapai usia maksimal"
+                                : status === "4"
+                                ? "Submit"
+                                : isLocked
+                                ? "Anda sudah mendaftar pada periode ini"
+                                : "Apply"}
                             </button>
                             </DialogTrigger>
                           <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
