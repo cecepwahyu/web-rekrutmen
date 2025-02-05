@@ -44,7 +44,7 @@ const generateMathCaptcha = () => {
 };
 
 const createMathCaptchaImage = (question: string) => {
-  if (typeof window === 'undefined') return null; // Ensure this runs only in the browser
+  if (typeof window === 'undefined') return null;
 
   const canvas = document.createElement("canvas");
   canvas.width = 200;
@@ -197,6 +197,10 @@ const Login = () => {
         const errorJson = JSON.parse(errorText);
         if (errorJson.responseCode === "401") {
           throw new Error("Email or password is incorrect");
+        } else if (errorJson.responseCode === "403") {
+          showDialog(errorJson.data.message || "Too many failed login attempts. Try again later.", true);
+          regenerateCaptcha();
+          return;
         } else {
           throw new Error("Email or password is incorrect");
         }
@@ -216,8 +220,8 @@ const Login = () => {
 
         toast.success("Login successful! Redirecting...", {
           style: {
-        background: 'white',
-        color: 'green',
+            background: 'white',
+            color: 'green',
           },
         });
 
