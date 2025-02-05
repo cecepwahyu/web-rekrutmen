@@ -1104,7 +1104,7 @@ const DetailKarir = () => {
                       </a>
                     </div>
                     <div className="flex justify-center mt-8">
-                      {(status === "1" || status === "4") && (
+                      {(status === "1" || status === "4" || status === "2" || status === "3") && (
                         <Dialog
                           open={isDialogOpen}
                           onOpenChange={setIsDialogOpen}
