@@ -526,11 +526,11 @@ const DetailKarir = () => {
       const now = new Date();
       const periodeAkhir = new Date(article.periodeAkhir);
       periodeAkhir.setDate(periodeAkhir.getDate() + 1);
-      if (now > periodeAkhir) {
+      if (status !== "4" && now > periodeAkhir) {
         setIsApplyDisabled(true);
       }
     }
-  }, [article]);
+  }, [article, status]);
 
   useEffect(() => {
     const fetchHeightWeight = async () => {
@@ -834,6 +834,10 @@ const DetailKarir = () => {
   
 
   const isApplyButtonDisabled = () => {
+    if (status === "4") {
+      return false;
+    }
+
     if (isHeightMandatory && (tinggiBadan === null || beratBadan === null)) {
       return true;
     }
@@ -1122,9 +1126,7 @@ const DetailKarir = () => {
                               disabled={isLocked || isApplyDisabled || isFinal}
                             >
                               {status === "4"
-                              ? isLocked
-                                ? "Submit"
-                                : "Submit"
+                              ? "Submit"
                               : isLocked
                               ? "Anda sudah mendaftar pada periode ini"
                               : "Apply"}
