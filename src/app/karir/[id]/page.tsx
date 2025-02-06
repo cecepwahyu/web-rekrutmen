@@ -1146,7 +1146,7 @@ const DetailKarir = () => {
                               disabled={isLocked || isApplyDisabled || isFinal}
                             >
                               {isAgeExceeded
-                                ? "Maaf anda telah mencapai usia maksimal"
+                                ? "Maaf usia Anda melebihi syarat pendaftaran"
                                 : status === "4"
                                 ? "Submit"
                                 : isLocked
