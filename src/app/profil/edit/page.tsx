@@ -104,7 +104,7 @@ const fetchKecamatanOptions = async (kabupatenKode: string) => {
         }));
         return options;
     } catch (error) {
-        console.error("Error fetching kecamatan list:", error);
+        //console.error("Error fetching kecamatan list:", error);
         return [];
     }
 };
@@ -1018,7 +1018,12 @@ const EditProfil = () => {
                                                 id="nama"
                                                 name="nama"
                                                 value={profileData.nama || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (!/[<>/]/.test(value) && value.length <= 50) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Nama"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
@@ -1033,7 +1038,12 @@ const EditProfil = () => {
                                                 id="tempatLahir"
                                                 name="tempatLahir"
                                                 value={profileData.tempatLahir || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Tempat Lahir"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
@@ -1154,7 +1164,12 @@ const EditProfil = () => {
                                                 id="provinsiIdentitas"
                                                 name="provinsiIdentitas"
                                                 value={profileData.provinsiIdentitas || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Provinsi Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
@@ -1180,21 +1195,16 @@ const EditProfil = () => {
                                                 id="kotaIdentitas"
                                                 name="kotaIdentitas"
                                                 value={profileData.kotaIdentitas || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Kota Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="kotaIdentitas"
-                                                name="kotaIdentitas"
-                                                options={kotaIdentitasOptions}
-                                                value={kotaIdentitasOptions.find(option => option.value === profileData.kotaIdentitas)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kotaIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Kabupaten/Kota Identitas"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1206,21 +1216,16 @@ const EditProfil = () => {
                                                 id="kecamatanIdentitas"
                                                 name="kecamatanIdentitas"
                                                 value={profileData.kecamatanIdentitas || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Kecamatan Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="kecamatanIdentitas"
-                                                name="kecamatanIdentitas"
-                                                options={kecamatanIdentitasOptions}
-                                                value={kecamatanIdentitasOptions.find(option => option.value === profileData.kecamatanIdentitas)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kecamatanIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Kecamatan Identitas"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1232,21 +1237,16 @@ const EditProfil = () => {
                                                 id="desaIdentitas"
                                                 name="desaIdentitas"
                                                 value={profileData.desaIdentitas || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Desa Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="desaIdentitas"
-                                                name="desaIdentitas"
-                                                options={desaIdentitasOptions}
-                                                value={desaIdentitasOptions.find(option => option.value === profileData.desaIdentitas)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'desaIdentitas', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Desa Identitas"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4 col-span-2">
@@ -1258,7 +1258,12 @@ const EditProfil = () => {
                                                 id="alamatIdentitas"
                                                 name="alamatIdentitas"
                                                 value={profileData.alamatIdentitas || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Alamat Identitas"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
@@ -1277,21 +1282,16 @@ const EditProfil = () => {
                                                 id="provinsiDomisili"
                                                 name="provinsiDomisili"
                                                 value={profileData.provinsiDomisili || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Provinsi Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="provinsiDomisili"
-                                                name="provinsiDomisili"
-                                                options={provinsiDomisiliOptions}
-                                                value={provinsiDomisiliOptions.find(option => option.value === profileData.provinsiDomisili)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'provinsiDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Provinsi Domisili"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1303,21 +1303,16 @@ const EditProfil = () => {
                                                 id="kotaDomisili"
                                                 name="kotaDomisili"
                                                 value={profileData.kotaDomisili || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Kabupaten/Kota Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="kotaDomisili"
-                                                name="kotaDomisili"
-                                                options={kotaDomisiliOptions}
-                                                value={kotaDomisiliOptions.find(option => option.value === profileData.kotaDomisili)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kotaDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Kabupaten/Kota Domisili"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1329,21 +1324,16 @@ const EditProfil = () => {
                                                 id="kecamatanDomisili"
                                                 name="kecamatanDomisili"
                                                 value={profileData.kecamatanDomisili || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Kecamatan Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="kecamatanDomisili"
-                                                name="kecamatanDomisili"
-                                                options={kecamatanDomisiliOptions}
-                                                value={kecamatanDomisiliOptions.find(option => option.value === profileData.kecamatanDomisili)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'kecamatanDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Kecamatan Domisili"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4">
@@ -1355,21 +1345,16 @@ const EditProfil = () => {
                                                 id="desaDomisili"
                                                 name="desaDomisili"
                                                 value={profileData.desaDomisili || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Desa Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
-                                            {/* <Select
-                                                id="desaDomisili"
-                                                name="desaDomisili"
-                                                options={desaDomisiliOptions}
-                                                value={desaDomisiliOptions.find(option => option.value === profileData.desaDomisili)}
-                                                onChange={(selectedOption: { value: string } | null) => handleChange({ target: { name: 'desaDomisili', value: selectedOption?.value || '' } } as ChangeEvent<HTMLInputElement>, 0, "profile")}
-                                                placeholder="Pilih Desa Domisili"
-                                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
-                                                isSearchable
-                                            /> */}
                                         </div>
 
                                         <div className="mb-4 col-span-2">
@@ -1381,7 +1366,12 @@ const EditProfil = () => {
                                                 id="alamatDomisili"
                                                 name="alamatDomisili"
                                                 value={profileData.alamatDomisili || ""}
-                                                onChange={(e) => handleChange(e, 0, "profile")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, 0, "profile");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Alamat Domisili"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
@@ -1483,7 +1473,12 @@ const EditProfil = () => {
                                                     id="namaInstitusi"
                                                     name="namaInstitusi"
                                                     value={pendidikan.namaInstitusi || ""}
-                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "pendidikan");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Nama Institusi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={50}
@@ -1498,7 +1493,12 @@ const EditProfil = () => {
                                                     id="jurusan"
                                                     name="jurusan"
                                                     value={pendidikan.jurusan || ""}
-                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "pendidikan");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Jurusan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={50}
@@ -1547,7 +1547,12 @@ const EditProfil = () => {
                                                     id="nilai"
                                                     name="nilai"
                                                     value={pendidikan.nilai || ""}
-                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9.]*$/.test(value)) {
+                                                            handleChange(e, index, "pendidikan");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Nilai"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={5}
@@ -1563,7 +1568,12 @@ const EditProfil = () => {
                                                     id="gelar"
                                                     name="gelar"
                                                     value={pendidikan.gelar || ""}
-                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "pendidikan");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Gelar"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={50}
@@ -1578,7 +1588,12 @@ const EditProfil = () => {
                                                     id="achievements"
                                                     name="achievements"
                                                     value={pendidikan.achievements || ""}
-                                                    onChange={(e) => handleChange(e, index, "pendidikan")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "pendidikan");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Penghargaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={255}
@@ -1631,7 +1646,12 @@ const EditProfil = () => {
                                                     id="posisiKerja"
                                                     name="posisiKerja"
                                                     value={pengalaman.posisiKerja || ""}
-                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "pengalaman");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Posisi Kerja"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={50}
@@ -1673,7 +1693,12 @@ const EditProfil = () => {
                                                     id="deskripsiKerja"
                                                     name="deskripsiKerja"
                                                     value={pengalaman.deskripsiKerja || ""}
-                                                    onChange={(e) => handleChange(e, index, "pengalaman")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "pengalaman");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Deskripsi Pekerjaan"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={255}
@@ -1712,7 +1737,12 @@ const EditProfil = () => {
                                                 id="namaOrganisasi"
                                                 name="namaOrganisasi"
                                                 value={organisasi.namaOrganisasi || ""}
-                                                onChange={(e) => handleChange(e, index, "organisasi")}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, index, "organisasi");
+                                                    }
+                                                }}
                                                 placeholder="Masukkan Nama Organisasi"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
@@ -1726,7 +1756,12 @@ const EditProfil = () => {
                                                     id="posisiOrganisasi"
                                                     name="posisiOrganisasi"
                                                     value={organisasi.posisiOrganisasi || ""}
-                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "organisasi");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Posisi Organisasi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={50}
@@ -1768,7 +1803,12 @@ const EditProfil = () => {
                                                     id="deskripsiKerja"
                                                     name="deskripsiKerja"
                                                     value={organisasi.deskripsiKerja || ""}
-                                                    onChange={(e) => handleChange(e, index, "organisasi")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "organisasi");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Deskripsi"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={255}
@@ -1838,8 +1878,13 @@ const EditProfil = () => {
                                                 id="namaKontak"
                                                 name="namaKontak"
                                                 value={kontak.namaKontak || ""}
-                                                onChange={(e) => handleChange(e, index, "kontak")}
-                                                placeholder="Masukkan Nama Kontak"
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        handleChange(e, index, "kontak");
+                                                    }
+                                                }}
+                                                placeholder="Masukkan Nama"
                                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                 maxLength={50}
                                             />
@@ -1889,7 +1934,12 @@ const EditProfil = () => {
                                                     id="emailKontak"
                                                     name="emailKontak"
                                                     value={kontak.emailKontak || ""}
-                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9.@]*$/.test(value)) {
+                                                            handleChange(e, index, "kontak");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Email"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={30}
@@ -1903,7 +1953,12 @@ const EditProfil = () => {
                                                     id="alamatKontak"
                                                     name="alamatKontak"
                                                     value={kontak.alamatKontak || ""}
-                                                    onChange={(e) => handleChange(e, index, "kontak")}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                            handleChange(e, index, "kontak");
+                                                        }
+                                                    }}
                                                     placeholder="Masukkan Alamat"
                                                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring"
                                                     maxLength={255}
