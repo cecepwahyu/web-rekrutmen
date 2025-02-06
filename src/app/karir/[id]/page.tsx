@@ -302,6 +302,42 @@ const setAgeLimitAndFinalizeProfile = async (idPeserta: string) => {
   }
 };
 
+const logMaxAge = async (idPeserta: string, slug: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/slug/${slug}`,
+      {
+        method: "GET",
+        headers: getHeaders(token),
+      }
+    );
+
+    const data = await response.json();
+    if (data.responseCode === "000") {
+      const idLowongan = data.data.idLowongan;
+      const logResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/log/max-age?idPeserta=${idPeserta}&idLowongan=${idLowongan}`,
+        {
+          method: "POST",
+          headers: getHeaders(token),
+        }
+      );
+
+      const logData = await logResponse.json();
+      if (logData.responseCode !== "000") {
+        console.error("Failed to log max age:", logData.responseMessage);
+      }
+    } else {
+      console.error("Failed to fetch lowongan details:", data.responseMessage);
+    }
+  } catch (error) {
+    console.error("Error logging max age:", error);
+  }
+};
+
 const DetailKarir = () => {
   const params = useParams();
   const slug = params?.id as string;
@@ -1003,6 +1039,10 @@ const DetailKarir = () => {
 
   const handleAgeDialogOk = async () => {
     if (!idPeserta) return;
+
+    if (userAge !== null && maxAge !== null && userAge > maxAge) {
+      await logMaxAge(idPeserta, slug);
+    }
 
     await setAgeLimitAndFinalizeProfile(idPeserta);
     setIsAgeExceeded(true);
