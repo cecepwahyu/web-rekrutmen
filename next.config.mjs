@@ -1,3 +1,10 @@
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//     output: "standalone",
+// };
+
+// export default nextConfig;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
@@ -26,23 +33,23 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "no-referrer", // Controls the amount of referrer information sent with requests
+            value: "strict-origin-when-cross-origin", // Sends referrer only to same-origin
           },
           {
             key: "Permissions-Policy",
-            value: "geolocation=(), microphone=(), camera=()", // Controls the use of browser features
+            value: "geolocation=(), microphone=(), camera=()", // Restricts browser features
           },
           {
             key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp", // Ensures that only same-origin resources can be embedded
+            value: "require-corp", // Ensures secure cross-origin resource loading
           },
           {
             key: "Cross-Origin-Resource-Policy",
-            value: "same-origin", // Ensures that only same-origin resources can be accessed
+            value: "same-origin", // Blocks unauthorized resource sharing
           },
           {
             key: "Cross-Origin-Opener-Policy",
-            value: "same-origin", // Ensures that the document can only interact with same-origin documents
+            value: "same-origin", // Protects against cross-origin attacks
           },
         ],
       },
