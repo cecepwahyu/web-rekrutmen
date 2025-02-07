@@ -189,7 +189,7 @@ const Login = () => {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ ...data, recaptchaToken }),
+        body: JSON.stringify({ email: data.email, password: data.password }),
       });
 
       if (!response.ok) {
