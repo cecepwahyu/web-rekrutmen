@@ -36,16 +36,15 @@ import FormGroup from "@mui/material/FormGroup";
 
 // Define the form schema using zod
 const formSchema = z.object({
-  nama: z.string().min(1, "Nama is required."),
-  //username: z.string().min(3, "Username must be at least 6 characters."),
-  no_identitas: z.string().min(16, "NIK must be at least 16 characters."),
-  email: z.string().email("Please enter a valid email."),
+  nama: z.string().min(1, "Nama wajib diisi."),
+  no_identitas: z.string().min(16, "NIK / No Identitas harus memiliki minimal 16 karakter."),
+  email: z.string().email("Harap masukkan email yang valid."),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters.")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
-    .regex(/[0-9]/, "Password must contain at least one number.")
-    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character."),
+    .min(8, "Kata sandi harus terdiri dari setidaknya 8 karakter.")
+    .regex(/[A-Z]/, "Kata sandi harus mengandung setidaknya satu huruf kapital.")
+    .regex(/[0-9]/, "Kata sandi harus mengandung setidaknya satu angka.")
+    .regex(/[^a-zA-Z0-9]/, "Kata sandi harus mengandung setidaknya satu karakter khusus."),
 });
 
 type RegisterFormValues = z.infer<typeof formSchema>;
@@ -129,7 +128,7 @@ const Register = () => {
     if (emptyFields.length > 0) {
       const errors: { [key: string]: string } = {};
       emptyFields.forEach(([key]) => {
-        errors[key] = "This field is required.";
+        errors[key] = "Kolom ini wajib diisi.";
       });
       setFieldErrors(errors);
       return;
@@ -157,13 +156,13 @@ const Register = () => {
               Swal.fire({
                 icon: "error",
                 title: "Duplicate Email",
-                text: "Email already registered. Please use another email.",
+                text: "Email sudah terdaftar. Silakan gunakan email lain.",
               });
             } else if (errorJson.data.includes("NIK")) {
               Swal.fire({
                 icon: "error",
                 title: "Duplicate NIK",
-                text: "NIK already registered. Please use another NIK.",
+                text: "NIK sudah terdaftar. Silahkan gunakan NIK lain.",
               });
             } else {
               errors.general = "Register failed. Please try again.";
@@ -201,7 +200,7 @@ const Register = () => {
 
   const handleAgreementSubmit = async () => {
     if (!agreements.understand) {
-      setAgreementError("Please check the box to proceed.");
+      setAgreementError("Silakan centang persetujuan untuk melanjutkan.");
       return;
     }
 
@@ -229,16 +228,6 @@ const Register = () => {
         <MenuBar />
         <div className="bg-white flex-grow relative z-10 shadow-lg rounded-b-3xl">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            {/* <defs>
-              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{ stopColor: "#015CAC", stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: "#018ED2", stopOpacity: 1 }} />
-              </linearGradient>
-            </defs>
-            <path
-              fill="url(#grad1)"
-              d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"
-            ></path> */}
           </svg>
         </div>
 
