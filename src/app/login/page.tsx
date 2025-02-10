@@ -196,13 +196,13 @@ const Login = () => {
         const errorText = await response.text();
         const errorJson = JSON.parse(errorText);
         if (errorJson.responseCode === "401") {
-          throw new Error("Email or password is incorrect");
+          throw new Error("Email atau kata sandi salah");
         } else if (errorJson.responseCode === "403") {
           showDialog(errorJson.data.message || "Too many failed login attempts. Try again later.", true);
           regenerateCaptcha();
           return;
         } else {
-          throw new Error("Email or password is incorrect");
+          throw new Error("Email atau kata sandi salah");
         }
       }
 
@@ -210,7 +210,7 @@ const Login = () => {
 
       if (result.responseCode === "000") {
         if (!result.data.isActive) {
-          showDialog("Akun Anda tidak aktif. Silahkan hubungi Administrator.", true);
+          showDialog("Akun Anda tidak aktif. Silahkan verifikasi akun atau hubungi Administrator.", true);
           setLoading(false);
           return;
         }
@@ -248,7 +248,7 @@ const Login = () => {
     }
 
     if (!forgotPasswordEmail || !forgotPasswordIdentitas) {
-      showDialog("Please enter your email and identification number.", true);
+      showDialog("Silakan masukkan email dan nomor identitas Anda.", true);
       return;
     }
 
@@ -280,7 +280,7 @@ const Login = () => {
       if (!response.ok) {
         const errorText = await response.text();
         const errorJson = JSON.parse(errorText);
-        throw new Error(errorJson.data || "Invalid email or No Identitas");
+        throw new Error(errorJson.data || "Invalid email atau No Identitas");
       }
 
       showDialog("Password reset link sent! Please check your email.");
