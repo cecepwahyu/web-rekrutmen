@@ -26,6 +26,26 @@ function DesktopNavLinks() {
   const [showForceLogout, setShowForceLogout] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
+  const sessionTimeout = 1 * 60 * 1000; // 1 minute in milliseconds
+  let sessionTimer: NodeJS.Timeout;
+
+  const resetSessionTimer = () => {
+    clearTimeout(sessionTimer);
+    sessionTimer = setTimeout(() => {
+      handleForceLogout();
+    }, sessionTimeout);
+  };
+
+  const idleTimeout = 1 * 60 * 1000; // 1 minute in milliseconds
+  let idleTimer: NodeJS.Timeout;
+
+  const resetIdleTimer = () => {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      handleForceLogout();
+    }, idleTimeout);
+  };
+
   const getInitials = (name: string) => {
     if (!name) return '';
     const nameParts = name.split(' ');
@@ -110,45 +130,29 @@ function DesktopNavLinks() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => {
-  //     localStorage.removeItem('token');
-  //   };
+  useEffect(() => {
+    document.addEventListener('mousemove', resetSessionTimer);
+    document.addEventListener('keydown', resetSessionTimer);
+    resetSessionTimer();
 
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      clearTimeout(sessionTimer);
+      document.removeEventListener('mousemove', resetSessionTimer);
+      document.removeEventListener('keydown', resetSessionTimer);
+    };
+  }, []);
 
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //   };
-  // }, []);
+  useEffect(() => {
+    document.addEventListener('mousemove', resetIdleTimer);
+    document.addEventListener('keydown', resetIdleTimer);
+    resetIdleTimer();
 
-  // useEffect(() => {
-  //   const checkTokenValidity = async () => {
-  //     const token = localStorage.getItem('token');
-  //     if (token) {
-  //       try {
-  //         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/validate-token`, {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //             'Accept': 'application/json',
-  //             'Authorization': `Bearer ${token}`
-  //           },
-  //           body: JSON.stringify({})
-  //         });
-  //         const result = await response.json();
-  //         if (result.responseCode !== '000') {
-  //           setShowForceLogout(true);
-  //         }
-  //       } catch (error) {
-  //         console.error('Error validating token:', error);
-  //         setShowForceLogout(true);
-  //       }
-  //     }
-  //   };
-
-  //   checkTokenValidity();
-  // }, []);
+    return () => {
+      clearTimeout(idleTimer);
+      document.removeEventListener('mousemove', resetIdleTimer);
+      document.removeEventListener('keydown', resetIdleTimer);
+    };
+  }, []);
 
   const handleProfileDropdownToggle = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
