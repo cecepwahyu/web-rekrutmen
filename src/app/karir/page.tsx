@@ -91,14 +91,12 @@ const Karir = () => {
                         return now >= startDate;
                     });
                     setJobs(validJobs);
-                    setFilteredJobs(validJobs);
                     const rekrutmenJobs = validJobs.filter((job: Job) => job.status === "1" || job.status === "3");
                     const jobDescJobs = validJobs.filter((job: Job) => job.status === "4");
-                    setRekrutmenJobs(rekrutmenJobs.slice(currentPageRekrutmen * ITEMS_PER_PAGE, (currentPageRekrutmen + 1) * ITEMS_PER_PAGE));
-                    setJobDescJobs(jobDescJobs.slice(currentPageJobDesc * ITEMS_PER_PAGE, (currentPageJobDesc + 1) * ITEMS_PER_PAGE));
-                    setTotalPagesRekrutmen(Math.ceil(rekrutmenJobs.length / ITEMS_PER_PAGE));
-                    setTotalPagesJobDesc(Math.ceil(jobDescJobs.length / ITEMS_PER_PAGE));
-                    setTotalPages(Math.ceil(data.data.totalItems / ITEMS_PER_PAGE));
+                    setRekrutmenJobs(rekrutmenJobs);
+                    setJobDescJobs(jobDescJobs);
+                    setTotalPagesRekrutmen(data.data.totalPages);
+                    setTotalPagesJobDesc(data.data.totalPages);
                 }
             } catch (error) {
                 console.error("Error fetching job data:", error);
@@ -108,15 +106,103 @@ const Karir = () => {
         }
     };
 
-    // Fetch job data based on active tab
+    // Fetch job data for Rekrutmen
     useEffect(() => {
-        if (isAuthenticated) {
-            const endpoint = activeTab === "Rekrutmen"
-                ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/rekrutmen/paginated?page=${currentPageRekrutmen}`
-                : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/paginated?page=${currentPageJobDesc}`;
-            fetchJobs(endpoint);
+        const fetchRekrutmen = async () => {
+            setIsLoading(true); // Set loading to true before fetching
+
+            if (typeof window === "undefined") {
+                setIsLoading(false); // Set loading to false if not in the browser
+                return; // Exit if not in the browser
+            }
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.error("No token found in localStorage");
+                setIsLoading(false); // Set loading to false if no token is found
+                return; // Exit if no token is found
+            }
+
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/rekrutmen/paginated?page=${currentPageRekrutmen}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+
+                const data = await response.json();
+                if (data.responseCode === "000") {
+                    const publishedJobs = data.data.content;
+                    setRekrutmenJobs(publishedJobs); // Set only published and approved jobs
+                    setTotalPagesRekrutmen(data.data.totalPages); // Set total pages
+                    setFilteredJobs(publishedJobs); // Update filtered jobs
+                } else {
+                    console.error("Error fetching data:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching job data:", error);
+            } finally {
+                setIsLoading(false); // Set loading to false after fetching
+            }
+        };
+
+        if (isAuthenticated && activeTab === "Rekrutmen") {
+            fetchRekrutmen();
         }
-    }, [currentPageRekrutmen, currentPageJobDesc, isAuthenticated, activeTab]);
+    }, [currentPageRekrutmen, isAuthenticated, activeTab]);
+
+    // Fetch job data for Job Desc
+    useEffect(() => {
+        const fetchJobDesc = async () => {
+            setIsLoading(true); // Set loading to true before fetching
+
+            if (typeof window === "undefined") {
+                setIsLoading(false); // Set loading to false if not in the browser
+                return; // Exit if not in the browser
+            }
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.error("No token found in localStorage");
+                setIsLoading(false); // Set loading to false if no token is found
+                return; // Exit if no token is found
+            }
+
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/paginated?page=${currentPageJobDesc}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+
+                const data = await response.json();
+                if (data.responseCode === "000") {
+                    const publishedJobs = data.data.content;
+                    setJobDescJobs(publishedJobs); // Set only published and approved jobs
+                    setTotalPagesJobDesc(data.data.totalPages); // Set total pages
+                    setFilteredJobs(publishedJobs); // Update filtered jobs
+                } else {
+                    console.error("Error fetching data:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching job data:", error);
+            } finally {
+                setIsLoading(false); // Set loading to false after fetching
+            }
+        };
+
+        if (isAuthenticated && activeTab === "Job Desc") {
+            fetchJobDesc();
+        }
+    }, [currentPageJobDesc, isAuthenticated, activeTab]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -130,16 +216,9 @@ const Karir = () => {
     }, []);
 
     useEffect(() => {
-        const filtered = jobs.filter(job =>
-            job.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        if (activeTab === "Rekrutmen") {
-            setFilteredJobs(filtered.filter(job => (job.status === "1" || job.status === "3") && job.flgApprove === true));
-        } else if (activeTab === "Job Desc") {
-            setFilteredJobs(filtered.filter(job => job.status === "4" && job.flgApprove === true));
-        }
-    }, [searchTerm, jobs, activeTab]);
+        const filtered = activeTab === "Rekrutmen" ? rekrutmenJobs : jobDescJobs;
+        setFilteredJobs(filtered.filter(job => job.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase()) && job.flgApprove === true));
+    }, [searchTerm, rekrutmenJobs, jobDescJobs, activeTab]);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -351,33 +430,52 @@ const Karir = () => {
                                     </p>
                                 </div>
                             ) : (
-                                filteredJobs.slice(currentPageJobDesc * ITEMS_PER_PAGE, (currentPageJobDesc + 1) * ITEMS_PER_PAGE).map((job: Job) => (
-                                    <div key={job.idLowongan} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
-                                        <button
-                                            className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
-                                            onClick={() => window.location.href = `/karir/${job.slug}`}
-                                        >
-                                            <div className="w-1/4">
-                                                <Image
-                                                    src="/images/magang.png"
-                                                    alt={job.judulLowongan}
-                                                    width={150}
-                                                    height={150}
-                                                    className="rounded-lg object-contain"
-                                                    loading="lazy"
-                                                    onLoad={() => console.log('Image loaded')}
-                                                />
-                                            </div>
-                                            <div className="w-3/4 pl-6 text-left">
-                                                <h2 className="text-xl font-bold mb-2 text-darkBlue">{job.judulLowongan}</h2>
-                                                <div className="flex items-center text-gray-500 text-xs space-x-4 mt-2">
-                                                        <FontAwesomeIcon icon={faUsers} className="mr-1" />
-                                                        <span>{job.posisi}</span>
+                                <>
+                                    {filteredJobs.slice(currentPageJobDesc * ITEMS_PER_PAGE, (currentPageJobDesc + 1) * ITEMS_PER_PAGE).map((job: Job) => (
+                                        <div key={job.idLowongan} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
+                                            <button
+                                                className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
+                                                onClick={() => window.location.href = `/karir/${job.slug}`}
+                                            >
+                                                <div className="w-1/4">
+                                                    <Image
+                                                        src="/images/magang.png"
+                                                        alt={job.judulLowongan}
+                                                        width={150}
+                                                        height={150}
+                                                        className="rounded-lg object-contain"
+                                                        loading="lazy"
+                                                        onLoad={() => console.log('Image loaded')}
+                                                    />
                                                 </div>
-                                            </div>
-                                        </button>
+                                                <div className="w-3/4 pl-6 text-left">
+                                                    <h2 className="text-xl font-bold mb-2 text-darkBlue">{job.judulLowongan}</h2>
+                                                    <div className="flex items-center text-gray-500 text-xs space-x-4 mt-2">
+                                                            <FontAwesomeIcon icon={faUsers} className="mr-1" />
+                                                            <span>{job.posisi}</span>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    ))}
+
+                                    {/* Pagination Buttons for Job Desc */}
+                                    <div className="flex justify-center mt-6 space-x-2 mb-8">
+                                        {Array.from({ length: totalPagesJobDesc }).map((_, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => setCurrentPageJobDesc(index)}
+                                                className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                                                    index === currentPageJobDesc
+                                                        ? "bg-darkBlue text-white"
+                                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                                }`}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        ))}
                                     </div>
-                                ))
+                                </>
                             )}
                         </div>
                     )}

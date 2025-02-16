@@ -915,51 +915,12 @@ const EditProfil = () => {
             setIsLoading(false);
         }
 
-        // // Send kontak data to the new endpoint
-        // try {
-        //     const kontakResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/kontak/${id}/insert`, {
-        //         method: "PUT",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             Accept: "application/json",
-        //             Authorization: `Bearer ${token}`,
-        //         },
-        //         body: JSON.stringify(kontakList.map(kontak => ({
-        //             id_kontak_peserta: kontak.idKontakPeserta, // Include ID for update/delete
-        //             nama_kontak: kontak.namaKontak,
-        //             hub_kontak: kontak.hubKontak,
-        //             telp_kontak: kontak.telpKontak,
-        //             email_kontak: kontak.emailKontak,
-        //             alamat_kontak: kontak.alamatKontak,
-        //             is_bpddiy_related: isBpddiyRelated,
-        //         }))),
-        //     });
-
-        //     const kontakData = await kontakResponse.json();
-        //     if (kontakData.responseCode !== "000") {
-        //         console.error("Error saving kontak data:", kontakData.message);
-        //     }
-        // } catch (error) {
-        //     console.error("Error saving kontak data:", error);
-        // }
     };
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans relative">
             <MenuBar />
             <main className="pt-64 bg-gradient-to-r from-[#015CAC] to-[#018ED2] relative z-10">
-                {/* <div className="bg-white relative z-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                        <defs>
-                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%">
-                                <stop offset="0%" style={{ stopColor: '#015CAC', stopOpacity: 1 }} />
-                                <stop offset="100%" style={{ stopColor: '#018ED2', stopOpacity: 1 }} />
-                            </linearGradient>
-                        </defs>
-                        <path fill="url(#grad1)"
-                            d="M0,0L120,10.7C240,21,480,43,720,48C960,53,1200,43,1320,37.3L1440,32L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
-                    </svg>
-                </div> */}
 
                 <div className="flex flex-col justify-center items-center w-full bg-white min-h-[400px] relative z-10 -mt-32 px-4 pt-16 md:px-8 lg:px-16 xl:px-32">
                     <h1 className="text-darkBlue font-semibold text-3xl mt-4 md:mt-2">Edit Profil</h1>
