@@ -109,19 +109,17 @@ const Karir = () => {
     // Fetch job data for Rekrutmen
     useEffect(() => {
         const fetchRekrutmen = async () => {
-            setIsLoading(true); // Set loading to true before fetching
-
+            setIsLoading(true);
             if (typeof window === "undefined") {
-                setIsLoading(false); // Set loading to false if not in the browser
-                return; // Exit if not in the browser
+                setIsLoading(false);
+                return;
             }
 
             const token = localStorage.getItem("token");
-
             if (!token) {
                 console.error("No token found in localStorage");
-                setIsLoading(false); // Set loading to false if no token is found
-                return; // Exit if no token is found
+                setIsLoading(false);
+                return;
             }
 
             try {
@@ -136,17 +134,17 @@ const Karir = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    const publishedJobs = data.data.content;
-                    setRekrutmenJobs(publishedJobs); // Set only published and approved jobs
-                    setTotalPagesRekrutmen(data.data.totalPages); // Set total pages
-                    setFilteredJobs(publishedJobs); // Update filtered jobs
+                    const publishedJobs = data.data.content.filter((job: Job) => job.flgApprove === true);
+                    setRekrutmenJobs(publishedJobs);
+                    setFilteredJobs(publishedJobs);
+                    setTotalPagesRekrutmen(data.data.totalPages);
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
             } catch (error) {
                 console.error("Error fetching job data:", error);
             } finally {
-                setIsLoading(false); // Set loading to false after fetching
+                setIsLoading(false);
             }
         };
 
@@ -174,7 +172,7 @@ const Karir = () => {
             }
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/paginated?page=${currentPageJobDesc}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/paginated?page=${currentPageJobDesc}&size=${ITEMS_PER_PAGE}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -185,10 +183,10 @@ const Karir = () => {
 
                 const data = await response.json();
                 if (data.responseCode === "000") {
-                    const publishedJobs = data.data.content;
-                    setJobDescJobs(publishedJobs); // Set only published and approved jobs
-                    setTotalPagesJobDesc(data.data.totalPages); // Set total pages
-                    setFilteredJobs(publishedJobs); // Update filtered jobs
+                    const publishedJobs = data.data.content.filter((job: Job) => job.flgApprove === true);
+                    setJobDescJobs(publishedJobs);
+                    setFilteredJobs(publishedJobs);
+                    setTotalPagesJobDesc(Math.ceil(data.data.totalItems / ITEMS_PER_PAGE));
                 } else {
                     console.error("Error fetching data:", data.message);
                 }
@@ -361,7 +359,7 @@ const Karir = () => {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 w-11/12 lg:w-4/5 pb-10">
-                                    {filteredJobs.slice(currentPageRekrutmen * ITEMS_PER_PAGE, (currentPageRekrutmen + 1) * ITEMS_PER_PAGE).map((job: Job) => (
+                                    {filteredJobs.map((job: Job) => (
                                         <button
                                             key={job.idLowongan}
                                             className="bg-white shadow-lg rounded-lg p-6 flex items-center transform hover:scale-105 transition duration-500 ease-in-out hover:shadow-xl"
@@ -431,7 +429,7 @@ const Karir = () => {
                                 </div>
                             ) : (
                                 <>
-                                    {filteredJobs.slice(currentPageJobDesc * ITEMS_PER_PAGE, (currentPageJobDesc + 1) * ITEMS_PER_PAGE).map((job: Job) => (
+                                    {filteredJobs.map((job: Job) => (
                                         <div key={job.idLowongan} className="w-full md:w-2/3 lg:w-1/2 mt-6 px-4">
                                             <button
                                                 className="w-full bg-white shadow-lg rounded-lg p-6 flex items-center hover:shadow-xl transition-shadow duration-300 transform hover:scale-105"
