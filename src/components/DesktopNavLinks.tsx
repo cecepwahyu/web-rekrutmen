@@ -14,6 +14,8 @@ import {
     NavigationMenuViewport,
   } from "@/components/ui/navigation-menu"
 import HomeIcon from './HomeIcon';
+import { jwtDecode } from 'jwt-decode';
+import { usePathname } from 'next/navigation';
 
 function DesktopNavLinks() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +27,8 @@ function DesktopNavLinks() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showForceLogout, setShowForceLogout] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
+  const isMounted = typeof window !== 'undefined';
+  const pathname = usePathname();
 
   const sessionTimeout = 1 * 60 * 1000; // 1 minute in milliseconds
   let sessionTimer: NodeJS.Timeout;
@@ -129,6 +133,47 @@ function DesktopNavLinks() {
       fetchProfileData();
     }
   }, []);
+
+  useEffect(() => {
+    if (isMounted && pathname !== '/login' && pathname !== '/' && pathname !== '/register') {
+      const validateToken = async (token: string) => {
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/validate-token`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ token })
+          });
+          const result = await response.json();
+          if (result.responseCode !== '000') {
+            handleForceLogout();
+          }
+        } catch (error) {
+          handleForceLogout();
+        }
+      };
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decodedToken: any = jwtDecode(token);
+          const isTokenExpired = decodedToken.exp < Date.now() / 1000;
+          if (isTokenExpired) {
+            handleForceLogout();
+          } else {
+            validateToken(token);
+          }
+        } catch (error) {
+          handleForceLogout();
+        }
+      } else {
+        handleForceLogout();
+      }
+    }
+  }, [isMounted, pathname]);
 
   useEffect(() => {
     document.addEventListener('mousemove', resetSessionTimer);
