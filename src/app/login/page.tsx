@@ -295,7 +295,6 @@ const Login = () => {
         router.push("/otp");
       }, 2000);
     } catch (error) {
-      console.error("Error during password reset:", error);
       if (error instanceof Error) {
         showDialog(error.message || "An error occurred. Please try again later.", true);
       } else {
