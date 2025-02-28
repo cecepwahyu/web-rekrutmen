@@ -106,6 +106,10 @@ function DesktopNavLinks() {
             },
             body: JSON.stringify({})
           });
+          if (response.status === 401) {
+            handleForceLogout();
+            return;
+          }
           const result = await response.json();
           if (result.responseCode === '000') {
             const idPeserta = result.data.idPeserta;
@@ -117,6 +121,10 @@ function DesktopNavLinks() {
                 'Authorization': `Bearer ${token}`
               }
             });
+            if (profileResponse.status === 401) {
+              handleForceLogout();
+              return;
+            }
             const profileData = await profileResponse.json();
             if (profileData.responseCode === '000') {
               const [nama, email, profilePicture] = profileData.data[0];
@@ -147,6 +155,10 @@ function DesktopNavLinks() {
             },
             body: JSON.stringify({ token })
           });
+          if (response.status === 401) {
+            handleForceLogout();
+            return;
+          }
           const result = await response.json();
           if (result.responseCode !== '000') {
             handleForceLogout();
@@ -213,7 +225,10 @@ function DesktopNavLinks() {
 
   const handleForceLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    setHasToken(false);
+    if (pathname !== '/login' && pathname !== '/' && pathname !== '/register' && pathname !== '/account-verification' && pathname !== '/otp') {
+      window.location.href = "/login";
+    }
   };
 
   const handleLogoutClick = () => {
