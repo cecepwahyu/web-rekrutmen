@@ -362,7 +362,13 @@ const Otp = () => {
           </div>
         </div>
 
-        <MuiDialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <MuiDialog
+          open={openDialog}
+          onClose={() => {}}
+          maxWidth="md"
+          fullWidth
+          disableEscapeKeyDown={true}
+        >
           <MuiDialogTitle>Ubah Password</MuiDialogTitle>
           <MuiDialogContent>
             <div className="relative">
