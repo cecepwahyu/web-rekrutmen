@@ -414,7 +414,6 @@ const Register = () => {
                   >
                     {loading ? "Register in progress..." : "Register"}
                   </Button>
-                  {fieldErrors.general && <p className="text-red-500 text-center mt-4">{fieldErrors.general}</p>}
                 </form>
               </Form>
 
