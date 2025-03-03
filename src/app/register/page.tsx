@@ -122,7 +122,7 @@ const Register = () => {
   };
 
   // Handle form submission
-  const handleRegister = async (data: RegisterFormValues) => {
+  const handleRegister = (data: RegisterFormValues) => {
     // Check if any field is empty
     const emptyFields = Object.entries(data).filter(([key, value]) => !value);
     if (emptyFields.length > 0) {
@@ -134,9 +134,21 @@ const Register = () => {
       return;
     }
 
-    setLoading(true);
     setFieldErrors({}); // Clear previous errors
+    setIsDialogOpen(true);
+  };
+
+  const handleAgreementSubmit = async () => {
+    if (!agreements.understand) {
+      setAgreementError("Silakan centang persetujuan untuk melanjutkan.");
+      return;
+    }
+
+    setLoading(true);
+    setAgreementError(""); // Clear previous errors
+
     try {
+      const data = form.getValues();
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`, {
         method: "POST",
         headers: {
@@ -194,14 +206,6 @@ const Register = () => {
       setFieldErrors({ general: "An error occurred. Please try again later." });
     } finally {
       setLoading(false);
-    }
-    setIsDialogOpen(true);
-  };
-
-  const handleAgreementSubmit = async () => {
-    if (!agreements.understand) {
-      setAgreementError("Silakan centang persetujuan untuk melanjutkan.");
-      return;
     }
 
     setIsDialogOpen(false);
@@ -458,6 +462,7 @@ const Register = () => {
           {agreementError && (
             <p className="text-red-500 text-sm mt-2">{agreementError}</p>
           )}
+          {fieldErrors.general && <p className="text-red-500 text-center mt-4">{fieldErrors.general}</p>}
           <DialogFooter className="mt-6 flex justify-end">
             <button
               onClick={handleAgreementSubmit}
