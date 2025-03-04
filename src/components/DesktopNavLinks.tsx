@@ -30,17 +30,19 @@ function DesktopNavLinks() {
   const isMounted = typeof window !== 'undefined';
   const pathname = usePathname();
 
-  const sessionTimeout = 1 * 60 * 1000; // 1 minute in milliseconds
+  const sessionTimeout = parseInt(process.env.NEXT_PUBLIC_SESSION_TIMEOUT || '60000', 10); // Default to 1 minute
   let sessionTimer: NodeJS.Timeout;
 
   const resetSessionTimer = () => {
     clearTimeout(sessionTimer);
+    const currentTime = Date.now();
+    localStorage.setItem('lastActivity', currentTime.toString());
     sessionTimer = setTimeout(() => {
       handleForceLogout();
     }, sessionTimeout);
   };
 
-  const idleTimeout = 1 * 60 * 1000; // 1 minute in milliseconds
+  const idleTimeout = parseInt(process.env.NEXT_PUBLIC_IDLE_TIMEOUT || '60000', 10); // Default to 1 minute
   let idleTimer: NodeJS.Timeout;
 
   const resetIdleTimer = () => {
@@ -188,6 +190,14 @@ function DesktopNavLinks() {
   }, [isMounted, pathname]);
 
   useEffect(() => {
+    const lastActivity = localStorage.getItem('lastActivity');
+    if (lastActivity) {
+      const elapsedTime = Date.now() - parseInt(lastActivity, 10);
+      if (elapsedTime >= sessionTimeout) {
+        handleForceLogout();
+      }
+    }
+
     document.addEventListener('mousemove', resetSessionTimer);
     document.addEventListener('keydown', resetSessionTimer);
     resetSessionTimer();
