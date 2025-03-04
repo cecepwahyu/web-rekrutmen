@@ -33,13 +33,6 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // Check if the user is navigating to OTP page
-  if (pathname === '/otp') {
-    if (!referrer || !referrer.includes('/login')) {
-      return redirectToReferrer();
-    }
-  }
-
   // Add other conditional redirects if necessary
   if (pathname === '/restricted-page') {
     // Example logic for other pages
