@@ -33,12 +33,6 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // Add other conditional redirects if necessary
-  if (pathname === '/restricted-page') {
-    // Example logic for other pages
-    return NextResponse.redirect(new URL('/some-other-page', req.url));
-  }
-
   // Allow other requests to pass through
   return NextResponse.next();
 }
