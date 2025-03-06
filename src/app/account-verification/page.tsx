@@ -75,7 +75,7 @@ const AccountVerification = () => {
         },
       });
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/resend-otp`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/resend-otp-akun-verif`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
