@@ -166,6 +166,10 @@ const Login = () => {
     setForgotPasswordCaptchaImage(createMathCaptchaImage(newCaptcha.question));
   };
 
+  useEffect(() => {
+    document.title = "Login | Rekrutmen BPD DIY";
+  }, []);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
