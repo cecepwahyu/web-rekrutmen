@@ -269,18 +269,10 @@ const EditProfil = () => {
                 showDialog("Tanggal Akhir Bekerja tidak boleh kurang dari Tanggal Mulai Bekerja.");
                 return;
             }
-            if (name === "periodeKerjaStart" && value > pengalaman.periodeKerjaEnd) {
-                showDialog("Tanggal Mulai Bekerja tidak boleh lebih dari Tanggal Akhir Bekerja.");
-                return;
-            }
         } else if (type === "organisasi") {
             const organisasi = organisasiList[index];
             if (name === "periodeEnd" && value < organisasi.periodeStart) {
                 showDialog("Tanggal Akhir tidak boleh kurang dari Tanggal Mulai.");
-                return;
-            }
-            if (name === "periodeStart" && value > organisasi.periodeEnd) {
-                showDialog("Tanggal Mulai tidak boleh lebih dari Tanggal Akhir.");
                 return;
             }
         }
@@ -783,6 +775,10 @@ const EditProfil = () => {
         } else if (type === "organisasi") {
             setOrganisasiList(organisasiList.filter((_, i) => i !== index));
         } else if (type === "kontak") {
+            if (kontakList.length === 1) {
+                showDialog("Anda harus memiliki setidaknya satu kontak keluarga.");
+                return;
+            }
             setKontakList(kontakList.filter((_, i) => i !== index));
         }
     };
@@ -794,6 +790,11 @@ const EditProfil = () => {
 
         if (isBpddiyRelated === null) {
             showDialog("Field Hubungan dengan BPD wajib diisi.");
+            return;
+        }
+
+        if (kontakList.length === 0) {
+            showDialog("Anda harus mengisi setidaknya satu kontak keluarga.");
             return;
         }
 
@@ -1531,7 +1532,7 @@ const EditProfil = () => {
                                                     value={pendidikan.gelar || ""}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
-                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        if (/^[a-zA-Z0-9.\s]*$/.test(value)) {
                                                             handleChange(e, index, "pendidikan");
                                                         }
                                                     }}
