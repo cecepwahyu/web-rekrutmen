@@ -1230,7 +1230,7 @@ const EditProfil = () => {
                                                 value={profileData.alamatIdentitas || ""}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
-                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                    if (/^[a-zA-Z0-9\s.,():]*$/.test(value)) {
                                                         handleChange(e, 0, "profile");
                                                     }
                                                 }}
@@ -1338,7 +1338,7 @@ const EditProfil = () => {
                                                 value={profileData.alamatDomisili || ""}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
-                                                    if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                    if (/^[a-zA-Z0-9\s.,():]*$/.test(value)) {
                                                         handleChange(e, 0, "profile");
                                                     }
                                                 }}
@@ -1560,7 +1560,7 @@ const EditProfil = () => {
                                                     value={pendidikan.achievements || ""}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
-                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        if (/^[a-zA-Z0-9\s.,():]*$/.test(value)) {
                                                             handleChange(e, index, "pendidikan");
                                                         }
                                                     }}
@@ -1665,7 +1665,7 @@ const EditProfil = () => {
                                                     value={pengalaman.deskripsiKerja || ""}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
-                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        if (/^[a-zA-Z0-9\s.,():]*$/.test(value)) {
                                                             handleChange(e, index, "pengalaman");
                                                         }
                                                     }}
@@ -1775,7 +1775,7 @@ const EditProfil = () => {
                                                     value={organisasi.deskripsiKerja || ""}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
-                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        if (/^[a-zA-Z0-9\s.,():]*$/.test(value)) {
                                                             handleChange(e, index, "organisasi");
                                                         }
                                                     }}
