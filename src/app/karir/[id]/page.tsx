@@ -1172,26 +1172,26 @@ const DetailKarir = () => {
                             <DialogTrigger asChild>
                             <button
                               className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                              isLocked || isApplyDisabled || isFinal
+                              (isLocked && status !== "4") || isApplyDisabled || isFinal
                                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                                 : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
                               }`}
                               onClick={
-                              isLocked || isApplyDisabled || isFinal
+                              (isLocked && status !== "4") || isApplyDisabled || isFinal
                                 ? undefined
                                 : status === "4"
                                 ? handleSubmitCv
                                 : handleApply
                               }
-                              disabled={isLocked || isApplyDisabled || isFinal}
+                              disabled={(isLocked && status !== "4") || isApplyDisabled || isFinal}
                             >
                               {isAgeExceeded
-                                ? "Maaf usia Anda melebihi syarat pendaftaran"
-                                : status === "4"
-                                ? "Submit"
-                                : isLocked
-                                ? "Anda sudah mendaftar pada periode ini"
-                                : "Apply"}
+                              ? "Maaf usia Anda melebihi syarat pendaftaran"
+                              : status === "4"
+                              ? "Submit"
+                              : isLocked
+                              ? "Anda sudah mendaftar pada periode ini"
+                              : "Apply"}
                             </button>
                             </DialogTrigger>
                           <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
