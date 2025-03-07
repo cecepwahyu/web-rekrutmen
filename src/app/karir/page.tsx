@@ -83,7 +83,7 @@ const Karir = () => {
                     },
                 });
                 const data = await response.json();
-                if (data.responseCode === "000") {
+                if (data.responseCode === "000" && data.data && data.data.content) {
                     const allJobs: Job[] = data.data.content; // Explicitly define type
                     const now = new Date();
                     const validJobs = allJobs.filter(job => {
@@ -104,6 +104,44 @@ const Karir = () => {
                 setIsLoading(false); // Hide loading animation
             }
         }
+    };
+
+    const fetchAllJobs = async (endpoint: string) => {
+        setIsLoading(true);
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.error("No token found in localStorage");
+                return [];
+            }
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+                const data = await response.json();
+                if (data.responseCode === "000" && Array.isArray(data.data)) {
+                    const allJobs: Job[] = data.data;
+                    const now = new Date();
+                    const validJobs = allJobs.filter(job => {
+                        const startDate = new Date(job.periodeAwal);
+                        return now >= startDate;
+                    });
+                    return validJobs;
+                }
+            } catch (error) {
+                console.error("Error fetching job data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        return [];
     };
 
     // Fetch job data for Rekrutmen
@@ -214,9 +252,23 @@ const Karir = () => {
     }, []);
 
     useEffect(() => {
-        const filtered = activeTab === "Rekrutmen" ? rekrutmenJobs : jobDescJobs;
-        setFilteredJobs(filtered.filter(job => job.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase()) && job.flgApprove === true));
-    }, [searchTerm, rekrutmenJobs, jobDescJobs, activeTab]);
+        const searchJobs = async () => {
+            if (searchTerm.trim() === "") {
+                setFilteredJobs(activeTab === "Rekrutmen" ? rekrutmenJobs : jobDescJobs);
+                return;
+            }
+
+            const endpoint = activeTab === "Rekrutmen"
+                ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/rekrutmen/all`
+                : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lowongan/jobdesc/all`;
+
+            const allJobs = await fetchAllJobs(endpoint);
+            const filtered = allJobs.filter(job => job.judulLowongan.toLowerCase().includes(searchTerm.toLowerCase()) && job.flgApprove === true);
+            setFilteredJobs(filtered);
+        };
+
+        searchJobs();
+    }, [searchTerm, activeTab]);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
