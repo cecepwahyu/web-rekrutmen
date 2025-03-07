@@ -793,8 +793,16 @@ const EditProfil = () => {
             return;
         }
 
-        if (kontakList.length === 0) {
-            showDialog("Anda harus mengisi setidaknya satu kontak keluarga.");
+        // Validate if kontakList contains both Ayah and Ibu
+        const requiredRelations = ["Ayah", "Ibu"];
+        const existingRelations = kontakList.map((kontak) => kontak.hubKontak);
+
+        const missingRelations = requiredRelations.filter(
+            (relation) => !existingRelations.includes(relation)
+        );
+
+        if (missingRelations.length > 0) {
+            showDialog(`Anda harus mengisi data ${missingRelations.join(" dan ")} di Data Keluarga.`);
             return;
         }
 
