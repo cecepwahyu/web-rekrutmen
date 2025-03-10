@@ -509,7 +509,7 @@ const DetailKarir = () => {
     const fetchUserDocuments = async () => {
       const token = localStorage.getItem("token");
       if (!token || !idPeserta) return;
-
+  
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/documents`,
@@ -518,16 +518,22 @@ const DetailKarir = () => {
             headers: getHeaders(token),
           }
         );
-
+  
         const data = await response.json();
-        setIdUserDocuments(data);
+        if (Array.isArray(data)) {
+          setIdUserDocuments(data); // ✅ Store the array of document IDs
+        } else {
+          console.error("Unexpected response format:", data);
+        }
       } catch (error) {
         console.error("Error fetching user documents:", error);
       }
     };
-
-    fetchUserDocuments();
-  }, [idPeserta]);
+  
+    if (idPeserta) {
+      fetchUserDocuments();
+    }
+  }, [idPeserta]);  
 
   useEffect(() => {
     const fetchRequiredDocuments = async () => {
@@ -785,6 +791,34 @@ const DetailKarir = () => {
     };
   };
   
+  const fetchUserDocuments = async (idPeserta: string) => {
+    const token = localStorage.getItem("token");
+    if (!token || !idPeserta) return [];
+  
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/${idPeserta}/documents`,
+        {
+          method: "GET",
+          headers: getHeaders(token),
+        }
+      );
+  
+      const data = await response.json();
+      console.log("📄 API Response for Documents:", data); // Debug log
+  
+      if (Array.isArray(data) && data.length > 0) {
+        return data; // ✅ Successfully fetched documents
+      } else {
+        console.warn("⚠️ Documents fetched, but array is empty!");
+        return [];
+      }
+    } catch (error) {
+      console.error("❌ Error fetching user documents:", error);
+      return [];
+    }
+  };
+  
 
   const handleApplyNow = async () => {
     if (userAge !== null && maxAge !== null && userAge > maxAge) {
@@ -792,10 +826,32 @@ const DetailKarir = () => {
       return;
     }
   
-    await submitApplication();
-  };
+    if (!idPeserta) {
+      console.error("❌ idPeserta is null!");
+      return;
+    }
   
-  const submitApplication = async () => {
+    console.log("🔄 Fetching user documents in real-time...");
+    const documents = await fetchUserDocuments(idPeserta);
+  
+    if (documents.length === 0) {
+      console.error("❌ No documents found! Cannot apply.");
+      toast.error("Please upload required documents before applying.");
+      return;
+    }
+  
+    setIdUserDocuments(documents); // Ensure state is updated before calling submitApplication
+  
+    console.log("✅ Updated idUserDocuments:", documents);
+  
+    // Use a timeout to ensure state updates before proceeding
+    setTimeout(() => {
+      submitApplication(documents);
+    }, 500);
+  };  
+  
+  
+  const submitApplication = async (userDocuments: number[]) => {
     const token = localStorage.getItem("token");
     if (!token || !idPeserta) return;
   
@@ -804,29 +860,18 @@ const DetailKarir = () => {
       return;
     }
   
+    if (!userDocuments || userDocuments.length === 0) {
+      console.error("❌ No documents found for submission.");
+      toast.error("Please upload required documents before applying.");
+      return;
+    }
+  
     let allDocumentsUploaded = true;
   
     requiredDocuments.forEach((doc) => {
       const docName = doc[3].toLowerCase().replace(/\s+/g, "-");
-      const inputField = document.querySelector(`input[name="${docName}"]`);
-      const errorMessage = document.querySelector(`#error-${docName}`);
-  
       if (!uploadedFiles[docName]) {
         allDocumentsUploaded = false;
-        if (inputField !== null) {
-          inputField.classList.add("border-red-500");
-          if (errorMessage) {
-            errorMessage.textContent = "Please upload this document.";
-            setTimeout(() => {
-              errorMessage.textContent = "";
-              inputField.classList.remove("border-red-500");
-            }, 3000);
-          }
-        }
-      } else {
-        if (errorMessage) {
-          errorMessage.textContent = "";
-        }
       }
     });
   
@@ -849,7 +894,7 @@ const DetailKarir = () => {
   
     const payload = {
       id_peserta: idPeserta,
-      id_user_documents: idUserDocuments,
+      id_user_documents: userDocuments, // Use the parameter instead of state
       tinggi_badan: tinggiBadan,
       berat_badan: beratBadan,
     };
@@ -888,6 +933,7 @@ const DetailKarir = () => {
     }
   };
   
+  
 
   const isApplyButtonDisabled = () => {
     if (status === "4") {
@@ -915,6 +961,12 @@ const DetailKarir = () => {
 
     const token = localStorage.getItem("token");
     if (!token || !idPeserta) return;
+
+    // Ensure documents are fetched before submitting
+    if (!idUserDocuments || idUserDocuments.length === 0) {
+      console.error("❌ No documents found for submission.");
+      return;
+    }
 
     const payload = {
       id_peserta: idPeserta,
