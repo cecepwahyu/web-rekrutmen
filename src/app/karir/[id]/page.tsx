@@ -213,7 +213,9 @@ const checkCvSubmission = async (idPeserta: string) => {
       );
 
       const cvData = await cvResponse.json();
-      return cvData.responseCode === "000" && cvData.data.length > 0;
+      if (cvData.responseCode === "000" && cvData.data.length > 0) {
+        return cvData.data[0].status === "Applied";
+      }
     }
     return false;
   } catch (error) {
@@ -387,6 +389,7 @@ const DetailKarir = () => {
   const [isAgeDialogOpen, setIsAgeDialogOpen] = useState(false);
   const [maxAge, setMaxAge] = useState<number | null>(null);
   const [isAgeExceeded, setIsAgeExceeded] = useState(false);
+  const [isCvSubmitted, setIsCvSubmitted] = useState(false);
 
   const checkAndSetAgeLimit = async (idPeserta: string) => {
     const ageLimit = await checkAgeLimit(idPeserta);
@@ -565,6 +568,7 @@ const DetailKarir = () => {
     const fetchCvSubmissionStatus = async () => {
       if (status === "4" && idPeserta) {
         const isCvSubmitted = await checkCvSubmission(idPeserta);
+        setIsCvSubmitted(isCvSubmitted);
         setIsLocked(isCvSubmitted);
       }
     };
@@ -894,7 +898,7 @@ const DetailKarir = () => {
   
     const payload = {
       id_peserta: idPeserta,
-      id_user_documents: userDocuments, // Use the parameter instead of state
+      id_user_documents: userDocuments,
       tinggi_badan: tinggiBadan,
       berat_badan: beratBadan,
     };
@@ -932,7 +936,6 @@ const DetailKarir = () => {
       alert("An error occurred. Please try again.");
     }
   };
-  
   
 
   const isApplyButtonDisabled = () => {
@@ -1224,18 +1227,18 @@ const DetailKarir = () => {
                             <DialogTrigger asChild>
                             <button
                               className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                              (isLocked && status !== "4") || isApplyDisabled || isFinal
+                              (isLocked && status !== "4") || isApplyDisabled || isFinal || isCvSubmitted
                                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                                 : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
                               }`}
                               onClick={
-                              (isLocked && status !== "4") || isApplyDisabled || isFinal
+                              (isLocked && status !== "4") || isApplyDisabled || isFinal || isCvSubmitted
                                 ? undefined
                                 : status === "4"
                                 ? handleSubmitCv
                                 : handleApply
                               }
-                              disabled={(isLocked && status !== "4") || isApplyDisabled || isFinal}
+                              disabled={(isLocked && status !== "4") || isApplyDisabled || isFinal || isCvSubmitted}
                             >
                               {isAgeExceeded
                               ? "Maaf usia Anda melebihi syarat pendaftaran"
