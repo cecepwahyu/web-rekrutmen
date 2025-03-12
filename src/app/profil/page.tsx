@@ -1004,7 +1004,7 @@ const Profile = () => {
                                         onClick={handleChangePassword} 
                                         className="mt-4 w-full bg-darkBlue text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:bg-blue-400"
                                     >
-                                        Ubah Passwords
+                                        Ubah Password
                                     </button>
                                 </div>
 
