@@ -1925,7 +1925,7 @@ const EditProfil = () => {
                                                     value={kontak.alamatKontak || ""}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
-                                                        if (/^[a-zA-Z0-9\s]*$/.test(value)) {
+                                                        if (/^[a-zA-Z0-9\s.,():]*$/.test(value)) {
                                                             handleChange(e, index, "kontak");
                                                         }
                                                     }}
