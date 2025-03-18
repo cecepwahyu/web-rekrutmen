@@ -435,7 +435,14 @@ const DetailKarir = () => {
           setMinHeight(data.data.minHeight);
           setIsHeightMandatory(data.data.isHeightMandatory);
           setStatus(data.data.status); // Set status
-          setMaxAge(data.data.maxAge ? parseInt(data.data.maxAge) : null);
+
+            if (data.data.maxAge) {
+            const maxAgeYears = parseInt(data.data.maxAge);
+            const totalDays = maxAgeYears * 365;
+            setMaxAge(totalDays);
+            } else {
+            setMaxAge(null);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -631,12 +638,14 @@ const DetailKarir = () => {
         const data = await response.json();
         if (data.responseCode === "000") {
           const birthDate = new Date(data.data.tglLahir);
-          console.log("Birth Date:", birthDate);
           const age = calculateAge(birthDate);
-          setUserAge(age);
+
+          const totalDays = age.years * 365 + age.months * 30 + age.days;
+
+          setUserAge(totalDays);
           setIsFinal(data.data.isFinal);
         }
-      } catch (error) {
+            } catch (error) {
         console.error("Error fetching profile:", error);
       }
     };
@@ -664,10 +673,37 @@ const DetailKarir = () => {
   }, [idPeserta]);
 
   const calculateAge = (birthDate: Date) => {
-    console.log("Birth Date:", birthDate);
-    const difference = Date.now() - birthDate.getTime();
-    const ageDate = new Date(difference);
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
+    const now = new Date();
+    const years = now.getFullYear() - birthDate.getFullYear();
+    const months = now.getMonth() - birthDate.getMonth();
+    const days = now.getDate() - birthDate.getDate();
+  
+    let adjustedYears = years;
+    let adjustedMonths = months;
+    let adjustedDays = days;
+  
+    if (adjustedDays < 0) {
+      adjustedMonths -= 1;
+      const previousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+      adjustedDays += previousMonth.getDate();
+    }
+  
+    if (adjustedMonths < 0) {
+      adjustedYears -= 1;
+      adjustedMonths += 12;
+    }
+  
+    const totalDays =
+      adjustedYears * 365 +
+      adjustedMonths * 30 +
+      adjustedDays;
+  
+    return {
+      years: adjustedYears,
+      months: adjustedMonths,
+      days: adjustedDays,
+      totalDays,
+    };
   };
 
   const handleApply = async () => {
@@ -809,7 +845,6 @@ const DetailKarir = () => {
       );
   
       const data = await response.json();
-      console.log("📄 API Response for Documents:", data); // Debug log
   
       if (Array.isArray(data) && data.length > 0) {
         return data; // ✅ Successfully fetched documents
@@ -835,7 +870,6 @@ const DetailKarir = () => {
       return;
     }
   
-    console.log("🔄 Fetching user documents in real-time...");
     const documents = await fetchUserDocuments(idPeserta);
   
     if (documents.length === 0) {
@@ -846,13 +880,11 @@ const DetailKarir = () => {
   
     setIdUserDocuments(documents); // Ensure state is updated before calling submitApplication
   
-    console.log("✅ Updated idUserDocuments:", documents);
-  
     // Use a timeout to ensure state updates before proceeding
     setTimeout(() => {
       submitApplication(documents);
     }, 500);
-  };  
+  };
   
   
   const submitApplication = async (userDocuments: number[]) => {
