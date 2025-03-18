@@ -83,6 +83,10 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+      document.title = "Register | Rekrutmen BPD DIY";
+    }, []);
+
   // Add event listener for scroll
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -439,9 +443,10 @@ const Register = () => {
             Silakan menyetujui syarat dan ketentuan berikut untuk melanjutkan aplikasi Anda.
           </DialogDescription>
           <FormGroup className="mt-4 space-y-4">
-            <p className="text-gray-700">1. Saya bersedia memberikan/menyerahkan/mengisi data pribadi saya kepada PT Bank BPD DIY untuk memproses dan/atau menggunakan dan/atau memanfaatkan data pribadi tersebut sebatas keperluan rekrutmen Bank.</p>
-            <p className="text-gray-700">2. Data dan dokumen yang saya input melalui web rekrutmen Bank BPD DIY adalah benar dan sesuai dengan data diri saya.</p>
+            <p className="text-gray-700">1. Saya bersedia menyerahkan data pribadi saya kepada PT Bank BPD DIY untuk memproses dan/atau menggunakan dan/atau memanfaatkan data pribadi tersebut sebatas keperluan rekrutmen Bank.</p>
+            <p className="text-gray-700">2. Data dan dokumen yang saya serahkan kepada PT Bank BPD DIY adalah benar dan sesuai dengan data diri saya.</p>
             <p className="text-gray-700">3. Apabila terdapat ketidakbenaran atas data dan dokumen tersebut, saya bertanggung jawab penuh atas segala akibatnya.</p>
+            <p className="text-gray-700">4. Saya memberi kuasa untuk melakukan pengambilan data di Sistem Layanan Informasi Keuangan (SLIK) dan/atau Daftar Terguna Teroris dan Organisasi) DTTOT dan/atau Daftar Pendanaan Proliferasi Senjata Pemusnah Massal (PPSPM) dan/atau Daftar Hitam Nasional (DHN).</p>
             <FormControlLabel
               control={
                 <Checkbox
