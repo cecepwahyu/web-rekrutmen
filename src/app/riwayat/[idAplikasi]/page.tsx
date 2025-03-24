@@ -260,13 +260,16 @@ const DetailRiwayat = () => {
     const logoWidth = 30; // Adjust logo width
     const logoHeight = 15; // Adjust logo height
   
+    // Get the current year dynamically
+    const currentYear = new Date().getFullYear();
+
     // Add header
     doc.addImage(logoPath, "PNG", 150, 10, logoWidth, logoHeight); // Position the logo at the top-right corner
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.text("Kartu Peserta Tes", 220, 20, { align: "center" }); // Title centered on the right half
     doc.setFontSize(12);
-    doc.text("Rekrutmen Pegawai PT Bank BPD DIY 2024", 220, 28, { align: "center" }); // Subtitle centered on the right half
+    doc.text(`Rekrutmen Pegawai PT Bank BPD DIY ${currentYear}`, 220, 28, { align: "center" }); // Subtitle centered on the right half
     doc.setLineWidth(0.5);
     doc.line(150, 35, 290, 35); // Line on the right half
   
