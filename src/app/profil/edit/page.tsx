@@ -1808,7 +1808,7 @@ const EditProfil = () => {
                                     </div>
                                     <div className="mb-4">
                                         <label className="block text-gray-700 font-bold mb-2">
-                                            Apakah anda mempunyai hubungan keluarga atau kerabat yang bekerja di Bank BPD DIY? <span className="text-red-500">*</span>
+                                            Apakah Anda mempunyai hubungan keluarga (Ayah, Ibu, Anak, Kakak, Adik, Menantu dan Ipar) dengan pengurus maupun pegawai PT Bank BPD DIY? <span className="text-red-500">*</span>
                                         </label>
                                         <div className="flex items-center">
                                             <input
