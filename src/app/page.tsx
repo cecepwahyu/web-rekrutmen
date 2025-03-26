@@ -387,29 +387,39 @@ const Home = () => {
                                 Apa saja persyaratan umum melamar di Bank BPD DIY?
                             </AccordionTrigger>
                             <AccordionContent className="w-full text-gray-700 text-sm md:text-base leading-relaxed">
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                                    Persyaratan umum mencakup:
-                                    <ul className="list-disc pl-6 mt-2">
-                                        <li>Warga Negara Indonesia (WNI).</li>
-                                        <li>Bertaqwa kepada Tuhan Yang Maha Esa.</li>
-                                        <li>Setia dan taat kepada Pancasila, UUD 1945 dan Negara Kesatuan Republik Indonesia.</li>
-                                        <li>Tidak menjadi anggota atau pengurus partai politik atau terlibat kegiatan politik praktis dan tidak akan mengikuti kegiatan politik pada saat aktif menjadi pegawai.</li>
-                                        <li>Tidak pernah diberhentikan “tidak dengan hormat” sebagai pegawai Instansi Pemerintah maupun swasta.</li>
-                                        <li>Tidak memiliki ketergantungan kepada narkoba/bebas narkoba, tidak berjudi dan tidak memiliki ketergantungan segala macam bentuk perjudian.</li>
-                                        <li>Sanggup menandatangani pakta integritas.</li>
-                                        <li>Tidak mempunyai hubungan keluarga (Ayah, Ibu, Anak, Kakak, Adik, Menantu dan Ipar) dengan pengurus maupun pegawai PT Bank BPD DIY.</li>
-                                        <li>Mempunyai reputasi keuangan yang baik (kolektibilitas lancar).</li>
-                                        <li>Bersedia ditempatkan di kantor-kantor yang ditetapkan oleh PT Bank BPD DIY.</li>
-                                        <li>Surat pernyataan bermaterai Poin A sampai J ditandatangani oleh pelamar.</li>
-                                        <li>Berkelakuan baik dan tidak pernah dihukum penjara atau kurungan berdasarkan keputusan pengadilan yang telah mempunyai kekuatan hukum yang tetap karena melakukan suatu tindak pidana kejahatan yang dinyatakan dalam Surat Keterangan Catatan Kepolisian (SKCK)/keterangan sejenisnya sesuai dengan ketentuan yang berlaku.</li>
-                                        <li>Berusia serendah-rendahnya 18 (delapan belas) tahun yang dibuktikan dengan Akte/Surat Kelahiran yang dikeluarkan oleh pejabat yang berwenang.</li>
-                                        <li>Mempunyai nilai TOEFL minimal 450 (1 tahun terakhir) atau tes sejenis seperti TOEFL IBT minimal 61/PTE minimal 50/ IELTS minimal 6.0.</li>
-                                        <li>Mempunyai pendidikan, kecakapan dan keahlian yang diperlukan.</li>
-                                        <li>Berbadan sehat yang dinyatakan dengan Surat Keterangan Sehat (terbaru) dari Dokter/Puskesmas/Instansi Kesehatan lainnya.</li>
-                                        <li>Lulus seluruh tahapan dan test seleksi.</li>
-                                    </ul>
-                                </motion.div>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                                Persyaratan umum mencakup:
+                                <ol className="mt-2 pl-6 space-y-2">
+                                {[
+                                    "Warga Negara Indonesia (WNI).",
+                                    "Bertaqwa kepada Tuhan Yang Maha Esa.",
+                                    "Setia dan taat kepada Pancasila, UUD 1945 dan Negara Kesatuan Republik Indonesia.",
+                                    "Tidak menjadi anggota atau pengurus partai politik atau terlibat kegiatan politik praktis dan tidak akan mengikuti kegiatan politik pada saat aktif menjadi pegawai.",
+                                    "Tidak pernah diberhentikan “tidak dengan hormat” sebagai pegawai Instansi Pemerintah maupun swasta.",
+                                    "Tidak memiliki ketergantungan kepada narkoba/bebas narkoba, tidak berjudi dan tidak memiliki ketergantungan segala macam bentuk perjudian.",
+                                    "Sanggup menandatangani pakta integritas.",
+                                    "Tidak mempunyai hubungan keluarga (Ayah, Ibu, Anak, Kakak, Adik, Menantu dan Ipar) dengan pengurus maupun pegawai PT Bank BPD DIY.",
+                                    "Mempunyai reputasi keuangan yang baik (kolektibilitas lancar).",
+                                    "Bersedia ditempatkan di kantor-kantor yang ditetapkan oleh PT Bank BPD DIY.",
+                                    "Surat pernyataan bermaterai Poin A sampai J ditandatangani oleh pelamar.",
+                                    "Berkelakuan baik dan tidak pernah dihukum penjara atau kurungan berdasarkan keputusan pengadilan yang telah mempunyai kekuatan hukum yang tetap karena melakukan suatu tindak pidana kejahatan yang dinyatakan dalam Surat Keterangan Catatan Kepolisian (SKCK)/keterangan sejenisnya sesuai dengan ketentuan yang berlaku.",
+                                    "Berusia serendah-rendahnya 18 (delapan belas) tahun yang dibuktikan dengan Akte/Surat Kelahiran yang dikeluarkan oleh pejabat yang berwenang.",
+                                    "Mempunyai nilai TOEFL minimal 450 (1 tahun terakhir) atau tes sejenis seperti TOEFL IBT minimal 61/PTE minimal 50/ IELTS minimal 6.0.",
+                                    "Mempunyai pendidikan, kecakapan dan keahlian yang diperlukan.",
+                                    "Berbadan sehat yang dinyatakan dengan Surat Keterangan Sehat (terbaru) dari Dokter/Puskesmas/Instansi Kesehatan lainnya.",
+                                    "Lulus seluruh tahapan dan test seleksi."
+                                ].map((item, index) => (
+                                    <li key={index} className="flex items-start">
+                                    <span className="w-6 shrink-0 font-regular">
+                                        {String.fromCharCode(65 + index)}.
+                                    </span>
+                                    <span className="ml-2">{item}</span>
+                                    </li>
+                                ))}
+                                </ol>
+                            </motion.div>
                             </AccordionContent>
+
                         </AccordionItem>
                         <AccordionItem value="item-3">
                             <AccordionTrigger className="w-full font-bold text-darkBlue text-lg md:text-xl hover:text-blue-500 transition-colors duration-300">
@@ -434,7 +444,7 @@ const Home = () => {
                             </AccordionTrigger>
                             <AccordionContent className="w-full text-gray-700 text-sm md:text-base leading-relaxed">
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                                    Ya, Bank BPD DIY biasanya membuka kesempatan bagi fresh graduate dengan berbagai posisi.
+                                    Ya, Bank BPD DIY membuka kesempatan bagi fresh graduate dengan berbagai posisi.
                                 </motion.div>
                             </AccordionContent>
                         </AccordionItem>
