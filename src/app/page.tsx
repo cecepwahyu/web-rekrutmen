@@ -154,7 +154,7 @@ const Home = () => {
                             <div className="flex flex-wrap">
                                 <div className="w-full md:w-1/2 pl-20 flex items-center justify-center">
                                     <div className="p-8 rounded-lg">
-                                        <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Karir di BPD DIY</h1>
+                                        <h1 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">Karir di Bank BPD DIY</h1>
                                         <p className="text-white hover:text-yellow-500 transition-colors duration-300">Temukan posisi yang sesuai dengan kualifikasi anda dan berkembang bersama Bank BPD DIY.</p>
                                         <br />
                                         <button 
@@ -263,13 +263,17 @@ const Home = () => {
                         </div>
                         <div className="relative z-10">
                             <span className="text-darkBlue font-extrabold text-4xl text-center md:text-left leading-tight tracking-wide">
-                                Tentang BPD DIY
+                                Tentang Bank BPD DIY
                             </span>
                             <div className="w-16 h-1 bg-blue-500 mt-2 mb-4 mx-auto md:mx-0"></div>
                             <p className="font-sans text-lg leading-relaxed text-gray-700 text-left md:pr-8">
-                                BPD DIY selalu mengusahakan agar karyawan dapat bekerja sesuai dengan potensi dan kemampuan mereka serta
-                                mempelajari hal-hal baru setiap harinya. Kami percaya jika hal itu dibudayakan di dalam lingkungan BPD DIY,
-                                akan membangun semangat untuk terus berinovasi.
+                                <span className="font-semibold text-darkBlue">PT Bank Pembangunan Daerah Daerah Istimewa Yogyakarta</span>, atau yang lebih dikenal sebagai <span className="font-semibold text-blue-500">Bank BPD DIY</span>, adalah sebuah <span className="italic">Badan Usaha Milik Daerah</span> yang dimiliki oleh Pemerintah Daerah Daerah Istimewa Yogyakarta dan Pemerintah Kabupaten/Kota se-Daerah Istimewa Yogyakarta.
+                            </p>
+                            <p className="font-sans text-lg leading-relaxed text-gray-700 text-left md:pr-8 mt-4">
+                                Bank BPD DIY berkomitmen untuk <span className="font-medium text-blue-400">mendorong pertumbuhan perekonomian</span>, memberikan solusi finansial yang inovatif bagi masyarakat, serta menjalankan peran sebagai <span className="font-medium text-darkBlue">agen pembangunan</span> yang fokus pada pengembangan sektor <span className="font-semibold text-blue-500">UMKM</span>.
+                            </p>
+                            <p className="font-sans text-lg leading-relaxed text-gray-700 text-left md:pr-8 mt-4">
+                                Dengan kepercayaan yang diberikan oleh nasabah serta dukungan dari seluruh pemangku kepentingan, <span className="font-semibold text-darkBlue">Bank BPD DIY</span> terus tumbuh dan berkembang, menjadi mitra terpercaya dalam membangun masa depan yang lebih baik.
                             </p>
                         </div>
                     </div>
@@ -282,8 +286,8 @@ const Home = () => {
                         Mari Berkembang Bersama Kami
                     </h1>
                     <p className="font-sans text-lg font-light leading-relaxed text-gray-700 text-center mt-6 px-6 md:px-32 lg:px-48">
-                        BPD DIY selalu mengusahakan agar karyawan dapat bekerja sesuai dengan potensi dan kemampuan mereka serta
-                        mempelajari hal-hal baru setiap harinya. Kami percaya jika hal itu dibudayakan di dalam lingkungan BPD DIY,
+                        Bank BPD DIY selalu mengusahakan agar karyawan dapat bekerja sesuai dengan potensi dan kemampuan mereka serta
+                        mempelajari hal-hal baru setiap harinya. Kami percaya jika hal itu dibudayakan di dalam lingkungan Bank BPD DIY,
                         akan membangun semangat untuk terus berinovasi.
                     </p>
                     <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-blue-100 to-transparent"></div>
@@ -344,7 +348,7 @@ const Home = () => {
 
                 {/* Section FAQ's */}
                 <div className="flex flex-col justify-center items-center w-full bg-white h-auto relative z-10 pb-12 pt-8">
-                    <h1 className="text-darkBlue font-semibold text-3xl mt-30 text-center">Sekilas BPD DIY</h1>
+                    <h1 className="text-darkBlue font-semibold text-3xl mt-30 text-center">Sekilas Bank BPD DIY</h1>
                     <br />
                     <div className="w-full flex justify-center px-4 md:px-0">
                         <div className="relative w-full max-w-4xl overflow-hidden rounded-lg shadow-lg" style={{ paddingBottom: '40%' }}>
@@ -363,7 +367,7 @@ const Home = () => {
                     <Accordion type="single" collapsible className="w-11/12 md:w-3/4 mx-auto mt-6">
                         <AccordionItem value="item-1">
                             <AccordionTrigger className="w-full font-bold text-darkBlue text-lg md:text-xl hover:text-blue-500 transition-colors duration-300">
-                                Apa saja posisi yang tersedia di BPD DIY?
+                                Apa saja posisi yang tersedia di Bank BPD DIY?
                             </AccordionTrigger>
                             <AccordionContent className="w-full text-gray-700 text-sm md:text-base leading-relaxed">
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
@@ -409,13 +413,13 @@ const Home = () => {
                         </AccordionItem>
                         <AccordionItem value="item-3">
                             <AccordionTrigger className="w-full font-bold text-darkBlue text-lg md:text-xl hover:text-blue-500 transition-colors duration-300">
-                                Bagaimana cara melamar pekerjaan di BPD DIY?
+                                Bagaimana cara melamar pekerjaan di Bank BPD DIY?
                             </AccordionTrigger>
                             <AccordionContent className="w-full text-gray-700 text-sm md:text-base leading-relaxed">
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                                     Anda dapat melamar pekerjaan melalui langkah berikut:
                                     <ul className="list-disc pl-6 mt-2">
-                                        <li>Kunjungi website resmi BPD DIY atau portal karier yang bekerja sama dengan bank.</li>
+                                        <li>Kunjungi website resmi Bank BPD DIY atau portal karier yang bekerja sama dengan bank.</li>
                                         <li>Pilih posisi yang sesuai dengan minat dan kualifikasi Anda.</li>
                                         <li>Unduh dan lengkapi formulir lamaran.</li>
                                         <li>Siapkan dokumen pendukung seperti CV, surat lamaran, ijazah, transkrip nilai, dan pas foto.</li>
@@ -426,11 +430,11 @@ const Home = () => {
                         </AccordionItem>
                         <AccordionItem value="item-4">
                             <AccordionTrigger className="w-full font-bold text-darkBlue text-lg md:text-xl hover:text-blue-500 transition-colors duration-300">
-                                Apakah fresh graduate dapat melamar di BPD DIY?
+                                Apakah fresh graduate dapat melamar di Bank BPD DIY?
                             </AccordionTrigger>
                             <AccordionContent className="w-full text-gray-700 text-sm md:text-base leading-relaxed">
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                                    Ya, BPD DIY biasanya membuka kesempatan bagi fresh graduate dengan berbagai posisi.
+                                    Ya, Bank BPD DIY biasanya membuka kesempatan bagi fresh graduate dengan berbagai posisi.
                                 </motion.div>
                             </AccordionContent>
                         </AccordionItem>
