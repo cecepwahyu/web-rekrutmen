@@ -274,7 +274,6 @@ const checkAgeLimit = async (idPeserta: string) => {
       return data.data.age_limit;
     } else {
       console.error("Error checking age limit:", data.responseMessage);
-      return false;
     }
   } catch (error) {
     console.error("Error checking age limit:", error);
@@ -390,12 +389,17 @@ const DetailKarir = () => {
   const [maxAge, setMaxAge] = useState<number | null>(null);
   const [isAgeExceeded, setIsAgeExceeded] = useState(false);
   const [isCvSubmitted, setIsCvSubmitted] = useState(false);
+  const [ageExceededPerSlug, setAgeExceededPerSlug] = useState<{ [slug: string]: boolean }>({});
 
   const checkAndSetAgeLimit = async (idPeserta: string) => {
+    if (!maxAge) return;
     const ageLimit = await checkAgeLimit(idPeserta);
     if (ageLimit) {
-      setIsApplyDisabled(true);
-      setIsAgeExceeded(true);
+      setAgeExceededPerSlug((prev) => ({
+        ...prev,
+        [slug]: true,
+      }));
+      setIsApplyDisabled(true); // optional
     }
   };
 
@@ -504,8 +508,13 @@ const DetailKarir = () => {
         );
 
         const data = await response.json();
+        const ageExceeded = ageExceededPerSlug[slug];
         if (data.responseCode === "000") {
-          setIsLocked(data.data === "true" && status === "1");
+          if (ageExceeded) {
+            setIsLocked(false); // 🚫 Do not show "already applied"
+          } else {
+            setIsLocked(data.isLocked && status === "1");
+          }
         }
       } catch (error) {
         console.error("Error fetching lock status:", error);
@@ -513,7 +522,7 @@ const DetailKarir = () => {
     };
 
     fetchLockStatus();
-  }, [idPeserta, status]);
+  }, [idPeserta, status, slug, ageExceededPerSlug]);
 
   useEffect(() => {
     const fetchUserDocuments = async () => {
@@ -981,7 +990,7 @@ const DetailKarir = () => {
 
     return requiredDocuments.some(
       (doc) => !uploadedFiles[doc[3].toLowerCase().replace(/\s+/g, "-")]
-    ) || isAgeExceeded;
+    ) || ageExceededPerSlug[slug];
   };
 
   const handleAgreementSubmit = async () => {
@@ -1132,7 +1141,10 @@ const DetailKarir = () => {
     }
 
     await setAgeLimitAndFinalizeProfile(idPeserta);
-    setIsAgeExceeded(true);
+    setAgeExceededPerSlug((prev) => ({
+      ...prev,
+      [slug]: true,
+    }));
     setIsAgeDialogOpen(false);
     router.push("/karir");
   };
@@ -1259,26 +1271,42 @@ const DetailKarir = () => {
                             <DialogTrigger asChild>
                             <button
                               className={`py-2 px-6 rounded-lg shadow-lg transition duration-300 transform ${
-                              (isLocked && status !== "4") || isApplyDisabled || isFinal || isCvSubmitted
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
+                                ageExceededPerSlug[slug] ||
+                                  (isLocked && status !== "4") ||
+                                  (isApplyDisabled && status !== "4") ||
+                                  (isFinal && status !== "4") ||
+                                  isCvSubmitted
+
+                                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                  : "bg-darkBlue text-white hover:bg-blue-700 hover:scale-105"
                               }`}
                               onClick={
-                              (isLocked && status !== "4") || isApplyDisabled || isFinal || isCvSubmitted
-                                ? undefined
-                                : status === "4"
-                                ? handleSubmitCv
-                                : handleApply
-                              }
-                              disabled={(isLocked && status !== "4") || isApplyDisabled || isFinal || isCvSubmitted}
+                                ageExceededPerSlug[slug] ||
+                                (isLocked && status !== "4") ||
+                                (isApplyDisabled && status !== "4") ||
+                                (isFinal && status !== "4") ||
+                                isCvSubmitted
+                                  ? undefined
+                                  : status === "4"
+                                  ? handleSubmitCv
+                                  : handleApply
+                              }                              
+                                disabled={
+                                  ageExceededPerSlug[slug] ||
+                                    (isLocked && status !== "4") ||
+                                    (isApplyDisabled && status !== "4") ||
+                                    (isFinal && status !== "4") ||
+                                    isCvSubmitted
+
+                                }                              
                             >
-                              {isAgeExceeded
-                              ? "Maaf usia Anda melebihi syarat pendaftaran"
-                              : status === "4"
-                              ? "Submit"
-                              : isLocked
-                              ? "Anda sudah mendaftar pada periode ini"
-                              : "Apply"}
+                              {(() => {
+                                if (ageExceededPerSlug[slug]) return "Maaf usia Anda melebihi syarat pendaftaran";
+                                if (status === "4") return "Submit";
+                                if (isLocked) return "Anda sudah mendaftar pada periode ini";
+                                return "Apply";
+                              })()}
+
                             </button>
                             </DialogTrigger>
                           <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-6 bg-white rounded-lg shadow-lg">
