@@ -393,15 +393,16 @@ const DetailKarir = () => {
 
   const checkAndSetAgeLimit = async (idPeserta: string) => {
     if (!maxAge) return;
+  
     const ageLimit = await checkAgeLimit(idPeserta);
     if (ageLimit) {
       setAgeExceededPerSlug((prev) => ({
         ...prev,
         [slug]: true,
       }));
-      setIsApplyDisabled(true); // optional
+      setIsApplyDisabled(true);
     }
-  };
+  }; 
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -660,19 +661,6 @@ const DetailKarir = () => {
     };
   
     fetchProfile();
-  }, [idPeserta]);
-  
-  useEffect(() => {
-    const fetchAgeLimit = async () => {
-      if (!idPeserta) return;
-  
-      const ageLimit = await checkAgeLimit(idPeserta);
-      if (ageLimit) {
-        setIsApplyDisabled(true);
-      }
-    };
-  
-    fetchAgeLimit();
   }, [idPeserta]);
 
   useEffect(() => {
