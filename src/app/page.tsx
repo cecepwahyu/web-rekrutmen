@@ -137,7 +137,7 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 px-4">
-                                    <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300">
+                                <div className="rounded-lg relative z-0 hover:scale-105 transition-transform duration-300">
                                         <svg className="h-100 w-full rounded-lg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
                                                 <pattern id="img2" x="0" y="0.1" width="1" height="1">
@@ -286,9 +286,7 @@ const Home = () => {
                         Mari Berkembang Bersama Kami
                     </h1>
                     <p className="font-sans text-lg font-light leading-relaxed text-gray-700 text-center mt-6 px-6 md:px-32 lg:px-48">
-                        Bank BPD DIY selalu mengusahakan agar karyawan dapat bekerja sesuai dengan potensi dan kemampuan mereka serta
-                        mempelajari hal-hal baru setiap harinya. Kami percaya jika hal itu dibudayakan di dalam lingkungan Bank BPD DIY,
-                        akan membangun semangat untuk terus berinovasi.
+                        Bank BPD DIY mengajak putra putri terbaik bangsa, untuk bergabung dengan perusahaan yang terus berkembang melalui inovasi yang berkelanjutan.
                     </p>
                     <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-blue-100 to-transparent"></div>
                     <div className="absolute top-0 left-0 w-20 h-20 bg-yellow-300 rounded-full opacity-50 blur-xl transform -translate-x-10 -translate-y-10"></div>
