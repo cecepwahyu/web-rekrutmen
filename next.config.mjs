@@ -9,7 +9,7 @@
 const nextConfig = {
   output: "standalone",
   images: {
-    domains: ['localhost', '192.168.4.79', '192.168.10.45', 'api-rekrutmen'],
+    domains: ['localhost', '192.168.4.79', '192.168.10.45', 'api-rekrutmen', 'pod2.pub.bpddiy.co.id'],
   },
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,

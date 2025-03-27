@@ -325,9 +325,9 @@ const Karir = () => {
                             <Image
                                 src="/images/slider4.png"
                                 alt="Magang"
-                                width={800}
-                                height={600}
-                                className="w-[460px] h-auto rounded-lg object-contain pb-10"
+                                width={200}
+                                height={150}
+                                className="w-[300px] h-auto rounded-lg object-contain pb-6"
                                 loading="lazy"
                                 onLoad={() => console.log('Image loaded')}
                             />

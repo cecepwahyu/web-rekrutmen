@@ -437,7 +437,7 @@ const Register = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="overflow-y-auto max-h-[80vh] w-full md:w-[80vw] lg:w-[60vw] p-4 md:p-6 bg-white rounded-lg shadow-lg">
           <DialogTitle className="text-lg md:text-xl font-semibold text-darkBlue">
-            Kebijakan Privasi
+            Persetujuan Pemrosesan Data Pribadi
           </DialogTitle>
           <DialogDescription className="text-sm md:text-base mt-2 text-gray-700">
             Silakan menyetujui syarat dan ketentuan berikut untuk melanjutkan aplikasi Anda.
@@ -446,7 +446,7 @@ const Register = () => {
             <p className="text-gray-700">1. Saya bersedia menyerahkan data pribadi saya kepada PT Bank BPD DIY untuk memproses dan/atau menggunakan dan/atau memanfaatkan data pribadi tersebut sebatas keperluan rekrutmen Bank.</p>
             <p className="text-gray-700">2. Data dan dokumen yang saya serahkan kepada PT Bank BPD DIY adalah benar dan sesuai dengan data diri saya.</p>
             <p className="text-gray-700">3. Apabila terdapat ketidakbenaran atas data dan dokumen tersebut, saya bertanggung jawab penuh atas segala akibatnya.</p>
-            <p className="text-gray-700">4. Saya memberi kuasa untuk melakukan pengambilan data di Sistem Layanan Informasi Keuangan (SLIK) dan/atau Daftar Terguna Teroris dan Organisasi) DTTOT dan/atau Daftar Pendanaan Proliferasi Senjata Pemusnah Massal (PPSPM) dan/atau Daftar Hitam Nasional (DHN).</p>
+            <p className="text-gray-700">4. Saya memberi kuasa untuk melakukan pengambilan data di Sistem Layanan Informasi Keuangan (SLIK) dan/atau Daftar Terduga Teroris dan Organisasi Teroris (DTTOT) dan/atau Daftar Pencegahan Pendanaan Proliferasi Senjata Pemusnah Massal (PPPSPM) dan/atau Daftar Hitam Nasional (DHN) dan/atau lainnya.</p>
             <FormControlLabel
               control={
                 <Checkbox
