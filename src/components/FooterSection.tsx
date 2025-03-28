@@ -18,7 +18,7 @@ const FooterSection = () => {
                         <br />
                         PHONE : +62274561614
                         <br />
-                        EMAIL : sdm@bpddiy.co.idpemberdayaan.sdm@bpddiy.co.id
+                        EMAIL : pemberdayaan.sdm@bpddiy.co.id
                         <br />
                         FAX : +62274561614
                         <br />
